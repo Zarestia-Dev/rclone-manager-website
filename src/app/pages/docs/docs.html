@@ -1,76 +1,77 @@
 <div class="page-container">
-  <div class="page-content">
-    <div class="docs-header animate-fade-in-up">
-      <h1 class="page-title">Documentation</h1>
-      <p class="page-subtitle">Complete guide to using RClone Manager</p>
-    </div>
+  <div class="docs-header animate-fade-in-up">
+    <h1 class="page-title">Documentation</h1>
+    <p class="page-subtitle">Complete guide to using RClone Manager</p>
+  </div>
 
-    <!-- Quick Links -->
-    <div class="quick-links animate-fade-in-up animate-delay-1">
-      <h2 class="section-title">
-        <mat-icon>link</mat-icon>
-        Quick Links
-      </h2>
-      <div class="quick-links-grid">
-        <button mat-raised-button class="primary" (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/releases')">
-          <mat-icon>download</mat-icon>
-          Latest Releases
-        </button>
-        <button mat-raised-button class="accent" (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/wiki')">
-          <mat-icon>menu_book</mat-icon>
-          Wiki
-        </button>
-        <button mat-raised-button (click)="openExternalLink('https://rclone.org/')">
-          <mat-icon>cloud</mat-icon>
-          rclone.org
-        </button>
-        <button mat-raised-button (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/discussions')">
-          <mat-icon>forum</mat-icon>
-          Discussions
-        </button>
-      </div>
+  <!-- Quick Links -->
+  <div class="quick-links animate-fade-in-up animate-delay-1">
+    <h2 class="section-title">
+      <mat-icon>link</mat-icon>
+      Quick Links
+    </h2>
+    <div class="quick-links-grid">
+      <button mat-raised-button class="primary"
+        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/releases')">
+        <mat-icon>download</mat-icon>
+        Latest Releases
+      </button>
+      <button mat-raised-button class="accent"
+        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/wiki')">
+        <mat-icon>menu_book</mat-icon>
+        Wiki
+      </button>
+      <button mat-raised-button (click)="openExternalLink('https://rclone.org/')">
+        <mat-icon>cloud</mat-icon>
+        rclone.org
+      </button>
+      <button mat-raised-button
+        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/discussions')">
+        <mat-icon>forum</mat-icon>
+        Discussions
+      </button>
     </div>
+  </div>
 
-    <!-- Documentation Sections -->
-    <div class="docs-sections animate-fade-in-up animate-delay-2">
-      <h2 class="section-title">
-        <mat-icon>library_books</mat-icon>
-        Documentation
-      </h2>
-      <div class="docs-grid">
-        @for (section of docSections; track section.title) {
-          <mat-card class="doc-section-card hover-lift">
-            <mat-card-header>
-              <div mat-card-avatar class="section-icon">
-                <mat-icon>{{ section.icon }}</mat-icon>
-              </div>
-              <mat-card-title>{{ section.title }}</mat-card-title>
-              <mat-card-subtitle>{{ section.description }}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="doc-items">
-                @for (item of section.items; track item.title) {
-                  <div class="doc-item" (click)="openLink(item)">
-                    <div class="doc-item-content">
-                      <h4 class="doc-item-title">
-                        {{ item.title }}
-                        @if (item.isExternal) {
-                          <mat-icon class="external-icon">open_in_new</mat-icon>
-                        }
-                      </h4>
-                      @if (item.description) {
-                        <p class="doc-item-description">{{ item.description }}</p>
-                      }
-                    </div>
-                  </div>
+  <!-- Documentation Sections -->
+  <div class="docs-sections animate-fade-in-up animate-delay-2">
+    <h2 class="section-title">
+      <mat-icon>library_books</mat-icon>
+      Documentation
+    </h2>
+    <div class="docs-grid">
+      @for (section of docSections; track section.title) {
+      <mat-card class="doc-section-card hover-lift">
+        <mat-card-header>
+          <div mat-card-avatar class="section-icon">
+            <mat-icon>{{ section.icon }}</mat-icon>
+          </div>
+          <mat-card-title>{{ section.title }}</mat-card-title>
+          <mat-card-subtitle>{{ section.description }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="doc-items">
+            @for (item of section.items; track item.title) {
+            <div class="doc-item" (click)="openLink(item)" (keydown.enter)="openLink(item)" tabindex="0">
+              <div class="doc-item-content">
+                <h4 class="doc-item-title">
+                  {{ item.title }}
+                  @if (item.isExternal) {
+                  <mat-icon class="external-icon">open_in_new</mat-icon>
+                  }
+                </h4>
+                @if (item.description) {
+                <p class="doc-item-description">{{ item.description }}</p>
                 }
               </div>
-            </mat-card-content>
-          </mat-card>
-        }
-      </div>
+            </div>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+      }
     </div>
-
-
   </div>
+
+
 </div>

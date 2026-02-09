@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -42,17 +42,17 @@ interface HelpLink {
     MatCardModule,
     MatDividerModule,
     MatChipsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
   ],
   templateUrl: './faq.html',
-  styleUrl: './faq.scss'
+  styleUrl: './faq.scss',
 })
 export class Faq implements OnInit {
-  selectedCategory: string = 'all';
-  isLoading: boolean = true;
-  error: string | null = null;
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  selectedCategory = 'all';
+  isLoading = true;
+  error: string | null = null;
 
   categories: FaqCategory[] = [];
 
@@ -71,41 +71,49 @@ export class Faq implements OnInit {
     try {
       this.isLoading = true;
       this.error = null;
-      
+
       // Fetch FAQ data from GitHub Wiki
       const response = await firstValueFrom(
         this.http.get('https://raw.githubusercontent.com/wiki/Zarestia-Dev/rclone-manager/FAQ.md', {
-          responseType: 'text'
-        })
+          responseType: 'text',
+        }),
       );
-      
+
       const parsedData = this.parseFaqMarkdown(response);
       this.faqItems = parsedData.items;
       this.categories = parsedData.categories;
       this.helpLinks = parsedData.helpLinks;
-      console.log('Successfully loaded FAQ data:', this.faqItems.length, 'questions,', this.categories.length, 'categories');
-      
-    } catch (error: any) {
+      this.helpLinks = parsedData.helpLinks;
+      console.log(
+        'Successfully loaded FAQ data:',
+        this.faqItems.length,
+        'questions,',
+        this.categories.length,
+        'categories',
+      );
+    } catch (error) {
       console.error('Error loading FAQ data:', error);
-      this.error = 'Failed to load FAQ data from GitHub Wiki. Please check your internet connection and try again.';
+      this.error =
+        'Failed to load FAQ data from GitHub Wiki. Please check your internet connection and try again.';
       // No fallback items - keep arrays empty
     } finally {
       this.isLoading = false;
     }
   }
 
-  private parseFaqMarkdown(markdown: string): { items: FaqItem[], categories: FaqCategory[], helpLinks: HelpLink[] } {
+  private parseFaqMarkdown(markdown: string): {
+    items: FaqItem[];
+    categories: FaqCategory[];
+    helpLinks: HelpLink[];
+  } {
     const faqItems: FaqItem[] = [];
     const categorySet = new Set<string>();
     const lines = markdown.split('\n');
     let currentQuestion: Partial<FaqItem> = {};
-    let isInAnswer = false;
     let answerLines: string[] = [];
     let helpLinks: HelpLink[] = [];
-    
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      
+
+    for (const line of lines) {
       // Check for question (### heading)
       if (line.startsWith('### ') && line.length > 4) {
         // Save previous question if exists
@@ -116,17 +124,16 @@ export class Faq implements OnInit {
             categorySet.add(currentQuestion.category);
           }
         }
-        
+
         // Start new question
         currentQuestion = {
           id: this.generateId(line.substring(4)),
           question: line.substring(4),
           category: 'general',
           tags: [],
-          isExpanded: false
+          isExpanded: false,
         };
         answerLines = [];
-        isInAnswer = false;
       }
       // Check for category
       else if (line.startsWith('**Category:**')) {
@@ -139,18 +146,17 @@ export class Faq implements OnInit {
       else if (line.startsWith('**Tags:**')) {
         const tagsStr = line.replace('**Tags:**', '').trim();
         if (currentQuestion) {
-          currentQuestion.tags = tagsStr.split(',').map(tag => tag.trim());
+          currentQuestion.tags = tagsStr.split(',').map((tag) => tag.trim());
         }
       }
       // Start collecting answer after metadata
       else if (line && !line.startsWith('**') && !line.startsWith('---') && !line.startsWith('#')) {
         if (currentQuestion.question) {
-          isInAnswer = true;
           answerLines.push(line);
         }
       }
     }
-    
+
     // Don't forget the last question
     if (currentQuestion.question && answerLines.length > 0) {
       currentQuestion.answer = answerLines.join(' ').trim();
@@ -166,27 +172,29 @@ export class Faq implements OnInit {
         id: 'all',
         name: 'All Questions',
         icon: 'help',
-        description: 'View all frequently asked questions'
-      }
+        description: 'View all frequently asked questions',
+      },
     ];
 
     // Add categories found in FAQ items
-    Array.from(categorySet).sort().forEach(categoryId => {
-      const categoryConfig = this.getCategoryConfig(categoryId);
-      categories.push({
-        id: categoryId,
-        name: categoryConfig.name,
-        icon: categoryConfig.icon,
-        description: categoryConfig.description
+    Array.from(categorySet)
+      .sort()
+      .forEach((categoryId) => {
+        const categoryConfig = this.getCategoryConfig(categoryId);
+        categories.push({
+          id: categoryId,
+          name: categoryConfig.name,
+          icon: categoryConfig.icon,
+          description: categoryConfig.description,
+        });
       });
-    });
 
     // Generate help links from repository info
     helpLinks = this.generateHelpLinks();
-    
+
     return { items: faqItems, categories, helpLinks };
   }
-  
+
   private generateId(question: string): string {
     return question
       .toLowerCase()
@@ -195,50 +203,56 @@ export class Faq implements OnInit {
       .substring(0, 50);
   }
 
-  private getCategoryConfig(categoryId: string): { name: string, icon: string, description: string } {
-    const configs: Record<string, { name: string, icon: string, description: string }> = {
-      'installation': {
+  private getCategoryConfig(categoryId: string): {
+    name: string;
+    icon: string;
+    description: string;
+  } {
+    const configs: Record<string, { name: string; icon: string; description: string }> = {
+      installation: {
         name: 'Installation',
         icon: 'download',
-        description: 'Getting RClone Manager installed'
+        description: 'Getting RClone Manager installed',
       },
-      'configuration': {
-        name: 'Configuration', 
+      configuration: {
+        name: 'Configuration',
         icon: 'settings',
-        description: 'Setting up and configuring remotes'
+        description: 'Setting up and configuring remotes',
       },
-      'usage': {
+      usage: {
         name: 'Usage',
-        icon: 'play_arrow', 
-        description: 'Using RClone Manager features'
+        icon: 'play_arrow',
+        description: 'Using RClone Manager features',
       },
-      'troubleshooting': {
+      troubleshooting: {
         name: 'Troubleshooting',
         icon: 'bug_report',
-        description: 'Fixing common issues'
+        description: 'Fixing common issues',
       },
-      'features': {
+      features: {
         name: 'Features',
         icon: 'star',
-        description: 'Understanding available features'
+        description: 'Understanding available features',
       },
-      'support': {
+      support: {
         name: 'Support',
         icon: 'support',
-        description: 'Getting help and support'
+        description: 'Getting help and support',
       },
-      'general': {
+      general: {
         name: 'General',
         icon: 'info',
-        description: 'General information'
-      }
+        description: 'General information',
+      },
     };
 
-    return configs[categoryId] || {
-      name: categoryId.charAt(0).toUpperCase() + categoryId.slice(1),
-      icon: 'help_outline',
-      description: `Questions about ${categoryId}`
-    };
+    return (
+      configs[categoryId] || {
+        name: categoryId.charAt(0).toUpperCase() + categoryId.slice(1),
+        icon: 'help_outline',
+        description: `Questions about ${categoryId}`,
+      }
+    );
   }
 
   private generateHelpLinks(): HelpLink[] {
@@ -248,29 +262,29 @@ export class Faq implements OnInit {
         description: 'Ask questions, share ideas, and get help from the community',
         url: 'https://github.com/Zarestia-Dev/rclone-manager/discussions',
         icon: 'forum',
-        type: 'primary'
+        type: 'primary',
       },
       {
         title: 'Report an Issue',
         description: 'Found a bug or problem? Report it on our GitHub issues',
         url: 'https://github.com/Zarestia-Dev/rclone-manager/issues/new',
         icon: 'bug_report',
-        type: 'warn'
+        type: 'warn',
       },
       {
         title: 'Documentation',
         description: 'Browse our comprehensive documentation and guides',
         url: '/docs',
         icon: 'menu_book',
-        type: 'accent'
+        type: 'accent',
       },
       {
         title: 'Feature Request',
-        description: 'Suggest new features or improvements', 
+        description: 'Suggest new features or improvements',
         url: 'https://github.com/Zarestia-Dev/rclone-manager/discussions/categories/ideas',
         icon: 'lightbulb',
-        type: 'accent'
-      }
+        type: 'accent',
+      },
     ];
   }
 
@@ -280,12 +294,12 @@ export class Faq implements OnInit {
 
   get filteredFaqItems(): FaqItem[] {
     let items = this.faqItems;
-    
+
     // Filter by category
     if (this.selectedCategory !== 'all') {
-      items = items.filter(item => item.category === this.selectedCategory);
+      items = items.filter((item) => item.category === this.selectedCategory);
     }
-    
+
     return items;
   }
 
@@ -306,7 +320,7 @@ export class Faq implements OnInit {
     if (this.selectedCategory === 'all') {
       return 'All Questions';
     }
-    const category = this.categories.find(c => c.id === this.selectedCategory);
+    const category = this.categories.find((c) => c.id === this.selectedCategory);
     return category?.name || 'Questions';
   }
 }

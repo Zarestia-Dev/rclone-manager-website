@@ -6,8 +6,8 @@
     </div>
 
     <div class="features-grid">
-      @for (feature of features; track feature.title) {
-        <mat-card class="feature-card hover-lift animate-fade-in-up" 
+      @for (feature of features(); track feature.title) {
+        <mat-card class="feature-card hover-lift animate-swap" 
                   [style.animation-delay]="($index * 0.1) + 's'">
           <mat-card-content>
             <div class="feature-icon">

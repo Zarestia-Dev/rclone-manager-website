@@ -5,23 +5,131 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  overflow: hidden;
+
+  // Headless Mode - Blob Positions & Colors
+  &.headless-mode {
+    .blob-1 {
+      top: 40%;
+      left: 60%;
+      background: var(--gnome-orange-3);
+      width: 70vw;
+      height: 70vw;
+      opacity: 0.4;
+      filter: blur(100px);
+    }
+
+    .blob-2 {
+      top: -10%;
+      left: -10%;
+      background: var(--gnome-yellow-4);
+      width: 60vw;
+      height: 60vw;
+      opacity: 0.35;
+      filter: blur(120px);
+    }
+
+    .blob-3 {
+      top: 50%;
+      left: 10%;
+      background: var(--gnome-red-3);
+      width: 50vw;
+      height: 50vw;
+      opacity: 0.3;
+      filter: blur(90px);
+    }
+
+    .hero-title.headless {
+      background: linear-gradient(135deg, var(--gnome-orange-3), var(--gnome-yellow-4));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
 }
 
-.hero-background {
+.hero-background-wrapper {
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
-  background: var(--onboarding-background);
-  z-index: -1;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--window-bg-color);
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    transition: all 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    opacity: 0.4;
+    z-index: 0;
+  }
+
+  // Desktop Mode (Default) Positions & Colors
+  .blob-1 {
+    top: -10%;
+    left: -10%;
+    background: var(--primary-color);
+    width: 70vw;
+    height: 70vw;
+    animation: float 20s infinite ease-in-out;
+    opacity: 0.35;
+  }
+
+  .blob-2 {
+    top: 40%;
+    left: 50%;
+    background: var(--accent-color);
+    width: 60vw;
+    height: 60vw;
+    animation: float 25s infinite ease-in-out reverse;
+    opacity: 0.3;
+  }
+
+  .blob-3 {
+    top: 20%;
+    left: 20%;
+    background: var(--primary-color);
+    width: 50vw;
+    height: 50vw;
+    animation: float 22s infinite ease-in-out 2s;
+    opacity: 0.25;
+  }
+
+  .glass-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.01);
+    backdrop-filter: blur(80px); // Increased blur for better blending
+    z-index: 1;
+  }
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(30px, -50px) rotate(10deg);
+  }
+  66% {
+    transform: translate(-20px, 20px) rotate(-5deg);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
 }
 
 .hero-container {
   max-width: 900px;
   width: 100%;
   text-align: center;
-  z-index: 1;
+  z-index: 2; // Ensure content is above blobs and glass overlay
 }
 
 .hero-content {
@@ -29,16 +137,63 @@
   flex-direction: column;
   align-items: center;
   gap: 2rem;
+  width: 100%;
+}
+
+.mode-text-container {
+  display: grid;
+  grid-template-areas: "content";
+  width: 100%;
+  align-items: center;
+  justify-items: center;
+  min-height: 180px;
+}
+
+.mode-content {
+  grid-area: content;
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+  &.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+    pointer-events: auto;
+    z-index: 2;
+  }
 }
 
 .hero-logo {
   width: 120px;
   height: 120px;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
+  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 
   @media (max-width: 768px) {
     width: 90px;
     height: 90px;
+  }
+}
+
+.animate-swap {
+  animation: swapContent 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes swapContent {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -74,6 +229,14 @@
   @media (max-width: 480px) {
     font-size: 1rem;
   }
+
+  .tech-stack {
+    display: block;
+    margin-top: 0.75rem;
+    font-size: 0.9em;
+    font-weight: 500;
+    opacity: 0.85;
+  }
 }
 
 .hero-actions {
@@ -88,11 +251,6 @@
     font-size: 1rem;
     font-weight: 600;
     transition: all 0.3s ease;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    }
 
     mat-icon {
       margin-right: 0.5rem;
@@ -125,9 +283,7 @@
     }
     
     &:hover {
-      border-color: var(--primary-color);
       background: rgba(var(--primary-color-rgb), 0.1);
-      transform: translateY(-2px);
     }
   }
   

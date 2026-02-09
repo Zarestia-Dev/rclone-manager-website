@@ -22,7 +22,7 @@ function getStoredTheme(): 'light' | 'dark' | 'system' | null {
   try {
     const v = localStorage.getItem(THEME_STORAGE_KEY);
     if (v === 'light' || v === 'dark' || v === 'system') return v;
-  } catch (e) {
+  } catch {
     // localStorage access can fail in some environments; ignore and fallback to system
   }
   return null;
@@ -52,16 +52,14 @@ function initThemeDetection() {
 
   // Modern API
   if (typeof mql.addEventListener === 'function') {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (mql as any).addEventListener('change', listener);
-  } else if (typeof (mql as any).addListener === 'function') {
+    mql.addEventListener('change', listener);
+  } else if (typeof mql.addListener === 'function') {
     // Fallback for older browsers
-    (mql as any).addListener(listener);
+    mql.addListener(listener);
   }
 }
 
 // Run theme init as early as possible to avoid flicker
 initThemeDetection();
 
-bootstrapApplication(App, appConfig)
-  .catch((err) => console.error(err));
+bootstrapApplication(App, appConfig).catch((err) => console.error(err));

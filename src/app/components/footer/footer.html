@@ -7,17 +7,17 @@
           <span>RClone Manager</span>
         </div>
         <p class="footer-description">
-          A powerful desktop application for managing your cloud storage with RClone.
+          A powerful desktop application for managing your cloud storage with Rclone.
         </p>
       </div>
 
       <div class="footer-section">
         <h4>Quick Links</h4>
         <ul>
-          <li><a (click)="setTab('general')">Home</a></li>
-          <li><a (click)="setTab('docs')">Documentation</a></li>
-          <li><a (click)="setTab('downloads')">Downloads</a></li>
-          <li><a (click)="setTab('faq')">FAQ</a></li>
+          <li><a (click)="setTab('general')" (keydown.enter)="setTab('general')" tabindex="0">Home</a></li>
+          <li><a (click)="setTab('docs')" (keydown.enter)="setTab('docs')" tabindex="0">Documentation</a></li>
+          <li><a (click)="setTab('downloads')" (keydown.enter)="setTab('downloads')" tabindex="0">Downloads</a></li>
+          <li><a (click)="setTab('faq')" (keydown.enter)="setTab('faq')" tabindex="0">FAQ</a></li>
         </ul>
       </div>
 

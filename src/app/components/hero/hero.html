@@ -1,14 +1,40 @@
-<section class="hero">
-  <div class="hero-background"></div>
+<section class="hero" [class.headless-mode]="modeService.currentMode() === 'headless'">
+  <div class="hero-background-wrapper">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="glass-overlay"></div>
+  </div>
   <div class="hero-container">
     <div class="hero-content animate-fade-in-up">
       <img src="rclone.svg" alt="RClone Manager" class="hero-logo animate-float">
-      <h1 class="hero-title animate-fade-in-up animate-delay-1">
-        RClone Manager
-      </h1>
-      <p class="hero-subtitle animate-fade-in-up animate-delay-2">
-        A powerful, user-friendly desktop application for managing your cloud storage with RClone
-      </p>
+      
+      <div class="mode-text-container">
+        <!-- Desktop Content -->
+        <div class="mode-content" [class.active]="modeService.currentMode() === 'desktop'">
+          <h1 class="hero-title animate-fade-in-up animate-delay-1">
+            RClone Manager
+          </h1>
+          <p class="hero-subtitle animate-fade-in-up animate-delay-2">
+            A powerful, cross-platform GUI for managing Rclone remotes with style and ease.
+            <br>
+            <span class="tech-stack">Built with Angular 20 + Tauri · Linux • Windows • macOS • ARM Support</span>
+          </p>
+        </div>
+
+        <!-- Headless Content -->
+        <div class="mode-content" [class.active]="modeService.currentMode() === 'headless'">
+          <h1 class="hero-title animate-fade-in-up animate-delay-1 headless">
+            RClone Manager Headless
+          </h1>
+          <p class="hero-subtitle animate-fade-in-up animate-delay-2">
+            Run as a web server on Linux servers without a GUI!
+            <br>
+            <span class="tech-stack">Perfect for NAS, VPS, and remote systems. Access from any browser. 🚀</span>
+          </p>
+        </div>
+      </div>
+
       <div class="hero-actions animate-fade-in-up animate-delay-3">
         <button mat-raised-button class="primary" (click)="setTab('downloads')">
           <mat-icon>download</mat-icon>

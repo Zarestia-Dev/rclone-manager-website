@@ -1,255 +1,235 @@
 <div class="page-container">
-  <div class="page-content">
-    <div class="downloads-header animate-fade-in-up">
-      <h1 class="page-title">Downloads</h1>
-      <p class="page-subtitle">Get RClone Manager for your platform</p>
-    </div>
+  <div class="downloads-header animate-fade-in-up">
+    <h1 class="page-title">Downloads</h1>
+    <p class="page-subtitle">Get RClone Manager for your platform</p>
+  </div>
 
-    <!-- Loading State -->
-    @if (isLoading) {
-      <div class="loading-section animate-fade-in-up animate-delay-1">
-        <mat-card class="loading-card">
-          <mat-card-content>
-            <div class="loading-content">
-              <mat-spinner diameter="40"></mat-spinner>
-              <h3>Loading latest release information...</h3>
-              <p>Fetching data from GitHub releases and changelog</p>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    }
-
-    <!-- Error State -->
-    @if (error && !isLoading) {
-      <div class="error-section animate-fade-in-up animate-delay-1">
-        <mat-card class="error-card">
-          <mat-card-content>
-            <div class="error-content">
-              <mat-icon class="error-icon">error_outline</mat-icon>
-              <h3>Unable to Load Latest Release</h3>
-              <p>{{ error }}</p>
-              <button mat-raised-button class="primary" (click)="refreshData()">
-                <mat-icon>refresh</mat-icon>
-                Try Again
-              </button>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    }
-
-    <!-- Current Version Info -->
-    @if (!isLoading && !error && changelog.length > 0) {
-      <div class="current-version animate-fade-in-up animate-delay-1">
-        <mat-card class="version-card">
-          <mat-card-content>
-            <div class="version-info">
-              <div class="version-details">
-                <h2 class="current-version-title">
-                  <mat-icon>new_releases</mat-icon>
-                  Current Version: {{ changelog[0].version }}
-                </h2>
-                <p class="version-date">Released {{ changelog[0].date }}</p>
-                @if (changelog[0].changes.added && changelog[0].changes.added.length > 0) {
-                  <div class="version-highlights">
-                    <h4>Latest Updates:</h4>
-                    <ul>
-                      @for (item of changelog[0].changes.added.slice(0, 3); track item) {
-                        <li>{{ item }}</li>
-                      }
-                    </ul>
-                  </div>
-                }
-                @if (latestRelease) {
-                  <div class="release-stats">
-                    <span class="stat">
-                      <mat-icon>folder</mat-icon>
-                      {{ getAssetCount() }} files
-                    </span>
-                    <span class="stat">
-                      <mat-icon>schedule</mat-icon>
-                      {{ getRelativeTime(latestRelease.published_at) }}
-                    </span>
-                  </div>
-                }
-              </div>
-              <div class="version-actions">
-                <button mat-raised-button class="primary" (click)="openExternalLink(latestRelease?.html_url || 'https://github.com/Zarestia-Dev/rclone-manager/releases/latest')">
-                  <mat-icon>open_in_new</mat-icon>
-                  View Release Notes
-                </button>
-              </div>
-            </div>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    }
-
-    <!-- Platform Downloads -->
-    @if (!isLoading && platforms.length > 0) {
-      <div class="platforms-section animate-fade-in-up animate-delay-2">
-        <h2 class="section-title">
-          <mat-icon>download</mat-icon>
-          Choose Your Platform
-        </h2>
-        
-        <div class="platforms-grid">
-          @for (platform of platforms; track platform.name) {
-            <mat-card class="platform-card hover-lift">
-              <mat-card-header>
-                <div mat-card-avatar class="platform-icon">
-                  <mat-icon>{{ platform.icon }}</mat-icon>
-                </div>
-                <mat-card-title>{{ platform.name }}</mat-card-title>
-                <mat-card-subtitle>{{ platform.description }}</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <div class="download-options">
-                  @for (download of platform.downloads; track download.name + download.architecture) {
-                    <div class="download-option" (click)="downloadFile(download.url)">
-                      <div class="download-info">
-                        <h4 class="download-name">{{ download.name }}</h4>
-                        <div class="download-meta">
-                          <span class="architecture">{{ download.architecture }}</span>
-                          <span class="size">{{ download.size }}</span>
-                        </div>
-                      </div>
-                      <mat-icon class="download-icon">file_download</mat-icon>
-                    </div>
-                  }
-                </div>
-              </mat-card-content>
-            </mat-card>
-          }
+  <!-- Loading State -->
+  @if (isLoading) {
+  <div class="loading-section animate-fade-in-up animate-delay-1">
+    <mat-card class="loading-card">
+      <mat-card-content>
+        <div class="loading-content">
+          <mat-spinner diameter="40"></mat-spinner>
+          <h3>Loading latest release information...</h3>
+          <p>Fetching data from GitHub releases and changelog</p>
         </div>
-      </div>
-    }
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
 
-    <!-- System Requirements -->
-    <div class="requirements-section animate-fade-in-up animate-delay-3">
-      <h2 class="section-title">
-        <mat-icon>info</mat-icon>
-        System Requirements
-      </h2>
-      <div class="requirements-grid">
-        <mat-card class="requirement-card">
-          <mat-card-content>
-            <h3><mat-icon>computer</mat-icon>Windows</h3>
-            <ul>
-              <li>Windows 10 version 1903 or later</li>
-              <li>4 GB RAM minimum</li>
-              <li>100 MB disk space</li>
-            </ul>
-          </mat-card-content>
-        </mat-card>
-        <mat-card class="requirement-card">
-          <mat-card-content>
-            <h3><mat-icon>laptop_mac</mat-icon>macOS</h3>
-            <ul>
-              <li>macOS 10.15 (Catalina) or later</li>
-              <li>4 GB RAM minimum</li>
-              <li>100 MB disk space</li>
-            </ul>
-          </mat-card-content>
-        </mat-card>
-        <mat-card class="requirement-card">
-          <mat-card-content>
-            <h3><mat-icon>memory</mat-icon>Linux</h3>
-            <ul>
-              <li>Modern Linux distribution</li>
-              <li>4 GB RAM minimum</li>
-              <li>100 MB disk space</li>
-            </ul>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </div>
-
-    <!-- Changelog Section -->
-    @if (!isLoading && changelog.length > 0) {
-      <div class="changelog-section animate-fade-in-up animate-delay-4">
-        <h2 class="section-title">
-          <mat-icon>history</mat-icon>
-          What's New
-        </h2>
-        <p class="changelog-subtitle">
-          See what's been improved in each version
-        </p>
-        
-        <mat-accordion class="changelog-accordion">
-          @for (version of changelog; track version.version) {
-            <mat-expansion-panel [expanded]="version.isLatest" class="version-panel">
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  <div class="version-header">
-                    <span class="version-number">{{ version.version }}</span>
-                    @if (version.isLatest) {
-                      <span class="latest-badge">Latest</span>
-                    }
-                  </div>
-                </mat-panel-title>
-                <mat-panel-description>
-                  {{ version.date }}
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              
-              <div class="changelog-content">
-                @if (version.changes.warning && version.changes.warning.length > 0) {
-                  <div class="change-section warning">
-                    <h4><mat-icon>warning</mat-icon>Warning</h4>
-                    <ul>
-                      @for (item of version.changes.warning; track item) {
-                        <li>{{ item }}</li>
-                      }
-                    </ul>
-                  </div>
-                }
-                
-                @if (version.changes.added && version.changes.added.length > 0) {
-                  <div class="change-section added">
-                    <h4><mat-icon>add_circle</mat-icon>Added</h4>
-                    <ul>
-                      @for (item of version.changes.added; track item) {
-                        <li>{{ item }}</li>
-                      }
-                    </ul>
-                  </div>
-                }
-                
-                @if (version.changes.changed && version.changes.changed.length > 0) {
-                  <div class="change-section changed">
-                    <h4><mat-icon>edit</mat-icon>Changed</h4>
-                    <ul>
-                      @for (item of version.changes.changed; track item) {
-                        <li>{{ item }}</li>
-                      }
-                    </ul>
-                  </div>
-                }
-                
-                @if (version.changes.fixed && version.changes.fixed.length > 0) {
-                  <div class="change-section fixed">
-                    <h4><mat-icon>bug_report</mat-icon>Fixed</h4>
-                    <ul>
-                      @for (item of version.changes.fixed; track item) {
-                        <li>{{ item }}</li>
-                      }
-                    </ul>
-                  </div>
-                }
-              </div>
-            </mat-expansion-panel>
-          }
-        </mat-accordion>
-        
-        <div class="changelog-footer">
-          <button mat-raised-button class="accent" (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/blob/master/CHANGELOG.md')">
-            <mat-icon>open_in_new</mat-icon>
-            View Full Changelog
+  <!-- Error State -->
+  @if (error && !isLoading) {
+  <div class="error-section animate-fade-in-up animate-delay-1">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <mat-icon class="error-icon">error_outline</mat-icon>
+          <h3>Unable to Load Latest Release</h3>
+          <p>{{ error }}</p>
+          <button mat-raised-button class="primary" (click)="refreshData()">
+            <mat-icon>refresh</mat-icon>
+            Try Again
           </button>
         </div>
-      </div>
-    }
+      </mat-card-content>
+    </mat-card>
   </div>
+  }
+  <!-- Platform Downloads -->
+  @if (!isLoading && platforms.length > 0) {
+  <div class="platforms-section animate-fade-in-up animate-delay-2">
+    <h2 class="section-title">
+      <mat-icon>download</mat-icon>
+      Choose Your Platform
+    </h2>
+
+    <div class="platforms-grid">
+      @for (platform of platforms; track platform.name) {
+      <mat-card class="platform-card hover-lift animate-swap" [style.animation-delay]="($index * 0.1) + 's'">
+        <mat-card-header>
+          <div mat-card-avatar class="platform-icon">
+            <mat-icon>{{ platform.icon }}</mat-icon>
+          </div>
+          <mat-card-title>{{ platform.name }}</mat-card-title>
+          <mat-card-subtitle>{{ platform.description }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="download-options">
+            @for (download of platform.downloads; track download.name + download.architecture) {
+            <div class="download-option" (click)="downloadFile(download.url)"
+              (keydown.enter)="downloadFile(download.url)" tabindex="0">
+              <div class="download-info">
+                <h4 class="download-name">{{ download.name }}</h4>
+                <div class="download-meta">
+                  <span class="architecture">{{ download.architecture }}</span>
+                  <span class="size">{{ download.size }}</span>
+                </div>
+              </div>
+              <mat-icon class="download-icon">file_download</mat-icon>
+            </div>
+            }
+
+            @if (platform.packageManagers && platform.packageManagers.length > 0) {
+            @if (platform.downloads.length > 0) {
+            <mat-divider class="divider-spacing"></mat-divider>
+            }
+            <h4 class="section-subtitle">Package Managers</h4>
+            @for (pm of platform.packageManagers; track pm.name) {
+            <div class="download-option package-manager" (click)="copyCommand(pm.command)"
+              (keydown.enter)="copyCommand(pm.command)" tabindex="0">
+              <div class="download-info">
+                <h4 class="download-name">{{ pm.name }}</h4>
+                <div class="download-meta">
+                  <span class="command-preview">{{ pm.command }}</span>
+                </div>
+              </div>
+              <mat-icon class="download-icon" fontIcon="content_copy"></mat-icon>
+            </div>
+            }
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Current Version Info -->
+  @if (!isLoading && !error && latestRelease) {
+  @for (release of [latestRelease]; track release.tag_name) {
+  <div class="current-version animate-swap">
+    <mat-card class="version-card">
+      <mat-card-content>
+        <div class="version-info">
+          <div class="version-details">
+            <h2 class="current-version-title">
+              <mat-icon>new_releases</mat-icon>
+              Current Version: {{ release.tag_name }}
+            </h2>
+            <p class="version-date">Released {{ release.published_at | date:'longDate' }}</p>
+            
+            <div class="version-highlights markdown-body" [innerHTML]="latestReleaseBodyHtml"></div>
+
+            <div class="release-stats">
+              <span class="stat">
+                <mat-icon>folder</mat-icon>
+                {{ getAssetCount() }} files
+              </span>
+              <span class="stat">
+                <mat-icon>schedule</mat-icon>
+                {{ getRelativeTime(release.published_at) }}
+              </span>
+            </div>
+          </div>
+          <div class="version-actions">
+            <button mat-raised-button class="primary"
+              (click)="openExternalLink(release.html_url)">
+              <mat-icon>open_in_new</mat-icon>
+              View Release Notes
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  }
+  }
+
+
+  <!-- System Requirements -->
+  <div class="requirements-section animate-fade-in-up animate-delay-3">
+    <h2 class="section-title">
+      <mat-icon>info</mat-icon>
+      System Requirements
+    </h2>
+    <div class="requirements-grid">
+      <mat-card class="requirement-card">
+        <mat-card-content>
+          <h3><mat-icon>computer</mat-icon>Windows</h3>
+          <ul>
+            <li>Windows 10 version 1903 or later</li>
+            <li>4 GB RAM minimum</li>
+            <li>100 MB disk space</li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="requirement-card">
+        <mat-card-content>
+          <h3><mat-icon>laptop_mac</mat-icon>macOS</h3>
+          <ul>
+            <li>macOS 10.15 (Catalina) or later</li>
+            <li>4 GB RAM minimum</li>
+            <li>100 MB disk space</li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="requirement-card">
+        <mat-card-content>
+          <h3><mat-icon>memory</mat-icon>Linux</h3>
+          <ul>
+            <li>Modern Linux distribution</li>
+            <li>4 GB RAM minimum</li>
+            <li>100 MB disk space</li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Changelog Section -->
+  @if (!isLoading && changelog.length > 0) {
+  <div class="changelog-section animate-fade-in-up animate-delay-4">
+    <h2 class="section-title">
+      <mat-icon>history</mat-icon>
+      What's New
+    </h2>
+    <p class="changelog-subtitle">
+      See what's been improved in each version
+    </p>
+
+    <mat-accordion class="changelog-accordion">
+      @for (version of changelog; track version.version) {
+      <mat-expansion-panel [expanded]="version.isLatest" class="version-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <div class="version-header">
+              <span class="version-number">{{ version.version }}</span>
+              @if (version.isLatest) {
+              <span class="latest-badge">Latest</span>
+              }
+            </div>
+          </mat-panel-title>
+          <mat-panel-description>
+            {{ version.date }}
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="changelog-content">
+          @for (section of getSections(version); track section) {
+          <div class="change-section" [class]="section">
+            <h4><mat-icon>{{ getSectionIcon(section) }}</mat-icon>{{ getSectionTitle(section) }}</h4>
+            <ul>
+              @for (item of version.changes[section]; track item) {
+              <li [innerHTML]="item"></li>
+              }
+            </ul>
+          </div>
+          }
+        </div>
+      </mat-expansion-panel>
+      }
+    </mat-accordion>
+
+    <div class="changelog-footer">
+      <button mat-raised-button class="accent"
+        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/blob/master/CHANGELOG.md')">
+        <mat-icon>open_in_new</mat-icon>
+        View Full Changelog
+      </button>
+    </div>
+  </div>
+  }
 </div>

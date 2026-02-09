@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { TabService } from '../../services/tab.service';
+import { TabService, AppTab } from '../../services/tab.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { ModeService } from '../../services/mode.service';
 
 @Component({
   selector: 'app-hero',
@@ -14,7 +15,8 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class Hero {
   tabService = inject(TabService);
-  
+  modeService = inject(ModeService);
+
   scrollToFeatures() {
     const featuresSection = document.querySelector('app-features');
     if (featuresSection) {
@@ -23,7 +25,6 @@ export class Hero {
   }
 
   setTab(tab: string) {
-    // cast to any since Hero is small and knows tab names
-    (this.tabService as any).setTab(tab);
+    this.tabService.setTab(tab as AppTab);
   }
 }

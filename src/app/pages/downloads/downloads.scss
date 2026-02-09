@@ -1,11 +1,5 @@
-// Downloads specific styles
-.page-content {
-  max-width: 1200px; // Wider for downloads
-}
-
 .downloads-header {
   text-align: center;
-  margin-bottom: 4rem;
 }
 
 // Loading and Error States
@@ -14,8 +8,8 @@
   margin-bottom: 4rem;
 
   mat-card {
-    background: var(--secondary-background);
-    border: 1px solid var(--border-color);
+    background: var(--window-bg-color);
+    box-shadow: var(--shadow-gnome);
 
     mat-card-content {
       padding: 2rem;
@@ -38,7 +32,7 @@
           font-size: 1.25rem;
           font-weight: 600;
           margin: 0;
-          color: var(--app-text-color);
+          color: var(--window-fg-color);
         }
 
         p {
@@ -65,10 +59,12 @@
   margin-bottom: 4rem;
 
   mat-card {
-    background: linear-gradient(135deg, 
+    background: linear-gradient(
+      135deg,
       rgba(var(--primary-color-rgb), 0.05),
-      rgba(var(--accent-color-rgb), 0.05));
-    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+      rgba(var(--accent-color-rgb), 0.05)
+    );
+    box-shadow: 0 0 0 1px rgba(var(--primary-color-rgb), 0.2);
 
     mat-card-content {
       padding: 2rem;
@@ -93,7 +89,7 @@
         font-size: 1.5rem;
         font-weight: 600;
         margin: 0 0 0.5rem 0;
-        color: var(--app-text-color);
+        color: var(--window-fg-color);
 
         mat-icon {
           color: var(--primary-color);
@@ -111,15 +107,15 @@
           font-size: 1rem;
           font-weight: 600;
           margin: 0 0 0.5rem 0;
-          color: var(--app-text-color);
+          color: var(--window-fg-color);
         }
 
         ul {
           margin: 0;
           padding-left: 1.25rem;
-          
+
           li {
-            color: var(--app-text-color);
+            color: var(--window-fg-color);
             font-size: 0.9rem;
             line-height: 1.5;
             margin-bottom: 0.25rem;
@@ -134,31 +130,31 @@
   }
 }
 
-      .release-stats {
-        display: flex;
-        gap: 1.5rem;
-        margin-top: 1rem;
-        
-        .stat {
-          display: flex;
-          align-items: center;
-          gap: 0.25rem;
-          color: var(--text-muted);
-          font-size: 0.85rem;
-          
-          mat-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-            color: var(--primary-color);
-          }
-        }
+.release-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1rem;
 
-        @media (max-width: 480px) {
-          flex-direction: column;
-          gap: 0.5rem;
-        }
-      }
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--primary-color);
+    }
+  }
+
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
 
 // Platforms Section
 .platforms-section {
@@ -166,6 +162,7 @@
 
   .platforms-grid {
     display: grid;
+    align-items: start;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 2rem;
 
@@ -175,17 +172,19 @@
   }
 
   .platform-card {
-    background: var(--secondary-background);
-    border: 1px solid var(--border-color);
+    background: var(--window-bg-color);
+    box-shadow: var(--shadow-gnome);
     transition: all 0.3s ease;
 
     mat-card-header {
       padding-bottom: 1rem;
 
       .platform-icon {
-        background: linear-gradient(135deg, 
+        background: linear-gradient(
+          135deg,
           rgba(var(--primary-color-rgb), 0.1),
-          rgba(var(--accent-color-rgb), 0.1));
+          rgba(var(--accent-color-rgb), 0.1)
+        );
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -199,7 +198,7 @@
     }
 
     mat-card-title {
-      color: var(--app-text-color);
+      color: var(--window-fg-color);
       font-weight: 600;
     }
 
@@ -213,12 +212,21 @@
       flex-direction: column;
       gap: 0.75rem;
 
+      .section-subtitle {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin: 0.5rem 0 0.25rem 0;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
       .download-option {
         display: flex;
         justify-content: space-between;
         align-items: center;
         padding: 0.75rem;
-        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-gnome);
         border-radius: var(--radius-xs);
         cursor: pointer;
         transition: all 0.3s ease;
@@ -242,7 +250,7 @@
             font-size: 0.95rem;
             font-weight: 500;
             margin: 0;
-            color: var(--app-text-color);
+            color: var(--window-fg-color);
           }
 
           .download-meta {
@@ -254,6 +262,35 @@
             .architecture {
               font-weight: 500;
             }
+
+            .command-preview {
+              font-family: 'JetBrains Mono', monospace;
+              background: rgba(var(--primary-color-rgb), 0.1);
+              padding: 0.1rem 0.4rem;
+              border-radius: 4px;
+              font-size: 0.8rem;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+              max-width: 200px;
+
+              @media (max-width: 480px) {
+                max-width: 150px;
+              }
+            }
+          }
+        }
+
+        &.package-manager {
+          .download-icon {
+            font-size: 20px;
+            opacity: 0.7;
+          }
+
+          &:hover {
+            .download-icon {
+              opacity: 1;
+            }
           }
         }
 
@@ -263,6 +300,21 @@
         }
       }
     }
+  }
+}
+
+.animate-swap {
+  animation: swapDownload 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes swapDownload {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -280,8 +332,8 @@
     }
 
     mat-card {
-      background: var(--secondary-background);
-      border: 1px solid var(--border-color);
+      background: var(--window-bg-color);
+      box-shadow: var(--shadow-gnome);
 
       mat-card-content {
         padding: 1.5rem;
@@ -293,7 +345,7 @@
           font-size: 1.1rem;
           font-weight: 600;
           margin: 0 0 1rem 0;
-          color: var(--app-text-color);
+          color: var(--window-fg-color);
 
           mat-icon {
             color: var(--primary-color);
@@ -303,7 +355,7 @@
         ul {
           margin: 0;
           padding-left: 1.25rem;
-          
+
           li {
             color: var(--text-muted);
             font-size: 0.9rem;
@@ -334,17 +386,10 @@
     margin-bottom: 2rem;
 
     .mat-expansion-panel {
-      background: var(--secondary-background);
-      border: 1px solid var(--border-color);
-      border-radius: var(--card-border-radius) !important;
       margin-bottom: 1rem;
 
       &:last-child {
         margin-bottom: 0;
-      }
-
-      .mat-expansion-panel-header {
-        padding: 1rem 1.5rem;
       }
 
       .version-header {
@@ -355,7 +400,7 @@
         .version-number {
           font-weight: 600;
           font-size: 1.1rem;
-          color: var(--app-text-color);
+          color: var(--window-fg-color);
         }
 
         .latest-badge {
@@ -387,7 +432,7 @@
             font-size: 1rem;
             font-weight: 600;
             margin: 0 0 0.75rem 0;
-            
+
             mat-icon {
               font-size: 18px;
               width: 18px;
@@ -398,9 +443,9 @@
           ul {
             margin: 0;
             padding-left: 1.5rem;
-            
+
             li {
-              color: var(--app-text-color);
+              color: var(--window-fg-color);
               line-height: 1.5;
               margin-bottom: 0.5rem;
               font-size: 0.9rem;
@@ -408,21 +453,57 @@
               &:last-child {
                 margin-bottom: 0;
               }
+
+              // Markdown styles
+              ::ng-deep code {
+                background: rgba(var(--primary-color-rgb), 0.1);
+                color: var(--primary-color);
+                padding: 0.1rem 0.3rem;
+                border-radius: 4px;
+                font-family: monospace;
+                font-size: 0.85em;
+              }
+
+              ::ng-deep a {
+                color: var(--accent-color);
+                text-decoration: none;
+                font-weight: 500;
+
+                &:hover {
+                  text-decoration: underline;
+                }
+              }
+
+              ::ng-deep strong {
+                font-weight: 600;
+                color: var(--window-fg-color);
+              }
             }
           }
 
           &.warning {
             background: rgba(var(--warn-color-rgb), 0.05);
-            border: 1px solid rgba(var(--warn-color-rgb), 0.2);
+            box-shadow: 0 0 0 1px rgba(var(--warn-color-rgb), 0.2);
             border-radius: var(--radius-xs);
             padding: 1rem;
-            
-            h4 { color: var(--warn-color); }
+
+            h4 {
+              color: var(--warn-color);
+            }
           }
 
-          &.added h4 { color: var(--primary-color); }
-          &.changed h4 { color: var(--accent-color); }
-          &.fixed h4 { color: #22c55e; }
+          &.added h4 {
+            color: var(--primary-color);
+          }
+          &.changed h4 {
+            color: var(--accent-color);
+          }
+          &.fixed h4 {
+            color: var(--orange);
+          }
+          &.need-fix h4 {
+            color: var(--warn-color);
+          }
         }
       }
     }

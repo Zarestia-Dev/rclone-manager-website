@@ -1,11 +1,5 @@
-// Docs specific styles
-.page-content {
-  max-width: 1200px; // Wider for docs
-}
-
 .docs-header {
   text-align: center;
-  margin-bottom: 4rem;
 }
 
 // Quick Links Section
@@ -21,7 +15,7 @@
   button {
     padding: 1rem;
     font-weight: 500;
-    
+
     mat-icon {
       margin-right: 0.5rem;
     }
@@ -44,8 +38,8 @@
 }
 
 .doc-section-card {
-  background: var(--secondary-background);
-  border: 1px solid var(--border-color);
+  background: var(--window-bg-color);
+  box-shadow: var(--shadow-gnome);
   transition: all 0.3s ease;
 
   mat-card-header {
@@ -53,9 +47,11 @@
   }
 
   .section-icon {
-    background: linear-gradient(135deg, 
+    background: linear-gradient(
+      135deg,
       rgba(var(--primary-color-rgb), 0.1),
-      rgba(var(--accent-color-rgb), 0.1));
+      rgba(var(--accent-color-rgb), 0.1)
+    );
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -68,7 +64,7 @@
   }
 
   mat-card-title {
-    color: var(--app-text-color);
+    color: var(--window-fg-color);
     font-weight: 600;
   }
 
@@ -87,7 +83,6 @@
 .doc-item {
   padding: 0.75rem;
   border-radius: var(--radius-xs);
-  border: 1px solid transparent;
   cursor: pointer;
   transition: all 0.3s ease;
 
@@ -110,7 +105,7 @@
   font-size: 0.95rem;
   font-weight: 500;
   margin: 0;
-  color: var(--app-text-color);
+  color: var(--window-fg-color);
 
   .external-icon {
     font-size: 16px;

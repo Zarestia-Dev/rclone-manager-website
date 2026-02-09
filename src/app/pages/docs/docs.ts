@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TabService, AppTab } from '../../services/tab.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +31,8 @@ interface DocItem {
   styleUrl: './docs.scss'
 })
 export class Docs {
-  constructor(private tabService: TabService) {}
+  private tabService = inject(TabService);
+
 
   docSections: DocSection[] = [
     {
@@ -138,7 +139,7 @@ export class Docs {
         {
           title: 'Contributing',
           description: 'How to get involved with development',
-          url: 'https://github.com/Zarestia-Dev/rclone-manager/wiki/Contributing',
+          url: 'https://github.com/Zarestia-Dev/rclone-manager/blob/master/CONTRIBUTING.md',
           isExternal: true
         },
         {

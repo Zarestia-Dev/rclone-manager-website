@@ -1,7 +1,6 @@
 // FAQ specific styles
 .faq-header {
   text-align: center;
-  margin-bottom: 4rem;
 }
 
 .section-title .question-count {
@@ -26,8 +25,8 @@
     align-items: center;
     gap: 0.25rem;
     padding: 0.5rem 1rem;
-    background: var(--secondary-background);
-    color: var(--app-text-color);
+    background: var(--window-bg-color);
+    color: var(--window-fg-color);
     transition: all 0.3s ease;
     cursor: pointer;
 
@@ -74,7 +73,7 @@
   h3 {
     font-size: 1.5rem;
     margin: 0 0 0.5rem 0;
-    color: var(--app-text-color);
+    color: var(--window-fg-color);
   }
 
   p {
@@ -135,26 +134,6 @@
   }
 }
 
-.faq-accordion .mat-expansion-panel {
-  background: var(--secondary-background);
-  border: 1px solid var(--border-color);
-  border-radius: var(--card-border-radius) !important;
-  margin-bottom: 1rem;
-  overflow: hidden;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  .mat-expansion-panel-header {
-    padding: 1rem 1.5rem;
-    
-    &:hover {
-      background: var(--bg-hover) !important;
-    }
-  }
-}
-
 .question-title {
   display: flex;
   align-items: center;
@@ -168,7 +147,7 @@
 
   span {
     font-weight: 500;
-    color: var(--app-text-color);
+    color: var(--window-fg-color);
   }
 }
 
@@ -210,7 +189,7 @@
     }
 
     p {
-      color: var(--app-text-color);
+      color: var(--window-fg-color);
       line-height: 1.6;
       margin: 0;
       flex: 1;
@@ -231,7 +210,7 @@
 
     .answer-tag {
       background: var(--bg-elevated);
-      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-gnome);
       font-size: 0.75rem;
       padding: 0.25rem 0.5rem;
       height: auto;
@@ -239,8 +218,6 @@
     }
   }
 }
-
-
 
 // Common grid sections
 .help-section,
@@ -280,8 +257,8 @@
 // Unified card styling
 .help-card,
 .community-card {
-  background: var(--secondary-background);
-  border: 1px solid var(--border-color);
+  background: var(--window-bg-color);
+  box-shadow: var(--shadow-gnome);
   cursor: pointer;
   transition: all 0.3s ease;
 
@@ -305,15 +282,21 @@
   .help-icon,
   .community-icon {
     flex-shrink: 0;
-    
+
     mat-icon {
       font-size: 32px;
       width: 32px;
       height: 32px;
-      
-      &.primary { color: var(--primary-color); }
-      &.accent { color: var(--accent-color); }
-      &.warn { color: var(--warn-color); }
+
+      &.primary {
+        color: var(--primary-color);
+      }
+      &.accent {
+        color: var(--accent-color);
+      }
+      &.warn {
+        color: var(--warn-color);
+      }
     }
   }
 
@@ -332,7 +315,7 @@
 
 .community-card-content {
   align-items: flex-start;
-  
+
   .external-icon {
     margin-top: 0.25rem;
   }
@@ -344,7 +327,7 @@
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 0.25rem 0;
-  color: var(--app-text-color);
+  color: var(--window-fg-color);
 }
 
 .community-title {
@@ -369,10 +352,12 @@
 }
 
 .resources-card {
-  background: linear-gradient(135deg, 
+  background: linear-gradient(
+    135deg,
     rgba(var(--primary-color-rgb), 0.05),
-    rgba(var(--accent-color-rgb), 0.05));
-  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+    rgba(var(--accent-color-rgb), 0.05)
+  );
+  box-shadow: 0 0 0 1px rgba(var(--primary-color-rgb), 0.2);
 
   mat-card-content {
     padding: 2rem;
@@ -400,11 +385,11 @@
       font-size: 1.25rem;
       font-weight: 600;
       margin: 0 0 0.75rem 0;
-      color: var(--app-text-color);
+      color: var(--window-fg-color);
     }
 
     p {
-      color: var(--app-text-color);
+      color: var(--window-fg-color);
       line-height: 1.6;
       margin: 0;
     }
@@ -423,7 +408,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  
+
   &:hover {
     text-decoration: underline;
   }

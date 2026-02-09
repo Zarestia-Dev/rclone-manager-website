@@ -1,6 +1,6 @@
 <nav class="navbar" [class.scrolled]="isScrolled">
   <div class="navbar-container">
-    <a class="logo" (click)="setTab('general')">
+    <a class="logo" (click)="setTab('general')" (keydown.enter)="setTab('general')" tabindex="0">
       <img src="rclone.svg" alt="RClone Manager Logo" class="logo-img">
       <span class="logo-text">RClone Manager</span>
     </a>
@@ -10,9 +10,22 @@
     </button>
 
     <div class="nav-links" [class.open]="isMobileMenuOpen">
-      <button mat-button [class.active]="currentTab === 'general'" (click)="setTab('general'); closeMobileMenu()">Home</button>
-      <button mat-button [class.active]="currentTab === 'docs'" (click)="setTab('docs'); closeMobileMenu()">Docs</button>
-      <button mat-button [class.active]="currentTab === 'downloads'" (click)="setTab('downloads'); closeMobileMenu()">Downloads</button>
+      <!-- Mode Toggle -->
+      <button class="mode-toggle" (click)="toggleMode()">
+        <span class="toggle-track">
+          <span class="toggle-indicator" [class.headless]="modeService.currentMode() === 'headless'">
+            <mat-icon>{{ modeService.currentMode() === 'desktop' ? 'monitor' : 'dns' }}</mat-icon>
+          </span>
+        </span>
+        <span class="toggle-label">{{ modeService.currentMode() === 'desktop' ? 'Desktop' : 'Headless' }}</span>
+      </button>
+
+      <button mat-button [class.active]="currentTab === 'general'"
+        (click)="setTab('general'); closeMobileMenu()">Home</button>
+      <button mat-button [class.active]="currentTab === 'docs'"
+        (click)="setTab('docs'); closeMobileMenu()">Docs</button>
+      <button mat-button [class.active]="currentTab === 'downloads'"
+        (click)="setTab('downloads'); closeMobileMenu()">Downloads</button>
       <button mat-button [class.active]="currentTab === 'faq'" (click)="setTab('faq'); closeMobileMenu()">FAQ</button>
       <app-theme-toggle></app-theme-toggle>
     </div>

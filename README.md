@@ -2,7 +2,7 @@
 
 Official website for RClone Manager – docs, downloads, and project info.
 
-Built with Angular 20 and Angular Material, featuring the same custom Adwaita theme from the desktop application.
+Built with Angular 21 and Angular Material, featuring the same custom Adwaita theme from the desktop application.
 
 ## 🚀 Live Site
 
@@ -10,7 +10,7 @@ Visit: [https://zarestia-dev.github.io/rclone-manager/](https://zarestia-dev.git
 
 ## 📦 Features
 
-- **Modern Angular 20** with standalone components
+- **Modern Angular 21** with standalone components
 - **Angular Material** with custom Adwaita theme
 - **Fully responsive** design (mobile, tablet, desktop)
 - **Smooth animations** and transitions

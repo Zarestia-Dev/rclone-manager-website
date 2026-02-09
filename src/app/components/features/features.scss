@@ -1,6 +1,6 @@
 .features {
   padding: 6rem 2rem;
-  background: var(--secondary-background);
+  background: var(--window-bg-color);
 
   &-container {
     max-width: 1200px;
@@ -40,12 +40,26 @@
   }
 }
 
+.animate-swap {
+  animation: swapFeature 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes swapFeature {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .feature-card {
-  background: var(--app-background);
-  border-radius: var(--card-border-radius);
+  background: var(--window-bg-color);
   padding: 2rem;
   text-align: center;
-  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-gnome);
 
   mat-card-content {
     padding: 0;
@@ -60,9 +74,11 @@
   width: 64px;
   height: 64px;
   border-radius: var(--icon-radius);
-  background: linear-gradient(135deg, 
+  background: linear-gradient(
+    135deg,
     rgba(var(--primary-color-rgb), 0.1),
-    rgba(var(--accent-color-rgb), 0.1));
+    rgba(var(--accent-color-rgb), 0.1)
+  );
   display: flex;
   align-items: center;
   justify-content: center;

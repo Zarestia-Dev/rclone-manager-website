@@ -1,135 +1,548 @@
-// Animation utilities for smooth transitions and effects
+// ===== LOADING & UTILITY ANIMATIONS =====
 
-// Fade in animation
-@keyframes fadeIn {
-  from {
-    opacity: 0;
+@keyframes shake {
+  0% {
+    transform: translateX(0);
   }
-  to {
-    opacity: 1;
+  10% {
+    transform: translateX(-8px) rotate(-1deg);
+  }
+  20% {
+    transform: translateX(8px) rotate(1deg);
+  }
+  30% {
+    transform: translateX(-6px) rotate(-1deg);
+  }
+  40% {
+    transform: translateX(6px) rotate(1deg);
+  }
+  50% {
+    transform: translateX(-4px) rotate(-0.5deg);
+  }
+  60% {
+    transform: translateX(4px) rotate(0.5deg);
+  }
+  70% {
+    transform: translateX(-2px) rotate(-0.25deg);
+  }
+  80% {
+    transform: translateX(2px) rotate(0.25deg);
+  }
+  90% {
+    transform: translateX(-1px) rotate(-0.1deg);
+  }
+  100% {
+    transform: translateX(0);
   }
 }
 
-// Fade in up animation
+@keyframes diskLoadingShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @keyframes fadeInUp {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
-  to {
+  100% {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-// Fade in down animation
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Scale in animation
-@keyframes scaleIn {
-  from {
-    opacity: 0;
+@keyframes breathing {
+  0% {
     transform: scale(0.9);
+    opacity: 0.5;
   }
-  to {
-    opacity: 1;
+  50% {
     transform: scale(1);
-  }
-}
-
-// Slide in from left
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-50px);
-  }
-  to {
     opacity: 1;
-    transform: translateX(0);
+  }
+  100% {
+    transform: scale(0.9);
+    opacity: 0.5;
   }
 }
 
-// Slide in from right
-@keyframes slideInRight {
-  from {
+// ===== PULSE ANIMATIONS =====
+// Large ripple effect animations
+
+@keyframes pulseBlue {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--accent-color-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(var(--accent-color-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--accent-color-rgb), 0);
+  }
+}
+
+@keyframes pulseGreen {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--light-green-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(var(--light-green-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--light-green-rgb), 0);
+  }
+}
+
+@keyframes pulseYellow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--yellow-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(var(--yellow-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--yellow-rgb), 0);
+  }
+}
+
+@keyframes pulseOrange {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--light-orange-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(var(--light-orange-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--light-orange-rgb), 0);
+  }
+}
+
+@keyframes pulsePurple {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--purple-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(var(--purple-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--purple-rgb), 0);
+  }
+}
+
+@keyframes pulseRed {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--warn-color-rgb), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(var(--warn-color-rgb), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--warn-color-rgb), 0);
+  }
+}
+
+@keyframes pulseMode {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--mode-primary-color-rgb, var(--primary-color-rgb)), 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 16px rgba(var(--mode-primary-color-rgb, var(--primary-color-rgb)), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--mode-primary-color-rgb, var(--primary-color-rgb)), 0);
+  }
+}
+
+/* Badge pop animation */
+@keyframes badge-pop {
+  0% {
+    transform: scale(0.4) translateY(-4px);
     opacity: 0;
-    transform: translateX(50px);
   }
-  to {
+  60% {
+    transform: scale(1.08) translateY(0);
     opacity: 1;
-    transform: translateX(0);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
   }
 }
 
-// Pulse animation
-@keyframes pulse {
-  0%, 100% {
+// ===== ICON PULSE ANIMATIONS =====
+// Smaller, more subtle pulse effects for icons with scaling
+
+@keyframes iconPulseRed {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--warn-color-rgb), 0.4);
     transform: scale(1);
   }
   50% {
+    box-shadow: 0 0 0 10px rgba(var(--warn-color-rgb), 0.1);
     transform: scale(1.05);
   }
 }
 
-// Float animation
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
+@keyframes iconPulseGreen {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--primary-color-rgb), 0.4);
+    transform: scale(1);
   }
   50% {
-    transform: translateY(-10px);
+    box-shadow: 0 0 0 10px rgba(var(--primary-color-rgb), 0.1);
+    transform: scale(1.05);
   }
 }
 
-// Animation utility classes
-.animate-fade-in {
-  opacity: 0;
-  animation: fadeIn 0.6s ease-out forwards;
+@keyframes iconPulseBlue {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--accent-color-rgb), 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(var(--accent-color-rgb), 0.1);
+    transform: scale(1.05);
+  }
 }
 
-.animate-fade-in-up {
-  opacity: 0;
-  animation: fadeInUp 0.6s ease-out forwards;
+@keyframes iconPulseYellow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--yellow-rgb), 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(var(--yellow-rgb), 0.1);
+    transform: scale(1.05);
+  }
 }
 
-.animate-fade-in-down {
-  opacity: 0;
-  animation: fadeInDown 0.6s ease-out forwards;
+@keyframes iconPulseOrange {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--light-orange-rgb), 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(var(--light-orange-rgb), 0.1);
+    transform: scale(1.05);
+  }
 }
 
-.animate-scale-in {
-  opacity: 0;
-  animation: scaleIn 0.4s ease-out forwards;
+@keyframes keyPress {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(0.95) translateY(1px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
 }
 
-.animate-slide-in-left {
-  opacity: 0;
-  animation: slideInLeft 0.6s ease-out forwards;
+@keyframes slideOverlayIn {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
 }
 
-.animate-slide-in-right {
-  opacity: 0;
-  animation: slideInRight 0.6s ease-out forwards;
+@keyframes slideOverlayOut {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
 }
 
-.animate-pulse {
-  animation: pulse 2s ease-in-out infinite;
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
-// Staggered animation delays
+@keyframes loadingSpinnerIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes loadingSpinnerOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes onboardingEntranceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes onboardingEntranceOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes onboardingStateIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes onboardingStateOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes slideInFromBottomIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Libadwaita-style bottom sheet animation for responsive modals
+@keyframes slideUpSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownSheet {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes slideInFromBottomOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes expandHeightIn {
+  0% {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  100% {
+    opacity: 1;
+    max-height: 200px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+  }
+}
+
+@keyframes expandHeightOut {
+  0% {
+    opacity: 1;
+    max-height: 200px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 12px;
+  }
+  100% {
+    opacity: 0;
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+// Keyframes for content swap (fade out/in)
+@keyframes swapContentIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-swap {
+  animation: swapContentIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+// ===== ANIMATION UTILITY CLASSES =====
+// Easy-to-use classes for applying animations
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse-blue {
+  animation: pulseBlue 2s infinite;
+}
+
+.animate-pulse-green {
+  animation: pulseGreen 2s infinite;
+}
+
+.animate-pulse-yellow {
+  animation: pulseYellow 2s infinite;
+}
+
+.animate-pulse-orange {
+  animation: pulseOrange 2s infinite;
+}
+
+.animate-pulse-red {
+  animation: pulseRed 2s infinite;
+}
+
+.animate-pulse-mode {
+  animation: pulseMode 2s infinite;
+}
+
+.animate-icon-pulse-red {
+  animation: iconPulseRed 1.5s infinite;
+}
+
+.animate-icon-pulse-green {
+  animation: iconPulseGreen 1.5s infinite;
+}
+
+.animate-icon-pulse-blue {
+  animation: iconPulseBlue 1.5s infinite;
+}
+
+.animate-icon-pulse-yellow {
+  animation: iconPulseYellow 1.5s infinite;
+}
+
+.animate-icon-pulse-orange {
+  animation: iconPulseOrange 1.5s infinite;
+}
+
+.animate-breathing {
+  animation: breathing 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: diskLoadingShimmer 1.5s infinite linear;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--window-fg-color-rgb), 0.1) 25%,
+    rgba(var(--window-fg-color-rgb), 0.2) 50%,
+    rgba(var(--window-fg-color-rgb), 0.1) 75%
+  );
+  background-size: 200% 100%;
+}
+
+// ===== ANIMATION DURATION MODIFIERS =====
+// Quick modifiers for different animation speeds
+
+.animate-slow {
+  animation-duration: 3s;
+}
+
+.animate-fast {
+  animation-duration: 0.5s;
+}
+
+.animate-pause {
+  animation-play-state: paused;
+}
+
 .animate-delay-1 {
   animation-delay: 0.1s;
 }
@@ -142,28 +555,63 @@
   animation-delay: 0.3s;
 }
 
-.animate-delay-4 {
-  animation-delay: 0.4s;
+.slide-overlay-enter {
+  animation: slideOverlayIn 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-.animate-delay-5 {
-  animation-delay: 0.5s;
+.slide-overlay-leave {
+  animation: slideOverlayOut 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
-// Hover effects
-.hover-lift {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
+.fade-in-out-enter {
+  animation: fadeIn 300ms ease-in-out forwards;
 }
 
-.hover-scale {
-  transition: transform 0.3s ease;
-  
-  &:hover {
-    transform: scale(1.05);
+.fade-in-out-leave {
+  animation: fadeOut 300ms ease-in-out forwards;
+}
+
+.loading-spinner-enter {
+  animation: loadingSpinnerIn 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.loading-spinner-leave {
+  animation: loadingSpinnerOut 200ms cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+.onboarding-entrance-enter {
+  animation: onboardingEntranceIn 600ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.onboarding-entrance-leave {
+  animation: onboardingEntranceOut 400ms cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+.onboarding-state-enter {
+  animation: onboardingStateIn 500ms 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.onboarding-state-leave {
+  animation: onboardingStateOut 400ms cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+}
+
+.expand-height-enter {
+  animation: expandHeightIn 300ms ease-in-out forwards;
+}
+
+.expand-height-leave {
+  animation: expandHeightOut 250ms ease-in-out forwards;
+}
+
+// ===== RESPONSIVE ANIMATIONS =====
+// Disable animations on devices that prefer reduced motion
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

@@ -1,5 +1,5 @@
 .footer {
-  background: var(--app-background);
+  background: var(--window-bg-color);
   border-top: 1px solid var(--border-color);
   padding: 3rem 2rem 1.5rem;
 
@@ -30,7 +30,7 @@
     font-size: 1rem;
     font-weight: 600;
     margin: 0 0 1rem 0;
-    color: var(--app-text-color);
+    color: var(--window-fg-color);
   }
 
   ul {
@@ -82,12 +82,11 @@
   gap: 0.5rem;
 
   a {
-    color: var(--app-text-color);
+    color: var(--window-fg-color);
     transition: all 0.3s ease;
 
     &:hover {
       color: var(--primary-color);
-      transform: translateY(-2px);
     }
   }
 }
