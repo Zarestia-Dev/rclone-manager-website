@@ -1,0 +1,39 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build -- --base-href /rclone-manager/
+
+      - name: Create 404.html
+        run: cp dist/rclone-manager-website/browser/index.html dist/rclone-manager-website/browser/404.html
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist/rclone-manager-website/browser
+          branch: gh-pages
+          repository-name: Zarestia-Dev/rclone-manager
+          token: ${{ secrets.DEPLOY_TOKEN }}
