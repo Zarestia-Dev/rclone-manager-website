@@ -14,27 +14,29 @@
       <div class="footer-section">
         <h4>Quick Links</h4>
         <ul>
-          <li><a (click)="setTab('general')" (keydown.enter)="setTab('general')" tabindex="0">Home</a></li>
-          <li><a (click)="setTab('docs')" (keydown.enter)="setTab('docs')" tabindex="0">Documentation</a></li>
-          <li><a (click)="setTab('downloads')" (keydown.enter)="setTab('downloads')" tabindex="0">Downloads</a></li>
-          <li><a (click)="setTab('faq')" (keydown.enter)="setTab('faq')" tabindex="0">FAQ</a></li>
+          @for (link of navLinks; track link.label) {
+          <li><a (click)="setTab(link.tab)" (keydown.enter)="setTab(link.tab)" tabindex="0">{{ link.label }}</a></li>
+          }
         </ul>
       </div>
 
       <div class="footer-section">
         <h4>Community</h4>
         <ul>
-          <li><a href="https://github.com/Zarestia-Dev/rclone-manager" target="_blank">GitHub</a></li>
-          <li><a href="https://github.com/Zarestia-Dev/rclone-manager/issues" target="_blank">Report Issue</a></li>
+          @for (link of socialLinks; track link.label) {
+          <li><a [href]="link.url" target="_blank">{{ link.label }}</a></li>
+          }
         </ul>
       </div>
 
       <div class="footer-section">
         <h4>Connect</h4>
         <div class="social-links">
-          <a href="https://github.com/Zarestia-Dev/rclone-manager" target="_blank" mat-icon-button>
-            <mat-icon>code</mat-icon>
+          @for (link of socialLinks; track link.label) {
+          <a [href]="link.url" target="_blank" mat-icon-button [attr.aria-label]="link.label">
+            <mat-icon>{{ link.icon }}</mat-icon>
           </a>
+          }
         </div>
       </div>
     </div>

@@ -11,25 +11,14 @@
       Quick Links
     </h2>
     <div class="quick-links-grid">
-      <button mat-raised-button class="primary"
-        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/releases')">
-        <mat-icon>download</mat-icon>
-        Latest Releases
+      @for (link of quickLinks; track link.title) {
+      <button mat-stroked-button [color]="link.type === 'basic' ? null : link.type"
+        [class.mat-stroked-button]="link.type === 'basic'" [class.mat-raised-button]="link.type !== 'basic'"
+        (click)="openExternalLink(link.url)">
+        <mat-icon>{{ link.icon }}</mat-icon>
+        {{ link.title }}
       </button>
-      <button mat-raised-button class="accent"
-        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/wiki')">
-        <mat-icon>menu_book</mat-icon>
-        Wiki
-      </button>
-      <button mat-raised-button (click)="openExternalLink('https://rclone.org/')">
-        <mat-icon>cloud</mat-icon>
-        rclone.org
-      </button>
-      <button mat-raised-button
-        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/discussions')">
-        <mat-icon>forum</mat-icon>
-        Discussions
-      </button>
+      }
     </div>
   </div>
 
@@ -72,6 +61,4 @@
       }
     </div>
   </div>
-
-
 </div>

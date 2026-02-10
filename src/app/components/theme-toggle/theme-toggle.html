@@ -1,18 +1,25 @@
-<button mat-icon-button [matMenuTriggerFor]="themeMenu" aria-label="Theme toggle">
-  <mat-icon>{{ getThemeIcon() }}</mat-icon>
-</button>
+<div class="theme-switch" role="group" aria-label="Theme selection">
+  <div class="switch-indicator"
+       [class.light]="getCurrentTheme() === 'light'"
+       [class.system]="getCurrentTheme() === 'system'"
+       [class.dark]="getCurrentTheme() === 'dark'">
+  </div>
 
-<mat-menu #themeMenu="matMenu">
-  <button mat-menu-item (click)="setTheme('light')" [class.active]="getCurrentTheme() === 'light'">
+  <button class="theme-btn" (click)="setTheme('light')" 
+          [class.active]="getCurrentTheme() === 'light'"
+          title="Light Theme" aria-label="Light Theme">
     <mat-icon>light_mode</mat-icon>
-    <span>Light</span>
   </button>
-  <button mat-menu-item (click)="setTheme('dark')" [class.active]="getCurrentTheme() === 'dark'">
-    <mat-icon>dark_mode</mat-icon>
-    <span>Dark</span>
-  </button>
-  <button mat-menu-item (click)="setTheme('system')" [class.active]="getCurrentTheme() === 'system'">
+  
+  <button class="theme-btn" (click)="setTheme('system')" 
+          [class.active]="getCurrentTheme() === 'system'"
+          title="System Theme" aria-label="System Theme">
     <mat-icon>brightness_auto</mat-icon>
-    <span>System</span>
   </button>
-</mat-menu>
+  
+  <button class="theme-btn" (click)="setTheme('dark')" 
+          [class.active]="getCurrentTheme() === 'dark'"
+          title="Dark Theme" aria-label="Dark Theme">
+    <mat-icon>dark_mode</mat-icon>
+  </button>
+</div>

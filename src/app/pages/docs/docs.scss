@@ -1,66 +1,38 @@
+@use '../../../styles/mixins' as *;
+
 .docs-header {
-  text-align: center;
+  @include page-header;
 }
 
 // Quick Links Section
 .quick-links {
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
 }
 
 .quick-links-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-
-  button {
-    padding: 1rem;
-    font-weight: 500;
-
-    mat-icon {
-      margin-right: 0.5rem;
-    }
-  }
+  @include grid-responsive(12.5rem, var(--space-md)); // 200px
 }
 
 // Documentation Sections
 .docs-sections {
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
 }
 
 .docs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
+  @include grid-responsive(21.875rem, var(--space-2xl)); // 350px
 }
 
 .doc-section-card {
-  background: var(--window-bg-color);
-  box-shadow: var(--shadow-gnome);
-  transition: all 0.3s ease;
+  @include card-base;
 
   mat-card-header {
-    padding-bottom: 1rem;
+    padding-bottom: var(--space-md);
   }
 
   .section-icon {
-    background: linear-gradient(
-      135deg,
-      rgba(var(--primary-color-rgb), 0.1),
-      rgba(var(--accent-color-rgb), 0.1)
-    );
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    mat-icon {
-      color: var(--primary-color);
-      font-size: 24px;
-    }
+    @include icon-circle(1.5rem); // 24px
+    width: 3rem; // 48px
+    height: 3rem;
   }
 
   mat-card-title {
@@ -70,20 +42,21 @@
 
   mat-card-subtitle {
     color: var(--text-muted);
-    font-size: 0.9rem;
+    font-size: var(--font-size-md); // 0.9rem
   }
 }
 
 .doc-items {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--space-sm);
 }
 
 .doc-item {
-  padding: 0.75rem;
+  padding: var(--space-sm);
   border-radius: var(--radius-xs);
   cursor: pointer;
+  background: var(--window-bg-color);
   transition: all 0.3s ease;
 
   &:hover {
@@ -95,28 +68,28 @@
 .doc-item-content {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: var(--space-xxs);
 }
 
 .doc-item-title {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   font-size: 0.95rem;
   font-weight: 500;
   margin: 0;
   color: var(--window-fg-color);
 
   .external-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 1rem; // 16px
+    width: 1rem;
+    height: 1rem;
     color: var(--text-muted);
   }
 }
 
 .doc-item-description {
-  font-size: 0.85rem;
+  font-size: var(--font-size-md); // 0.85rem approx
   color: var(--text-muted);
   margin: 0;
   line-height: 1.4;
@@ -125,7 +98,7 @@
 // Responsive Design
 @media (max-width: 768px) {
   .docs-header {
-    margin-bottom: 3rem;
+    margin-bottom: var(--space-2xl);
   }
 
   .quick-links-grid {

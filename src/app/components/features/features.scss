@@ -1,98 +1,42 @@
+@use '../../../styles/mixins' as *;
+
 .features {
-  padding: 6rem 2rem;
+  padding: var(--section-gap) var(--content-padding);
   background: var(--window-bg-color);
 
   &-container {
-    max-width: 1200px;
+    max-width: 75rem; // 1200px
     margin: 0 auto;
   }
 }
 
-.section-header {
-  text-align: center;
-  margin-bottom: 4rem;
-
-  .section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin: 0 0 1rem 0;
-    color: var(--app-text-color);
-
-    @media (max-width: 768px) {
-      font-size: 2rem;
-    }
-  }
-
-  .section-subtitle {
-    font-size: 1.125rem;
-    color: var(--text-muted);
-    margin: 0;
-  }
-}
-
 .features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.animate-swap {
-  animation: swapFeature 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes swapFeature {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+  @include grid-responsive(18.75rem, var(--container-gap)); // 300px
 }
 
 .feature-card {
-  background: var(--window-bg-color);
-  padding: 2rem;
+  @include card-base;
+  padding: var(--space-2xl);
   text-align: center;
-  box-shadow: var(--shadow-gnome);
 
   mat-card-content {
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: var(--space-md);
   }
 }
 
 .feature-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: var(--icon-radius);
-  background: linear-gradient(
-    135deg,
-    rgba(var(--primary-color-rgb), 0.1),
-    rgba(var(--accent-color-rgb), 0.1)
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  mat-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
-    color: var(--primary-color);
-  }
+  @include icon-circle(2rem); // 32px
+  width: 4rem; // 64px
+  height: 4rem; // 64px
+  // border-radius: var(--icon-radius); // Removed override as icon-circle handles it
 }
 
 .feature-title {
-  font-size: 1.25rem;
+  font-size: var(--font-size-xl);
   font-weight: 600;
   margin: 0;
   color: var(--app-text-color);

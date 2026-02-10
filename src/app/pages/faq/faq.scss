@@ -1,46 +1,43 @@
+@use '../../../styles/mixins' as *;
+
 // FAQ specific styles
 .faq-header {
-  text-align: center;
+  @include page-header;
 }
 
 .section-title .question-count {
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   font-weight: 400;
   color: var(--text-muted);
-  margin-left: 0.5rem;
+  margin-left: var(--space-xs);
 }
 
 // Category Filter
 .category-filter {
-  margin-bottom: 3rem;
+  margin-bottom: var(--space-2xl);
 }
 
 .category-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: var(--space-sm);
 
   mat-chip {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 1rem;
-    background: var(--window-bg-color);
-    color: var(--window-fg-color);
     transition: all 0.3s ease;
     cursor: pointer;
+    font-size: var(--font-size-sm);
 
     p {
       display: flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: var(--space-xxs);
       margin: 0;
     }
 
     mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 1.125rem; // 18px
+      width: 1.125rem;
+      height: 1.125rem;
     }
 
     &:hover {
@@ -56,7 +53,7 @@
 
 // FAQ Section
 .faq-section {
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
 }
 
 // Common state styling
@@ -66,33 +63,33 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 4rem 2rem;
+  padding: var(--section-gap) var(--content-padding);
   text-align: center;
   color: var(--text-muted);
 
   h3 {
-    font-size: 1.5rem;
-    margin: 0 0 0.5rem 0;
+    font-size: var(--font-size-2xl);
+    margin: 0 0 var(--space-xs) 0;
     color: var(--window-fg-color);
   }
 
   p {
     color: var(--text-muted);
     margin: 0;
-    max-width: 400px;
+    max-width: 25rem;
   }
 
   mat-icon {
-    font-size: 64px !important;
-    width: 64px !important;
-    height: 64px !important;
-    margin-bottom: 1rem;
+    font-size: 4rem !important; // 64px
+    width: 4rem !important;
+    height: 4rem !important;
+    margin-bottom: var(--space-md);
   }
 }
 
 .loading-state {
   mat-spinner {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-2xl);
   }
 }
 
@@ -102,13 +99,13 @@
   }
 
   p {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-2xl);
   }
 
   button {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-xs);
   }
 }
 
@@ -122,22 +119,10 @@
   }
 }
 
-.faq-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 2rem;
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 1rem;
-  }
-}
-
 .question-title {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--space-sm);
   flex: 1;
 
   .question-icon {
@@ -148,6 +133,7 @@
   span {
     font-weight: 500;
     color: var(--window-fg-color);
+    font-size: var(--font-size-md);
   }
 }
 
@@ -156,13 +142,13 @@
 .answer-tags {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--space-xs);
   flex-wrap: wrap;
 
   .tag,
   .answer-tag {
-    font-size: 0.75rem;
-    padding: 0.125rem 0.5rem;
+    font-size: var(--font-size-sm);
+    padding: 0.125rem var(--space-xs);
     border-radius: var(--radius-xs);
   }
 
@@ -174,13 +160,13 @@
 }
 
 .answer-content {
-  padding: 1rem 1.5rem 2rem;
+  padding: var(--space-md) var(--space-xl) var(--space-2xl);
   border-top: 1px solid var(--border-color);
 
   .answer-text {
     display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xl);
 
     .answer-icon {
       color: var(--accent-color);
@@ -193,26 +179,25 @@
       line-height: 1.6;
       margin: 0;
       flex: 1;
+      font-size: var(--font-size-base);
     }
   }
 
   .answer-tags {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-xs);
     flex-wrap: wrap;
 
     .tags-label {
-      font-size: 0.875rem;
+      font-size: var(--font-size-md);
       color: var(--text-muted);
       font-weight: 500;
     }
 
     .answer-tag {
-      background: var(--bg-elevated);
-      box-shadow: var(--shadow-gnome);
-      font-size: 0.75rem;
-      padding: 0.25rem 0.5rem;
+      font-size: var(--font-size-sm);
+      padding: var(--space-xxs) var(--space-xs);
       height: auto;
       min-height: unset;
     }
@@ -222,53 +207,41 @@
 // Common grid sections
 .help-section,
 .community-section {
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
 
   &-subtitle,
   .help-subtitle,
   .community-subtitle {
     color: var(--text-muted);
-    margin: 0 0 2rem 0;
-    font-size: 1rem;
+    margin: 0 0 var(--space-2xl) 0;
+    font-size: var(--font-size-base);
     text-align: center;
   }
 }
 
 // Common card grid layout
-.help-links,
-.community-grid {
-  display: grid;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-  }
-}
-
 .help-links {
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  @include grid-responsive(18.75rem, var(--space-xl)); // 300px
+  margin-bottom: var(--space-2xl);
 }
 
 .community-grid {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  @include grid-responsive(17.5rem, var(--space-xl)); // 280px
+  margin-bottom: var(--space-2xl);
 }
 
 // Unified card styling
 .help-card,
 .community-card {
-  background: var(--window-bg-color);
-  box-shadow: var(--shadow-gnome);
+  @include card-base;
   cursor: pointer;
-  transition: all 0.3s ease;
 
   &:hover {
     border-color: var(--primary-color);
-    transform: translateY(-2px);
   }
 
   mat-card-content {
-    padding: 1.5rem;
+    padding: var(--space-xl);
   }
 }
 
@@ -277,26 +250,16 @@
 .community-card-content {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: var(--space-md);
 
   .help-icon,
   .community-icon {
     flex-shrink: 0;
 
     mat-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-
-      &.primary {
-        color: var(--primary-color);
-      }
-      &.accent {
-        color: var(--accent-color);
-      }
-      &.warn {
-        color: var(--warn-color);
-      }
+      font-size: 2rem; // 32px
+      width: 2rem;
+      height: 2rem;
     }
   }
 
@@ -307,9 +270,9 @@
 
   .external-icon {
     color: var(--text-muted);
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 1.25rem; // 20px
+    width: 1.25rem;
+    height: 1.25rem;
   }
 }
 
@@ -317,7 +280,7 @@
   align-items: flex-start;
 
   .external-icon {
-    margin-top: 0.25rem;
+    margin-top: var(--space-xxs);
   }
 }
 
@@ -326,17 +289,17 @@
 .community-title {
   font-size: 1.1rem;
   font-weight: 600;
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 var(--space-xxs) 0;
   color: var(--window-fg-color);
 }
 
 .community-title {
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--space-xs);
 }
 
 .help-description,
 .community-description {
-  font-size: 0.9rem;
+  font-size: var(--font-size-md);
   color: var(--text-muted);
   margin: 0;
   line-height: 1.4;
@@ -348,7 +311,7 @@
 
 // Resources Section
 .resources-section {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-2xl);
 }
 
 .resources-card {
@@ -360,31 +323,31 @@
   box-shadow: 0 0 0 1px rgba(var(--primary-color-rgb), 0.2);
 
   mat-card-content {
-    padding: 2rem;
+    padding: var(--space-2xl);
   }
 }
 
 .resources-content {
   display: flex;
-  gap: 1rem;
+  gap: var(--space-md);
   align-items: flex-start;
 
   .resources-icon {
     color: var(--primary-color);
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
+    font-size: 2rem; // 32px
+    width: 2rem;
+    height: 2rem;
     flex-shrink: 0;
-    margin-top: 0.25rem;
+    margin-top: var(--space-xxs);
   }
 
   .resources-text {
     flex: 1;
 
     h3 {
-      font-size: 1.25rem;
+      font-size: var(--font-size-xl);
       font-weight: 600;
-      margin: 0 0 0.75rem 0;
+      margin: 0 0 var(--space-sm) 0;
       color: var(--window-fg-color);
     }
 
@@ -407,30 +370,30 @@
   font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: var(--space-xxs);
 
   &:hover {
     text-decoration: underline;
   }
 
   .inline-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 1rem; // 16px
+    width: 1rem;
+    height: 1rem;
   }
 }
 
 // Responsive Design
 @media (max-width: 768px) {
   .faq-header {
-    margin-bottom: 3rem;
+    margin-bottom: var(--space-2xl);
   }
 
   .help-card-content,
   .community-card-content {
     flex-direction: column;
     text-align: center;
-    gap: 1rem;
+    gap: var(--space-md);
 
     .external-icon {
       align-self: center;

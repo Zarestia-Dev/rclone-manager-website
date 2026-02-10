@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, signal } from '@angular/core';
 
 export type AppTab = 'general' | 'downloads' | 'docs' | 'faq';
 
@@ -7,14 +6,11 @@ export type AppTab = 'general' | 'downloads' | 'docs' | 'faq';
   providedIn: 'root'
 })
 export class TabService {
-  private currentTab = new BehaviorSubject<AppTab>('general' as AppTab);
-  public currentTab$ = this.currentTab.asObservable();
+  currentTab = signal<AppTab>('general');
 
   setTab(tab: AppTab) {
-    this.currentTab.next(tab);
-  }
-
-  getCurrentTab(): AppTab {
-    return this.currentTab.getValue();
+    this.currentTab.set(tab);
+    // Scroll to top when changing tabs
+    window.scrollTo(0, 0);
   }
 }

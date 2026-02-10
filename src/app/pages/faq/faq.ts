@@ -8,30 +8,16 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { firstValueFrom } from 'rxjs';
-
-interface FaqItem {
-  id: string;
-  question: string;
-  answer: string;
-  category: string;
-  tags?: string[];
-  isExpanded?: boolean;
-}
-
-interface FaqCategory {
-  id: string;
-  name: string;
-  icon: string;
-  description: string;
-}
-
-interface HelpLink {
-  title: string;
-  description: string;
-  url: string;
-  icon: string;
-  type: 'primary' | 'accent' | 'warn';
-}
+import {
+  FaqItem,
+  FaqCategory,
+  HelpLink,
+  FAQ_CATEGORIES,
+  HELP_LINKS,
+  COMMUNITY_LINKS,
+  FAQ_MESSAGES,
+} from '../../constants/faq.constants';
+import { getCategoryConfig } from '../../utils/faq.utils';
 
 @Component({
   selector: 'app-faq',
@@ -54,11 +40,11 @@ export class Faq implements OnInit {
   isLoading = true;
   error: string | null = null;
 
+  messages = FAQ_MESSAGES;
   categories: FaqCategory[] = [];
-
   faqItems: FaqItem[] = [];
-
-  helpLinks: HelpLink[] = [];
+  helpLinks: HelpLink[] = HELP_LINKS;
+  communityLinks: HelpLink[] = COMMUNITY_LINKS;
 
   ngOnInit(): void {
     // Use setTimeout to avoid ExpressionChangedAfterItHasBeenCheckedError
@@ -82,8 +68,6 @@ export class Faq implements OnInit {
       const parsedData = this.parseFaqMarkdown(response);
       this.faqItems = parsedData.items;
       this.categories = parsedData.categories;
-      this.helpLinks = parsedData.helpLinks;
-      this.helpLinks = parsedData.helpLinks;
       console.log(
         'Successfully loaded FAQ data:',
         this.faqItems.length,
@@ -93,8 +77,7 @@ export class Faq implements OnInit {
       );
     } catch (error) {
       console.error('Error loading FAQ data:', error);
-      this.error =
-        'Failed to load FAQ data from GitHub Wiki. Please check your internet connection and try again.';
+      this.error = FAQ_MESSAGES.ERROR_LOADING;
       // No fallback items - keep arrays empty
     } finally {
       this.isLoading = false;
@@ -111,7 +94,6 @@ export class Faq implements OnInit {
     const lines = markdown.split('\n');
     let currentQuestion: Partial<FaqItem> = {};
     let answerLines: string[] = [];
-    let helpLinks: HelpLink[] = [];
 
     for (const line of lines) {
       // Check for question (### heading)
@@ -167,20 +149,13 @@ export class Faq implements OnInit {
     }
 
     // Generate dynamic categories
-    const categories: FaqCategory[] = [
-      {
-        id: 'all',
-        name: 'All Questions',
-        icon: 'help',
-        description: 'View all frequently asked questions',
-      },
-    ];
+    const categories: FaqCategory[] = [...FAQ_CATEGORIES];
 
     // Add categories found in FAQ items
     Array.from(categorySet)
       .sort()
       .forEach((categoryId) => {
-        const categoryConfig = this.getCategoryConfig(categoryId);
+        const categoryConfig = getCategoryConfig(categoryId);
         categories.push({
           id: categoryId,
           name: categoryConfig.name,
@@ -189,10 +164,7 @@ export class Faq implements OnInit {
         });
       });
 
-    // Generate help links from repository info
-    helpLinks = this.generateHelpLinks();
-
-    return { items: faqItems, categories, helpLinks };
+    return { items: faqItems, categories, helpLinks: [] };
   }
 
   private generateId(question: string): string {
@@ -201,91 +173,6 @@ export class Faq implements OnInit {
       .replace(/[^a-z0-9\s]/g, '')
       .replace(/\s+/g, '-')
       .substring(0, 50);
-  }
-
-  private getCategoryConfig(categoryId: string): {
-    name: string;
-    icon: string;
-    description: string;
-  } {
-    const configs: Record<string, { name: string; icon: string; description: string }> = {
-      installation: {
-        name: 'Installation',
-        icon: 'download',
-        description: 'Getting RClone Manager installed',
-      },
-      configuration: {
-        name: 'Configuration',
-        icon: 'settings',
-        description: 'Setting up and configuring remotes',
-      },
-      usage: {
-        name: 'Usage',
-        icon: 'play_arrow',
-        description: 'Using RClone Manager features',
-      },
-      troubleshooting: {
-        name: 'Troubleshooting',
-        icon: 'bug_report',
-        description: 'Fixing common issues',
-      },
-      features: {
-        name: 'Features',
-        icon: 'star',
-        description: 'Understanding available features',
-      },
-      support: {
-        name: 'Support',
-        icon: 'support',
-        description: 'Getting help and support',
-      },
-      general: {
-        name: 'General',
-        icon: 'info',
-        description: 'General information',
-      },
-    };
-
-    return (
-      configs[categoryId] || {
-        name: categoryId.charAt(0).toUpperCase() + categoryId.slice(1),
-        icon: 'help_outline',
-        description: `Questions about ${categoryId}`,
-      }
-    );
-  }
-
-  private generateHelpLinks(): HelpLink[] {
-    return [
-      {
-        title: 'GitHub Discussions',
-        description: 'Ask questions, share ideas, and get help from the community',
-        url: 'https://github.com/Zarestia-Dev/rclone-manager/discussions',
-        icon: 'forum',
-        type: 'primary',
-      },
-      {
-        title: 'Report an Issue',
-        description: 'Found a bug or problem? Report it on our GitHub issues',
-        url: 'https://github.com/Zarestia-Dev/rclone-manager/issues/new',
-        icon: 'bug_report',
-        type: 'warn',
-      },
-      {
-        title: 'Documentation',
-        description: 'Browse our comprehensive documentation and guides',
-        url: '/docs',
-        icon: 'menu_book',
-        type: 'accent',
-      },
-      {
-        title: 'Feature Request',
-        description: 'Suggest new features or improvements',
-        url: 'https://github.com/Zarestia-Dev/rclone-manager/discussions/categories/ideas',
-        icon: 'lightbulb',
-        type: 'accent',
-      },
-    ];
   }
 
   async retryLoading(): Promise<void> {
@@ -318,9 +205,9 @@ export class Faq implements OnInit {
 
   getCategoryDisplayName(): string {
     if (this.selectedCategory === 'all') {
-      return 'All Questions';
+      return this.messages.ALL_QUESTIONS;
     }
     const category = this.categories.find((c) => c.id === this.selectedCategory);
-    return category?.name || 'Questions';
+    return category?.name || this.messages.QUESTIONS;
   }
 }

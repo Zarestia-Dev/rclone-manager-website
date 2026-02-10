@@ -28,8 +28,8 @@
     @if (isLoading) {
     <div class="loading-state">
       <mat-spinner diameter="50"></mat-spinner>
-      <h3>Loading FAQ...</h3>
-      <p>Fetching the latest questions and answers from GitHub Wiki</p>
+      <h3>{{ messages.LOADING_TITLE }}</h3>
+      <p>{{ messages.LOADING_DESC }}</p>
     </div>
     } @else if (error) {
     <div class="error-state">
@@ -42,13 +42,11 @@
       </button>
     </div>
     } @else {
-    <div class="faq-controls">
-      <h2 class="section-title">
-        <mat-icon>help</mat-icon>
-        {{ getCategoryDisplayName() }}
-        <span class="question-count">({{ filteredFaqItems.length }})</span>
-      </h2>
-    </div>
+    <h2 class="section-title">
+      <mat-icon>help</mat-icon>
+      {{ getCategoryDisplayName() }}
+      <span class="question-count">({{ filteredFaqItems.length }})</span>
+    </h2>
 
     @if (filteredFaqItems.length > 0) {
     <mat-accordion class="faq-accordion">
@@ -92,8 +90,8 @@
     } @else {
     <div class="no-results">
       <mat-icon class="no-results-icon">search_off</mat-icon>
-      <h3>No questions found</h3>
-      <p>No questions match the selected category. Try selecting a different category or check our help links below.</p>
+      <h3>{{ messages.NO_RESULTS_TITLE }}</h3>
+      <p>{{ messages.NO_RESULTS_DESC }}</p>
     </div>
     }
     }
@@ -138,70 +136,22 @@
     </p>
 
     <div class="community-grid">
-      <mat-card class="community-card hover-lift"
-        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager')">
+      @for (link of communityLinks; track link.title) {
+      <mat-card class="community-card hover-lift" (click)="openExternalLink(link.url)">
         <mat-card-content>
           <div class="community-card-content">
             <div class="community-icon">
-              <mat-icon class="primary">code</mat-icon>
+              <mat-icon [class]="link.type">{{ link.icon }}</mat-icon>
             </div>
             <div class="community-text">
-              <h3 class="community-title">Source Code</h3>
-              <p class="community-description">View the source code, star the project, and track development progress
-              </p>
+              <h3 class="community-title">{{ link.title }}</h3>
+              <p class="community-description">{{ link.description }}</p>
             </div>
             <mat-icon class="external-icon">open_in_new</mat-icon>
           </div>
         </mat-card-content>
       </mat-card>
-
-      <mat-card class="community-card hover-lift"
-        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/main/CONTRIBUTING.md')">
-        <mat-card-content>
-          <div class="community-card-content">
-            <div class="community-icon">
-              <mat-icon class="accent">handshake</mat-icon>
-            </div>
-            <div class="community-text">
-              <h3 class="community-title">Contributing Guide</h3>
-              <p class="community-description">Learn how to contribute code, documentation, or translations</p>
-            </div>
-            <mat-icon class="external-icon">open_in_new</mat-icon>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="community-card hover-lift"
-        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/security/advisories')">
-        <mat-card-content>
-          <div class="community-card-content">
-            <div class="community-icon">
-              <mat-icon class="warn">security</mat-icon>
-            </div>
-            <div class="community-text">
-              <h3 class="community-title">Security</h3>
-              <p class="community-description">Report security vulnerabilities responsibly through GitHub</p>
-            </div>
-            <mat-icon class="external-icon">open_in_new</mat-icon>
-          </div>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="community-card hover-lift"
-        (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/releases')">
-        <mat-card-content>
-          <div class="community-card-content">
-            <div class="community-icon">
-              <mat-icon class="primary">rocket_launch</mat-icon>
-            </div>
-            <div class="community-text">
-              <h3 class="community-title">Releases</h3>
-              <p class="community-description">View release notes, changelog, and download previous versions</p>
-            </div>
-            <mat-icon class="external-icon">open_in_new</mat-icon>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      }
     </div>
   </div>
 

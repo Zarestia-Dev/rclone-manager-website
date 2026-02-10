@@ -77,15 +77,16 @@
             }
             <h4 class="section-subtitle">Package Managers</h4>
             @for (pm of platform.packageManagers; track pm.name) {
-            <div class="download-option package-manager" (click)="copyCommand(pm.command)"
-              (keydown.enter)="copyCommand(pm.command)" tabindex="0">
+            <div class="download-option package-manager"
+              (click)="pm.url ? openExternalLink(pm.url) : copyCommand(pm.command)"
+              (keydown.enter)="pm.url ? openExternalLink(pm.url) : copyCommand(pm.command)" tabindex="0">
               <div class="download-info">
                 <h4 class="download-name">{{ pm.name }}</h4>
                 <div class="download-meta">
-                  <span class="command-preview">{{ pm.command }}</span>
+                  <span class="command-preview">{{ pm.actionLabel || pm.command }}</span>
                 </div>
               </div>
-              <mat-icon class="download-icon" fontIcon="content_copy"></mat-icon>
+              <mat-icon class="download-icon" [fontIcon]="pm.url ? 'open_in_new' : 'content_copy'"></mat-icon>
             </div>
             }
             }
@@ -110,7 +111,7 @@
               Current Version: {{ release.tag_name }}
             </h2>
             <p class="version-date">Released {{ release.published_at | date:'longDate' }}</p>
-            
+
             <div class="version-highlights markdown-body" [innerHTML]="latestReleaseBodyHtml"></div>
 
             <div class="release-stats">
@@ -125,8 +126,7 @@
             </div>
           </div>
           <div class="version-actions">
-            <button mat-raised-button class="primary"
-              (click)="openExternalLink(release.html_url)">
+            <button mat-raised-button class="primary" (click)="openExternalLink(release.html_url)">
               <mat-icon>open_in_new</mat-icon>
               View Release Notes
             </button>
@@ -146,36 +146,18 @@
       System Requirements
     </h2>
     <div class="requirements-grid">
+      @for (req of systemRequirements; track req.title) {
       <mat-card class="requirement-card">
         <mat-card-content>
-          <h3><mat-icon>computer</mat-icon>Windows</h3>
+          <h3><mat-icon>{{ req.icon }}</mat-icon>{{ req.title }}</h3>
           <ul>
-            <li>Windows 10 version 1903 or later</li>
-            <li>4 GB RAM minimum</li>
-            <li>100 MB disk space</li>
+            @for (item of req.requirements; track item) {
+            <li>{{ item }}</li>
+            }
           </ul>
         </mat-card-content>
       </mat-card>
-      <mat-card class="requirement-card">
-        <mat-card-content>
-          <h3><mat-icon>laptop_mac</mat-icon>macOS</h3>
-          <ul>
-            <li>macOS 10.15 (Catalina) or later</li>
-            <li>4 GB RAM minimum</li>
-            <li>100 MB disk space</li>
-          </ul>
-        </mat-card-content>
-      </mat-card>
-      <mat-card class="requirement-card">
-        <mat-card-content>
-          <h3><mat-icon>memory</mat-icon>Linux</h3>
-          <ul>
-            <li>Modern Linux distribution</li>
-            <li>4 GB RAM minimum</li>
-            <li>100 MB disk space</li>
-          </ul>
-        </mat-card-content>
-      </mat-card>
+      }
     </div>
   </div>
 

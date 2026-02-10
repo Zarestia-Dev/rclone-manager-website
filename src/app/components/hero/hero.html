@@ -8,48 +8,36 @@
   <div class="hero-container">
     <div class="hero-content animate-fade-in-up">
       <img src="rclone.svg" alt="RClone Manager" class="hero-logo animate-float">
-      
-      <div class="mode-text-container">
-        <!-- Desktop Content -->
-        <div class="mode-content" [class.active]="modeService.currentMode() === 'desktop'">
-          <h1 class="hero-title animate-fade-in-up animate-delay-1">
-            RClone Manager
-          </h1>
-          <p class="hero-subtitle animate-fade-in-up animate-delay-2">
-            A powerful, cross-platform GUI for managing Rclone remotes with style and ease.
-            <br>
-            <span class="tech-stack">Built with Angular 20 + Tauri · Linux • Windows • macOS • ARM Support</span>
-          </p>
-        </div>
 
-        <!-- Headless Content -->
-        <div class="mode-content" [class.active]="modeService.currentMode() === 'headless'">
-          <h1 class="hero-title animate-fade-in-up animate-delay-1 headless">
-            RClone Manager Headless
+      <div class="mode-text-container">
+        @for (mode of modes; track mode) {
+        <div class="mode-content" [class.active]="modeService.currentMode() === mode">
+          <h1 class="hero-title animate-fade-in-up animate-delay-1" [class.headless]="mode === 'headless'">
+            {{ getModeContent(mode).title }}
           </h1>
           <p class="hero-subtitle animate-fade-in-up animate-delay-2">
-            Run as a web server on Linux servers without a GUI!
+            {{ getModeContent(mode).subtitle }}
             <br>
-            <span class="tech-stack">Perfect for NAS, VPS, and remote systems. Access from any browser. 🚀</span>
+            <span class="tech-stack">{{ getModeContent(mode).techStack }}</span>
           </p>
         </div>
+        }
       </div>
 
       <div class="hero-actions animate-fade-in-up animate-delay-3">
-        <button mat-raised-button class="primary" (click)="setTab('downloads')">
-          <mat-icon>download</mat-icon>
-          Download Now
+        @for (action of heroContent.actions; track action.label) {
+        <button mat-raised-button [class]="action.type" [color]="action.type === 'primary' ? 'primary' : null"
+          (click)="setTab(action.tab)">
+          <mat-icon>{{ action.icon }}</mat-icon>
+          {{ action.label }}
         </button>
-        <button mat-raised-button class="accent" (click)="setTab('docs')">
-          <mat-icon>description</mat-icon>
-          View Documentation
-        </button>
+        }
       </div>
       <div class="hero-scroll-indicator animate-fade-in-up animate-delay-4">
         <button matIconButton (click)="scrollToFeatures()" class="scroll-btn">
           <mat-icon>keyboard_arrow_down</mat-icon>
         </button>
-        <p class="scroll-text">See Features</p>
+        <p class="scroll-text">{{ heroContent.scrollText }}</p>
       </div>
     </div>
   </div>

@@ -508,20 +508,20 @@ $dark-theme: (
   // ===== DESIGN SYSTEM TOKENS =====
 
   // Spacing Scale
-  --space-xxs: 4px;
-  --space-xs: 8px;
-  --space-sm: 12px;
-  --space-md: 16px;
-  --space-lg: 20px;
-  --space-xl: 24px;
-  --space-2xl: 32px;
+  --space-xxs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.25rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
 
   // Border Radius Scale
-  --radius-xxs: 4px;
-  --radius-xs: 8px;
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
+  --radius-xxs: 0.25rem;
+  --radius-xs: 0.5rem;
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
 
   // Component-specific radius aliases
   --border-radius: var(--radius-xs);
@@ -557,7 +557,7 @@ $dark-theme: (
   --modal-padding: var(--space-2xl);
   --content-padding: var(--space-2xl);
   --step-padding: var(--space-md);
-  --button-padding: var(--space-md) 28px;
+  --button-padding: var(--space-md) 1.75rem;
   --panel-header-padding: var(--space-xl);
   --panel-content-padding: var(--space-xl) var(--space-2xl) var(--space-2xl) var(--space-2xl);
   --panel-actions-padding: var(--space-md) var(--space-xl);
@@ -588,6 +588,9 @@ $dark-theme: (
   --icon-container-size: 64px;
 
   // Typography Scale
+  --font-size-6xl: 4rem;
+  --font-size-5xl: 3.5rem;
+  --font-size-4xl: 2.5rem;
   --font-size-3xl: 2rem;
   --font-size-2xl: 1.5rem;
   --font-size-xl: 1.25rem;
@@ -721,9 +724,13 @@ body {
     // Material System Overrides
     --mat-sys-primary: var(--gnome-orange-3);
     --mat-sys-tertiary: var(--gnome-yellow-4);
-    
+
     // Adjust containers
-    --mat-sys-primary-container: color-mix(in srgb, var(--gnome-orange-3) 15%, var(--view-bg-color));
+    --mat-sys-primary-container: color-mix(
+      in srgb,
+      var(--gnome-orange-3) 15%,
+      var(--view-bg-color)
+    );
     --mat-sys-on-primary-container: var(--gnome-orange-5);
   }
 
@@ -1377,14 +1384,15 @@ mat-accordion {
 // ============================================================================
 
 .page-container {
-  max-width: 1200px;
+  max-width: 80vw;
   width: 100%;
   margin: 0 auto;
   padding: 2rem;
   box-sizing: border-box;
-  
+
   // Ensure content doesn't touch edges on small screens
   @media (max-width: 768px) {
+    max-width: 95vw;
     padding: 1.5rem;
   }
 }
@@ -1392,15 +1400,15 @@ mat-accordion {
 .page-header {
   text-align: center;
   margin-bottom: 3rem;
-  
+
   .page-title {
-    font-size: 2.5rem;
+    font-size: var(--font-size-4xl);
     font-weight: 700;
     margin: 0 0 1rem 0;
     color: var(--window-fg-color);
-    
+
     @media (max-width: 768px) {
-      font-size: 2rem;
+      font-size: var(--font-size-3xl);
     }
   }
 
@@ -1411,4 +1419,36 @@ mat-accordion {
     max-width: 600px;
     line-height: 1.6;
   }
+}
+
+// Global Section Styles
+.section-title {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin: 0 0 var(--space-md) 0;
+  color: var(--window-fg-color);
+  text-align: left;
+
+  mat-icon {
+    color: var(--primary-color);
+    width: 32px;
+    height: 32px;
+    font-size: 32px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
+
+.section-subtitle {
+  font-size: var(--font-size-md);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-lg) 0;
 }

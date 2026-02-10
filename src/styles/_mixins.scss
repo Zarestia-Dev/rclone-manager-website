@@ -1,0 +1,49 @@
+// Common Grid Layouts
+@mixin grid-responsive($min-width: 300px, $gap: var(--space-2xl)) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+  gap: $gap;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Common Card Styles
+@mixin card-base {
+  transition: var(--transition-standard);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-gnome);
+}
+
+// Icon Container (Circular Gradient Background)
+@mixin icon-circle($size: 24px) {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-color-rgb), 0.1),
+    rgba(var(--accent-color-rgb), 0.1)
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $size * 2; // Usually padding creates size, but this is a base
+  height: $size * 2;
+
+  mat-icon {
+    color: var(--primary-color);
+    font-size: $size;
+    width: $size;
+    height: $size;
+  }
+}
+
+// Page Header
+@mixin page-header {
+  text-align: center;
+  margin-bottom: var(--space-4xl, 4rem);
+
+  @media (max-width: 768px) {
+    margin-bottom: var(--space-3xl, 3rem);
+  }
+}

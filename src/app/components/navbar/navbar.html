@@ -20,13 +20,12 @@
         <span class="toggle-label">{{ modeService.currentMode() === 'desktop' ? 'Desktop' : 'Headless' }}</span>
       </button>
 
-      <button mat-button [class.active]="currentTab === 'general'"
-        (click)="setTab('general'); closeMobileMenu()">Home</button>
-      <button mat-button [class.active]="currentTab === 'docs'"
-        (click)="setTab('docs'); closeMobileMenu()">Docs</button>
-      <button mat-button [class.active]="currentTab === 'downloads'"
-        (click)="setTab('downloads'); closeMobileMenu()">Downloads</button>
-      <button mat-button [class.active]="currentTab === 'faq'" (click)="setTab('faq'); closeMobileMenu()">FAQ</button>
+      @for (link of navLinks; track link.label) {
+      <button mat-button [class.active]="tabService.currentTab() === link.tab"
+        (click)="setTab(link.tab); closeMobileMenu()">
+        {{ link.label }}
+      </button>
+      }
       <app-theme-toggle></app-theme-toggle>
     </div>
   </div>

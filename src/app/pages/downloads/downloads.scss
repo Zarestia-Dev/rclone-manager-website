@@ -1,3 +1,5 @@
+@use '../../../styles/mixins' as *;
+
 .downloads-header {
   text-align: center;
 }
@@ -5,14 +7,13 @@
 // Loading and Error States
 .loading-section,
 .error-section {
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
 
   mat-card {
-    background: var(--window-bg-color);
     box-shadow: var(--shadow-gnome);
 
     mat-card-content {
-      padding: 2rem;
+      padding: var(--space-2xl);
 
       .loading-content,
       .error-content {
@@ -20,16 +21,16 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
+        gap: var(--space-md);
         text-align: center;
-        min-height: 200px; // Ensure consistent height
+        min-height: 12.5rem; // 200px
 
         mat-spinner {
-          margin-bottom: 0.5rem; // Small gap between spinner and text
+          margin-bottom: var(--space-xs);
         }
 
         h3 {
-          font-size: 1.25rem;
+          font-size: var(--font-size-xl);
           font-weight: 600;
           margin: 0;
           color: var(--window-fg-color);
@@ -39,15 +40,15 @@
           color: var(--text-muted);
           margin: 0;
           font-size: 0.95rem;
-          max-width: 400px; // Prevent text from being too wide
+          max-width: 25rem; // 400px
         }
 
         .error-icon {
-          font-size: 48px !important;
-          width: 48px !important;
-          height: 48px !important;
+          font-size: 3rem !important;
+          width: 3rem !important;
+          height: 3rem !important;
           color: var(--warn-color);
-          margin-bottom: 0.5rem;
+          margin-bottom: var(--space-xs);
         }
       }
     }
@@ -56,7 +57,7 @@
 
 // Current Version Section
 .current-version {
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
 
   mat-card {
     background: linear-gradient(
@@ -67,17 +68,17 @@
     box-shadow: 0 0 0 1px rgba(var(--primary-color-rgb), 0.2);
 
     mat-card-content {
-      padding: 2rem;
+      padding: var(--space-2xl);
 
       .version-info {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        gap: 2rem;
+        gap: var(--space-2xl);
 
         @media (max-width: 768px) {
           flex-direction: column;
-          gap: 1.5rem;
+          gap: var(--space-xl);
           text-align: center;
         }
       }
@@ -85,10 +86,10 @@
       .current-version-title {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        font-size: 1.5rem;
+        gap: var(--space-xs);
+        font-size: var(--font-size-2xl);
         font-weight: 600;
-        margin: 0 0 0.5rem 0;
+        margin: 0 0 var(--space-xs) 0;
         color: var(--window-fg-color);
 
         mat-icon {
@@ -98,15 +99,15 @@
 
       .version-date {
         color: var(--text-muted);
-        margin: 0 0 1rem 0;
+        margin: 0 0 var(--space-md) 0;
         font-size: 0.95rem;
       }
 
       .version-highlights {
         h4 {
-          font-size: 1rem;
+          font-size: var(--font-size-base);
           font-weight: 600;
-          margin: 0 0 0.5rem 0;
+          margin: 0 0 var(--space-xs) 0;
           color: var(--window-fg-color);
         }
 
@@ -124,7 +125,7 @@
       }
 
       button mat-icon {
-        margin-right: 0.5rem;
+        margin-right: var(--space-xs);
       }
     }
   }
@@ -132,8 +133,8 @@
 
 .release-stats {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 1rem;
+  gap: var(--space-xl);
+  margin-top: var(--space-md);
 
   .stat {
     display: flex;
@@ -143,57 +144,41 @@
     font-size: 0.85rem;
 
     mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
       color: var(--primary-color);
     }
   }
 
   @media (max-width: 480px) {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-xs);
   }
 }
 
 // Platforms Section
 .platforms-section {
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
 
   .platforms-grid {
-    display: grid;
+    @include grid-responsive(21.875rem, var(--space-2xl)); // 350px
     align-items: start;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
 
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       grid-template-columns: 1fr;
+      gap: 1.25rem;
     }
   }
 
   .platform-card {
-    background: var(--window-bg-color);
-    box-shadow: var(--shadow-gnome);
-    transition: all 0.3s ease;
+    @include card-base;
 
     mat-card-header {
-      padding-bottom: 1rem;
+      padding-bottom: var(--space-md);
 
       .platform-icon {
-        background: linear-gradient(
-          135deg,
-          rgba(var(--primary-color-rgb), 0.1),
-          rgba(var(--accent-color-rgb), 0.1)
-        );
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        mat-icon {
-          color: var(--primary-color);
-          font-size: 24px;
-        }
+        @include icon-circle(1.5rem); // 24px
       }
     }
 
@@ -215,7 +200,7 @@
       .section-subtitle {
         font-size: 0.9rem;
         font-weight: 600;
-        margin: 0.5rem 0 0.25rem 0;
+        margin: var(--space-xs) 0 0.25rem 0;
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -224,6 +209,7 @@
       .download-option {
         display: flex;
         justify-content: space-between;
+        background: var(--window-bg-color);
         align-items: center;
         padding: 0.75rem;
         box-shadow: var(--shadow-gnome);
@@ -231,20 +217,29 @@
         cursor: pointer;
         transition: all 0.3s ease;
 
+        @media (max-width: 640px) {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: var(--space-xs);
+        }
+
         &:hover {
           background: var(--bg-hover);
           border-color: var(--primary-color);
-          transform: translateY(-1px);
-
-          .download-icon {
-            transform: translateY(-2px);
-          }
         }
 
         .download-info {
           display: flex;
           flex-direction: column;
           gap: 0.25rem;
+          flex: 1;
+          min-width: 0;
+          padding-right: var(--space-md);
+
+          @media (max-width: 640px) {
+            padding-right: 0;
+            width: 100%;
+          }
 
           .download-name {
             font-size: 0.95rem;
@@ -255,9 +250,14 @@
 
           .download-meta {
             display: flex;
-            gap: 1rem;
+            gap: var(--space-md);
             font-size: 0.85rem;
             color: var(--text-muted);
+
+            @media (max-width: 640px) {
+              flex-wrap: wrap;
+              gap: 0.5rem 0.75rem;
+            }
 
             .architecture {
               font-weight: 500;
@@ -267,15 +267,16 @@
               font-family: 'JetBrains Mono', monospace;
               background: rgba(var(--primary-color-rgb), 0.1);
               padding: 0.1rem 0.4rem;
-              border-radius: 4px;
+              border-radius: var(--radius-xxs);
               font-size: 0.8rem;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
-              max-width: 200px;
+              max-width: 100%;
 
-              @media (max-width: 480px) {
-                max-width: 150px;
+              @media (max-width: 640px) {
+                white-space: normal;
+                word-break: break-word;
               }
             }
           }
@@ -283,7 +284,7 @@
 
         &.package-manager {
           .download-icon {
-            font-size: 20px;
+            font-size: 1.25rem;
             opacity: 0.7;
           }
 
@@ -297,54 +298,42 @@
         .download-icon {
           color: var(--primary-color);
           transition: transform 0.3s ease;
+
+          @media (max-width: 640px) {
+            align-self: flex-end;
+          }
         }
       }
     }
   }
 }
 
-.animate-swap {
-  animation: swapDownload 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes swapDownload {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
 // Requirements Section
 .requirements-section {
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
 
   .requirements-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr)); // 280px
+    gap: var(--space-xl);
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
     }
 
     mat-card {
-      background: var(--window-bg-color);
       box-shadow: var(--shadow-gnome);
 
       mat-card-content {
-        padding: 1.5rem;
+        padding: var(--space-xl);
 
         h3 {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: var(--space-xs);
           font-size: 1.1rem;
           font-weight: 600;
-          margin: 0 0 1rem 0;
+          margin: 0 0 var(--space-md) 0;
           color: var(--window-fg-color);
 
           mat-icon {
@@ -360,7 +349,7 @@
             color: var(--text-muted);
             font-size: 0.9rem;
             line-height: 1.5;
-            margin-bottom: 0.5rem;
+            margin-bottom: var(--space-xs);
 
             &:last-child {
               margin-bottom: 0;
@@ -374,19 +363,19 @@
 
 // Changelog Section
 .changelog-section {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-2xl);
 
   .changelog-subtitle {
     color: var(--text-muted);
-    margin: 0 0 2rem 0;
-    font-size: 1rem;
+    margin: 0 0 var(--space-2xl) 0;
+    font-size: var(--font-size-base);
   }
 
   .changelog-accordion {
-    margin-bottom: 2rem;
+    margin-bottom: var(--space-2xl);
 
     .mat-expansion-panel {
-      margin-bottom: 1rem;
+      margin-bottom: var(--space-md);
 
       &:last-child {
         margin-bottom: 0;
@@ -416,10 +405,10 @@
       }
 
       .changelog-content {
-        padding: 1rem 1.5rem 1.5rem;
+        padding: var(--space-md) var(--space-xl) var(--space-xl);
 
         .change-section {
-          margin-bottom: 1.5rem;
+          margin-bottom: var(--space-xl);
 
           &:last-child {
             margin-bottom: 0;
@@ -428,15 +417,15 @@
           h4 {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
-            font-size: 1rem;
+            gap: var(--space-xs);
+            font-size: var(--font-size-base);
             font-weight: 600;
             margin: 0 0 0.75rem 0;
 
             mat-icon {
-              font-size: 18px;
-              width: 18px;
-              height: 18px;
+              font-size: 1.125rem; // 18px
+              width: 1.125rem;
+              height: 1.125rem;
             }
           }
 
@@ -447,7 +436,7 @@
             li {
               color: var(--window-fg-color);
               line-height: 1.5;
-              margin-bottom: 0.5rem;
+              margin-bottom: var(--space-xs);
               font-size: 0.9rem;
 
               &:last-child {
@@ -459,7 +448,7 @@
                 background: rgba(var(--primary-color-rgb), 0.1);
                 color: var(--primary-color);
                 padding: 0.1rem 0.3rem;
-                border-radius: 4px;
+                border-radius: var(--radius-xxs);
                 font-family: monospace;
                 font-size: 0.85em;
               }
@@ -485,7 +474,7 @@
             background: rgba(var(--warn-color-rgb), 0.05);
             box-shadow: 0 0 0 1px rgba(var(--warn-color-rgb), 0.2);
             border-radius: var(--radius-xs);
-            padding: 1rem;
+            padding: var(--space-md);
 
             h4 {
               color: var(--warn-color);
@@ -511,37 +500,10 @@
 
   .changelog-footer {
     text-align: center;
-    padding-top: 1rem;
+    padding-top: var(--space-md);
 
     button mat-icon {
-      margin-right: 0.5rem;
+      margin-right: var(--space-xs);
     }
-  }
-}
-
-// Responsive Design
-@media (max-width: 768px) {
-  .page-container {
-    padding: 4rem 1rem 2rem;
-  }
-
-  .downloads-header {
-    margin-bottom: 3rem;
-  }
-
-  .platforms-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .requirements-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-title {
-    font-size: 1.5rem;
-  }
-
-  .version-info {
-    text-align: center;
   }
 }

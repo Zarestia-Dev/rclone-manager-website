@@ -1,7 +1,7 @@
 <div class="app-container">
   <app-navbar></app-navbar>
   <main class="main-content">
-    @switch (currentTab) {
+    @switch (tabService.currentTab()) {
       @case ('general') {
         <app-home></app-home>
       }

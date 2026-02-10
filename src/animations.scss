@@ -65,6 +65,11 @@
   }
 }
 
+.animate-fade-in-up {
+  opacity: 0; // Ensures element is hidden before animation starts
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
 @keyframes breathing {
   0% {
     transform: scale(0.9);
@@ -450,16 +455,22 @@
 @keyframes swapContentIn {
   0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px) scale(0.95);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 .animate-swap {
-  animation: swapContentIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  opacity: 0; // Ensures element is hidden before animation starts
+  animation: swapContentIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-fade-in-up {
+  opacity: 0; // Ensures element is hidden before animation starts
+  animation: fadeInUp 0.5s ease-out forwards;
 }
 
 // ===== ANIMATION UTILITY CLASSES =====
