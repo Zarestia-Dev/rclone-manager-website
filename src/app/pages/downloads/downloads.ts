@@ -1,5 +1,5 @@
 import { Component, OnInit, inject, effect } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { GithubService } from '../../services/github.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,8 +13,7 @@ import { marked } from 'marked';
 import { ModeService } from '../../services/mode.service';
 import { DownloadPlatform, ChangelogVersion, GitHubRelease } from '../../models/downloads.model';
 import {
-  GITHUB_API_BASE,
-  CHANGELOG_URL,
+  GITHUB_REPO,
   DESKTOP_PLATFORMS_CONFIG,
   HEADLESS_PLATFORMS_CONFIG,
   DOWNLOAD_TYPE_ORDER,
@@ -53,7 +52,7 @@ import {
   styleUrl: './downloads.scss',
 })
 export class Downloads implements OnInit {
-  private http = inject(HttpClient);
+  private github = inject(GithubService);
   private snackBar = inject(MatSnackBar);
   modeService = inject(ModeService);
 
@@ -124,7 +123,7 @@ export class Downloads implements OnInit {
 
   private async fetchReleases(): Promise<void> {
     const releases = await firstValueFrom(
-      this.http.get<GitHubRelease[]>(`${GITHUB_API_BASE}/releases`),
+      this.github.get<GitHubRelease[]>(`/repos/${GITHUB_REPO}/releases`),
     );
 
     this.allReleases = releases;
@@ -163,7 +162,7 @@ export class Downloads implements OnInit {
 
   private async fetchChangelog(): Promise<void> {
     const changelogText = await firstValueFrom(
-      this.http.get(CHANGELOG_URL, { responseType: 'text' }),
+      this.github.getRaw(GITHUB_REPO, 'master', 'CHANGELOG.md'),
     );
 
     this.changelog = parseChangelog(changelogText);
@@ -330,8 +329,8 @@ export class Downloads implements OnInit {
       latestReleaseTag: this.latestRelease?.tag_name,
       latestReleaseAssets: this.latestRelease?.assets?.length || 0,
       apiUrls: {
-        releases: `${GITHUB_API_BASE}/releases`,
-        changelog: CHANGELOG_URL,
+        releases: `https://api.github.com/repos/${GITHUB_REPO}/releases`,
+        changelog: `https://raw.githubusercontent.com/${GITHUB_REPO}/master/CHANGELOG.md`,
       },
     };
   }

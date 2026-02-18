@@ -1,8 +1,7 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable, map, catchError, of } from 'rxjs';
 import { RoadmapItem, RoadmapData } from '../constants/roadmap.constants';
-import { environment } from '../../environments/environment';
+import { GithubService } from './github.service';
 
 interface GraphQLFieldValue {
   name?: string;
@@ -31,7 +30,6 @@ interface GraphQLResponse {
   };
 }
 
-const GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql';
 const ORG_NAME = 'Zarestia-Dev';
 const PROJECT_NUMBER = 2;
 
@@ -122,34 +120,19 @@ const PROJECT_QUERY = `
 
 @Injectable({ providedIn: 'root' })
 export class RoadmapService {
-  private http = inject(HttpClient);
+  private github = inject(GithubService);
 
   fetchRoadmap(): Observable<RoadmapData> {
-    const token = environment.githubReadToken;
-
-    // No token available (local dev) → return fallback data
-    if (!token || token === 'GITHUB_READ_TOKEN_PLACEHOLDER') {
-      console.log('No GitHub token configured — using fallback roadmap data.');
+    if (!this.github.hasGraphqlAccess()) {
+      console.log('No GitHub GraphQL access configured — using fallback roadmap data.');
       return of({
         lastUpdated: new Date().toISOString(),
         items: FALLBACK_ITEMS,
       });
     }
 
-    return this.http
-      .post<GraphQLResponse>(
-        GITHUB_GRAPHQL_URL,
-        {
-          query: PROJECT_QUERY,
-          variables: { org: ORG_NAME, number: PROJECT_NUMBER },
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      )
+    return this.github
+      .graphql<GraphQLResponse>(PROJECT_QUERY, { org: ORG_NAME, number: PROJECT_NUMBER })
       .pipe(
         map((response) => this.parseResponse(response)),
         catchError((err) => {

@@ -5,10 +5,9 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
-import hljs from 'highlight.js';
+import { WikiService } from '../../services/wiki.service';
 
 export interface DocItem {
   title: string;
@@ -41,7 +40,7 @@ export interface DocSection {
   styleUrl: './docs.scss',
 })
 export class Docs implements OnInit {
-  private http = inject(HttpClient);
+  private wikiService = inject(WikiService);
   private sanitizer = inject(DomSanitizer);
 
   docSections = signal<DocSection[]>([]);
@@ -57,10 +56,7 @@ export class Docs implements OnInit {
     // Re-highlight and attach listeners when content changes
     effect(() => {
       if (this.renderedContent()) {
-        setTimeout(() => {
-          this.highlightCode();
-          this.attachLinkListeners();
-        }, 0);
+        this.attachLinkListeners();
       }
     });
 
@@ -68,12 +64,6 @@ export class Docs implements OnInit {
     const renderer = new marked.Renderer();
     marked.setOptions({
       renderer,
-      highlight: (code: string, lang: string) => {
-        if (lang && hljs.getLanguage(lang)) {
-          return hljs.highlight(code, { language: lang }).value;
-        }
-        return hljs.highlightAuto(code).value;
-      },
       breaks: true,
       gfm: true,
     } as Parameters<typeof marked.setOptions>[0]);
@@ -85,7 +75,7 @@ export class Docs implements OnInit {
 
   private loadSummary(): void {
     this.loading.set(true);
-    this.http.get('docs/sidebar.md', { responseType: 'text' }).subscribe({
+    this.wikiService.fetchSidebar().subscribe({
       next: (content) => {
         const { sections, quickLinks } = this.parseSummary(content);
         this.docSections.set(sections);
@@ -196,7 +186,7 @@ export class Docs implements OnInit {
 
   private loadContent(path: string): void {
     this.loading.set(true);
-    this.http.get(`docs/${path}`, { responseType: 'text' }).subscribe({
+    this.wikiService.fetchPage(path).subscribe({
       next: (markdown) => {
         const html = marked.parse(markdown) as string;
         this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(html));
@@ -213,13 +203,6 @@ export class Docs implements OnInit {
         this.loading.set(false);
       },
     });
-  }
-
-  private highlightCode(): void {
-    if (this.contentArea) {
-      const blocks = this.contentArea.nativeElement.querySelectorAll('pre code');
-      blocks.forEach((block: HTMLElement) => hljs.highlightElement(block));
-    }
   }
 
   private attachLinkListeners(): void {
@@ -241,7 +224,7 @@ export class Docs implements OnInit {
     const decodedHref = decodeURIComponent(href).replace(/-/g, ' ');
 
     for (const section of this.docSections()) {
-      const item = section.items.find((i) => {
+      const item = section.items.find((i: DocItem) => {
         if (!i.assetPath) return false;
         const filename = i.assetPath.split('/').pop()?.replace('.md', '');
         return (
