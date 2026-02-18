@@ -43,4 +43,4 @@ __screenshots__/
 Thumbs.db
 
 # Environment files with tokens
-src/environments/environment.prod.ts
+# src/environments/environment.prod.ts (Removed to allow tracking now that secrets are gone)
