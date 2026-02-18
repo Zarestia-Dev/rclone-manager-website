@@ -1,9 +1,9 @@
 import { Injectable, signal } from '@angular/core';
 
-export type AppTab = 'general' | 'downloads' | 'docs' | 'faq';
+export type AppTab = 'general' | 'downloads' | 'docs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TabService {
   currentTab = signal<AppTab>('general');

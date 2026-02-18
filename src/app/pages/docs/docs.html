@@ -1,64 +1,73 @@
-<div class="page-container">
-  <div class="docs-header animate-fade-in-up">
-    <h1 class="page-title">Documentation</h1>
-    <p class="page-subtitle">Complete guide to using RClone Manager</p>
-  </div>
-
-  <!-- Quick Links -->
-  <div class="quick-links animate-fade-in-up animate-delay-1">
-    <h2 class="section-title">
-      <mat-icon>link</mat-icon>
-      Quick Links
-    </h2>
-    <div class="quick-links-grid">
-      @for (link of quickLinks; track link.title) {
-      <button mat-stroked-button [color]="link.type === 'basic' ? null : link.type"
-        [class.mat-stroked-button]="link.type === 'basic'" [class.mat-raised-button]="link.type !== 'basic'"
-        (click)="openExternalLink(link.url)">
-        <mat-icon>{{ link.icon }}</mat-icon>
-        {{ link.title }}
-      </button>
-      }
-    </div>
-  </div>
-
-  <!-- Documentation Sections -->
-  <div class="docs-sections animate-fade-in-up animate-delay-2">
-    <h2 class="section-title">
-      <mat-icon>library_books</mat-icon>
-      Documentation
-    </h2>
-    <div class="docs-grid">
-      @for (section of docSections; track section.title) {
-      <mat-card class="doc-section-card hover-lift">
-        <mat-card-header>
-          <div mat-card-avatar class="section-icon">
-            <mat-icon>{{ section.icon }}</mat-icon>
-          </div>
-          <mat-card-title>{{ section.title }}</mat-card-title>
-          <mat-card-subtitle>{{ section.description }}</mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-          <div class="doc-items">
+<div class="page-container animate-fade-in">
+  <div class="docs-detail-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="docs-sidebar animate-fade-in-right">
+      <div class="sidebar-sections">
+        @for (section of docSections(); track section.title) {
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">{{ section.title }}</h3>
+          <div class="sidebar-items">
             @for (item of section.items; track item.title) {
-            <div class="doc-item" (click)="openLink(item)" (keydown.enter)="openLink(item)" tabindex="0">
-              <div class="doc-item-content">
-                <h4 class="doc-item-title">
-                  {{ item.title }}
-                  @if (item.isExternal) {
-                  <mat-icon class="external-icon">open_in_new</mat-icon>
-                  }
-                </h4>
-                @if (item.description) {
-                <p class="doc-item-description">{{ item.description }}</p>
-                }
-              </div>
-            </div>
+            <button mat-button class="sidebar-item" [class.active]="selectedItem()?.title === item.title"
+              (click)="selectItem(item)" [matTooltip]="item.description || ''" matTooltipPosition="right">
+              <mat-icon class="main-icon">{{ item.icon || 'description' }}</mat-icon>
+              <span class="item-title">{{ item.title }}</span>
+              @if (item.isExternal) {
+              <mat-icon class="external-icon">open_in_new</mat-icon>
+              }
+            </button>
             }
           </div>
-        </mat-card-content>
-      </mat-card>
-      }
+        </div>
+        }
+
+        <mat-divider></mat-divider>
+
+        <div class="sidebar-section">
+          <h3 class="sidebar-section-title">Quick Links</h3>
+          <div class="sidebar-items">
+            @for (link of quickLinks(); track link.title) {
+            <button mat-button class="sidebar-item" (click)="openExternalLink(link.url)">
+              <mat-icon class="main-icon">{{ link.icon }}</mat-icon>
+              <span class="item-title">{{ link.title }}</span>
+              <mat-icon class="external-icon">open_in_new</mat-icon>
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="docs-content-wrapper">
+      <div class="docs-content-card animate-fade-in-up">
+        @if (loading()) {
+        <div class="loading-overlay">
+          <mat-spinner diameter="48"></mat-spinner>
+          <p>Loading Documentation...</p>
+        </div>
+        }
+
+        @if (selectedItem()) {
+          <article class="markdown-body" [innerHTML]="renderedContent()" #contentArea></article>
+
+          <mat-divider></mat-divider>
+
+          <div class="docs-footer">
+            <p>Found a mistake? Help us improve the docs!</p>
+            <button mat-stroked-button
+              (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager-website/edit/master/public/docs/' + selectedItem()?.assetPath)">
+              <mat-icon>edit</mat-icon>
+              Edit this page on GitHub
+            </button>
+          </div>
+        } @else {
+          <div class="empty-state">
+            <mat-icon>description</mat-icon>
+            <p>Select a topic to start reading</p>
+          </div>
+        }
+      </div>
     </div>
   </div>
 </div>

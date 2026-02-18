@@ -17,7 +17,6 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'Home', tab: 'general', icon: 'home' },
   { label: 'Docs', tab: 'docs', icon: 'menu_book' },
   { label: 'Downloads', tab: 'downloads', icon: 'download' },
-  { label: 'FAQ', tab: 'faq', icon: 'question_answer' },
 ];
 
 export const SOCIAL_LINKS: SocialLink[] = [

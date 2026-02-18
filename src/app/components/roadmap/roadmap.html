@@ -1,0 +1,115 @@
+<section class="roadmap-section animate-fade-in-up">
+  <div class="section-header">
+    <h2 class="section-title">
+      <mat-icon>alt_route</mat-icon>
+      Project Roadmap
+    </h2>
+    <p class="section-subtitle">A glimpse into the future of RClone Manager</p>
+  </div>
+
+  @if (isLoading()) {
+    <div class="roadmap-loading">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Syncing with GitHub Projects...</p>
+    </div>
+  } @else if (error()) {
+    <div class="roadmap-error">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+    </div>
+  } @else {
+    <div class="roadmap-grid">
+      <!-- IN PROGRESS -->
+      <div class="roadmap-column in-progress">
+        <div class="column-header">
+          <mat-icon>sync</mat-icon>
+          <h3>In Progress</h3>
+        </div>
+        <div class="column-items">
+          @for (item of inProgressItems; track item.title) {
+            <div class="roadmap-card hover-lift">
+              <div class="card-header">
+                <span class="category-chip">{{ item.category }}</span>
+                @if (item.priority === 'high') {
+                  <span class="priority-chip high">High Priority</span>
+                }
+              </div>
+              <h4>{{ item.title }}</h4>
+              <p class="card-description" [innerHTML]="renderMarkdown(item.description)"></p>
+              <div class="card-footer">
+                @if (item.timeline) {
+                  <span class="timeline-tag">
+                    <mat-icon>calendar_today</mat-icon>
+                    {{ item.timeline }}
+                  </span>
+                }
+              </div>
+            </div>
+          } @empty {
+            <p class="empty-msg">No active tasks at the moment.</p>
+          }
+        </div>
+      </div>
+
+      <!-- TODO -->
+      <div class="roadmap-column todo">
+        <div class="column-header">
+          <mat-icon>notification_important</mat-icon>
+          <h3>Coming Soon</h3>
+        </div>
+        <div class="column-items">
+          @for (item of todoItems; track item.title) {
+            <div class="roadmap-card grayscale">
+              <div class="card-header">
+                <span class="category-chip">{{ item.category }}</span>
+              </div>
+              <h4>{{ item.title }}</h4>
+              <p class="card-description" [innerHTML]="renderMarkdown(item.description)"></p>
+              <div class="card-footer">
+                @if (item.timeline) {
+                  <span class="timeline-tag">
+                    <mat-icon>access_time</mat-icon>
+                    {{ item.timeline }}
+                  </span>
+                }
+              </div>
+            </div>
+          } @empty {
+            <p class="empty-msg">Stay tuned for upcoming milestones!</p>
+          }
+        </div>
+      </div>
+
+      <!-- DONE -->
+      <div class="roadmap-column done">
+        <div class="column-header">
+          <mat-icon>task_alt</mat-icon>
+          <h3>Recently Completed</h3>
+        </div>
+        <div class="column-items">
+          @for (item of doneItems; track item.title) {
+            <div class="roadmap-card done">
+              <div class="card-header">
+                <span class="category-chip">{{ item.category }}</span>
+                <mat-icon class="done-icon">done_all</mat-icon>
+              </div>
+              <h4>{{ item.title }}</h4>
+              <p class="card-description" [innerHTML]="renderMarkdown(item.description)"></p>
+            </div>
+          } @empty {
+            <p class="empty-msg">Hard work is underway!</p>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="roadmap-disclaimer">
+      <p>
+        @if (lastUpdated()) {
+          <span>Last updated: {{ lastUpdated() | date:'mediumDate' }} • </span>
+        }
+        Want to track progress in real-time? Check our <a href="https://github.com/orgs/Zarestia-Dev/projects/2" target="_blank">official project board</a>.
+      </p>
+    </div>
+  }
+</section>

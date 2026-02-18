@@ -38,5 +38,5 @@ export const HERO_CONTENT = {
       type: 'accent',
     },
   ] as HeroAction[],
-  scrollText: 'See Features',
+  scrollText: 'More Info',
 };
