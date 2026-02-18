@@ -26,6 +26,13 @@ export interface DocSection {
   items: DocItem[];
 }
 
+export interface SearchHit {
+  item: DocItem;
+  sectionTitle: string;
+  snippet: SafeHtml;
+  matchType: 'title' | 'content' | 'description';
+}
+
 @Component({
   selector: 'app-docs',
   imports: [
@@ -45,6 +52,12 @@ export class Docs implements OnInit {
 
   docSections = signal<DocSection[]>([]);
   quickLinks = signal<DocItem[]>([]);
+
+  // Search state
+  searchQuery = signal('');
+  searchHits = signal<SearchHit[]>([]);
+  isIndexing = signal(false);
+  private searchIndex = new Map<string, string>(); // assetPath -> content
 
   selectedItem = signal<DocItem | null>(null);
   renderedContent = signal<SafeHtml>('');
@@ -86,6 +99,7 @@ export class Docs implements OnInit {
           this.selectItem(sections[0].items[0]);
         }
         this.loading.set(false);
+        this.startIndexing();
       },
       error: (err) => {
         console.error('Error loading documentation summary:', err);
@@ -96,83 +110,69 @@ export class Docs implements OnInit {
 
   private parseSummary(content: string): { sections: DocSection[]; quickLinks: DocItem[] } {
     const sections: DocSection[] = [];
+    const quickLinks: DocItem[] = [];
     let currentSection: DocSection | null = null;
     let inQuickLinks = false;
-    const quickLinks: DocItem[] = [];
 
-    const lines = content.split('\n');
-    for (const line of lines) {
+    content.split('\n').forEach((line) => {
       const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('# ')) continue;
+      if (!trimmed || trimmed.startsWith('# ')) return;
 
       if (trimmed.startsWith('## ')) {
-        const headerMatch = trimmed.match(/^## (.*?)(?:\s*\{(.*)\})?$/);
-        if (headerMatch) {
-          const title = headerMatch[1].trim();
-          const metadata = this.parseMetadata(headerMatch[2]);
+        const [, title, metaStr] = trimmed.match(/^## (.*?)(?:\s*\{(.*)\})?$/) || [];
+        if (!title) return;
 
-          if (title === 'Quick Links') {
-            inQuickLinks = true;
-            currentSection = null;
-          } else {
-            inQuickLinks = false;
-            currentSection = {
-              title,
-              icon: metadata['icon'] || 'folder',
-              description: metadata['description'] || '',
-              items: [],
-            };
-            sections.push(currentSection);
-          }
-        }
-        continue;
-      }
-
-      if (trimmed.startsWith('- ')) {
-        const itemMatch = trimmed.match(/^- \[(.*?)\]\((.*?)\)(?:\s*\{(.*)\})?$/);
-        if (itemMatch) {
-          const title = itemMatch[1].trim();
-          const pathOrUrl = itemMatch[2].trim();
-          const metadata = this.parseMetadata(itemMatch[3]);
-
-          const item: DocItem = {
-            title,
-            icon: metadata['icon'],
-            description: metadata['description'],
-            isExternal: pathOrUrl.startsWith('http'),
-            url: pathOrUrl.startsWith('http') ? pathOrUrl : undefined,
-            assetPath: pathOrUrl.startsWith('http') ? undefined : pathOrUrl,
-            type: metadata['type'] as 'primary' | 'accent' | 'warn' | 'basic',
+        if (title.trim() === 'Quick Links') {
+          inQuickLinks = true;
+          currentSection = null;
+        } else {
+          inQuickLinks = false;
+          currentSection = {
+            title: title.trim(),
+            icon: this.parseMetadata(metaStr)['icon'] || 'folder',
+            description: this.parseMetadata(metaStr)['description'] || '',
+            items: [],
           };
-
-          if (inQuickLinks) {
-            quickLinks.push(item);
-          } else if (currentSection) {
-            currentSection.items.push(item);
-          }
+          sections.push(currentSection);
         }
+      } else if (trimmed.startsWith('- ')) {
+        const [, title, pathOrUrl, metaStr] =
+          trimmed.match(/^- \[(.*?)\]\((.*?)\)(?:\s*\{(.*)\})?$/) || [];
+        if (!title) return;
+
+        const metadata = this.parseMetadata(metaStr);
+        const item: DocItem = {
+          title: title.trim(),
+          icon: metadata['icon'],
+          description: metadata['description'],
+          isExternal: pathOrUrl.startsWith('http'),
+          url: pathOrUrl.startsWith('http') ? pathOrUrl : undefined,
+          assetPath: pathOrUrl.startsWith('http') ? undefined : pathOrUrl,
+          type: metadata['type'] as 'primary' | 'accent' | 'warn' | 'basic',
+        };
+
+        if (inQuickLinks) quickLinks.push(item);
+        else if (currentSection) currentSection.items.push(item);
       }
-    }
+    });
+
     return { sections, quickLinks };
   }
 
-  private parseMetadata(metaStr: string | undefined): Record<string, string> {
+  private parseMetadata(metaStr?: string): Record<string, string> {
     const meta: Record<string, string> = {};
     if (!metaStr) return meta;
 
-    const pairs = metaStr.split(',');
-    for (const pair of pairs) {
-      const parts = pair.split('=');
-      const key = parts[0]?.trim();
-      const value = parts[1]?.trim();
+    metaStr.split(',').forEach((pair) => {
+      const [key, value] = pair.split('=').map((s) => s.trim());
       if (key && value) {
         meta[key] = value.replace(/^["'](.*)["']$/, '$1');
       }
-    }
+    });
     return meta;
   }
 
-  selectItem(item: DocItem): void {
+  selectItem(item: DocItem, searchTerm?: string): void {
     if (item.isExternal) {
       window.open(item.url, '_blank');
       return;
@@ -181,17 +181,114 @@ export class Docs implements OnInit {
     if (!item.assetPath) return;
 
     this.selectedItem.set(item);
-    this.loadContent(item.assetPath);
+    const query = searchTerm || this.searchQuery();
+    this.searchQuery.set(''); // Clear search on item selection
+    this.loadContent(item.assetPath, query);
   }
 
-  private loadContent(path: string): void {
+  private startIndexing(): void {
+    const allItems = this.docSections()
+      .flatMap((s) => s.items)
+      .filter((i) => i.assetPath);
+    if (!allItems.length) return;
+
+    this.isIndexing.set(true);
+    let indexed = 0;
+
+    allItems.forEach((item) => {
+      this.wikiService.fetchPage(item.assetPath!).subscribe({
+        next: (content) => {
+          this.searchIndex.set(item.assetPath!, content.toLowerCase());
+          if (++indexed === allItems.length) this.isIndexing.set(false);
+        },
+        error: () => {
+          if (++indexed === allItems.length) this.isIndexing.set(false);
+        },
+      });
+    });
+  }
+
+  onSearch(query: string): void {
+    this.searchQuery.set(query);
+    const q = query.toLowerCase().trim();
+
+    if (q.length < 2) {
+      this.searchHits.set([]);
+      return;
+    }
+
+    const hits: SearchHit[] = [];
+    this.docSections().forEach((section) => {
+      section.items.forEach((item) => {
+        const content = item.assetPath ? this.searchIndex.get(item.assetPath) : '';
+        const titleMatch = item.title.toLowerCase().includes(q);
+        const descMatch = item.description?.toLowerCase().includes(q);
+        const contentMatch = content?.includes(q);
+
+        if (titleMatch || descMatch || contentMatch) {
+          hits.push({
+            item,
+            sectionTitle: section.title,
+            snippet: this.highlightMatch(
+              contentMatch ? this.extractSnippet(content!, q) : item.description || '',
+              query,
+            ),
+            matchType: titleMatch ? 'title' : descMatch ? 'description' : 'content',
+          });
+        }
+      });
+    });
+    this.searchHits.set(hits);
+  }
+
+  private extractSnippet(content: string, query: string): string {
+    const idx = content.indexOf(query);
+    const start = Math.max(0, idx - 40);
+    const end = Math.min(content.length, idx + query.length + 60);
+    return (
+      (start > 0 ? '...' : '') +
+      content
+        .substring(start, end)
+        .replace(/[#*`_]/g, '')
+        .replace(/\s+/g, ' ') +
+      (end < content.length ? '...' : '')
+    );
+  }
+
+  private highlightMatch(text: string, query: string): SafeHtml {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, 'gi');
+    const highlighted = text.replace(regex, '<mark>$1</mark>');
+    return this.sanitizer.bypassSecurityTrustHtml(highlighted);
+  }
+
+  private loadContent(path: string, searchTerm?: string): void {
     this.loading.set(true);
     this.wikiService.fetchPage(path).subscribe({
       next: (markdown) => {
-        const html = marked.parse(markdown) as string;
+        let html = marked.parse(markdown) as string;
+
+        // Highlight search term in the main content if provided
+        if (searchTerm && searchTerm.length >= 2) {
+          const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp(`(${escaped})`, 'gi');
+          html = html
+            .split(/(<[^>]*>)/)
+            .map((part) =>
+              part.startsWith('<')
+                ? part
+                : part.replace(regex, '<mark class="content-highlight">$1</mark>'),
+            )
+            .join('');
+        }
+
         this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(html));
         this.loading.set(false);
-        this.scrollToTop();
+
+        // Wait for rendering then scroll
+        setTimeout(() => {
+          this.scrollToMatchOrTop(searchTerm);
+        }, 100);
       },
       error: (err) => {
         console.error('Error loading markdown:', err);
@@ -203,6 +300,21 @@ export class Docs implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  private scrollToMatchOrTop(searchTerm?: string): void {
+    let found = false;
+    if (searchTerm && this.contentArea) {
+      const highlights = this.contentArea.nativeElement.querySelectorAll('.content-highlight');
+      if (highlights.length > 0) {
+        highlights[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        found = true;
+      }
+    }
+
+    if (!found) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }
 
   private attachLinkListeners(): void {

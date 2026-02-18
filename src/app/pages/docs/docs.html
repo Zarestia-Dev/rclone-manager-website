@@ -2,6 +2,42 @@
   <div class="docs-detail-layout">
     <!-- Sidebar Navigation -->
     <aside class="docs-sidebar animate-fade-in-right">
+      <div class="sidebar-search">
+        <mat-icon>search</mat-icon>
+        <input type="text" placeholder="Search documentation..." [value]="searchQuery()"
+          (input)="onSearch($any($event.target).value)" aria-label="Search documentation">
+        @if (isIndexing()) {
+          <mat-spinner diameter="16" class="search-spinner"></mat-spinner>
+        }
+
+        <!-- Advanced Search Results Overlay -->
+        @if (searchQuery().length >= 2) {
+          <div class="search-results-overlay animate-fade-in-up">
+            <div class="results-header">
+              <span>{{ searchHits().length }} Results Found</span>
+              <button mat-icon-button (click)="onSearch('')"><mat-icon>close</mat-icon></button>
+            </div>
+            
+            <div class="results-list">
+              @for (hit of searchHits(); track hit.item.title) {
+                <div class="search-hit" (click)="selectItem(hit.item, searchQuery())" 
+                  (keydown.enter)="selectItem(hit.item, searchQuery())"
+                  tabindex="0" role="button" aria-label="Navigate to search result">
+                  <div class="hit-meta">
+                    <mat-icon>{{ hit.item.icon || 'description' }}</mat-icon>
+                    <span class="hit-section">{{ hit.sectionTitle }}</span>
+                  </div>
+                  <div class="hit-title">{{ hit.item.title }}</div>
+                  <div class="hit-snippet" [innerHTML]="hit.snippet"></div>
+                </div>
+              } @empty {
+                <div class="no-results">No matches found for "{{ searchQuery() }}"</div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
       <div class="sidebar-sections">
         @for (section of docSections(); track section.title) {
         <div class="sidebar-section">
@@ -20,8 +56,6 @@
           </div>
         </div>
         }
-
-        <mat-divider></mat-divider>
 
         <div class="sidebar-section">
           <h3 class="sidebar-section-title">Quick Links</h3>
