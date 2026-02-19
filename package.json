@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build && mkdir -p dist/cloudflare/zarestia/rclone-manager && mv dist/cloudflare/browser/* dist/cloudflare/zarestia/rclone-manager/ || true",
+    "build": "ng build --base-href /zarestia/rclone-manager/ && mkdir -p dist/cloudflare/zarestia/rclone-manager && mv dist/cloudflare/browser/* dist/cloudflare/zarestia/rclone-manager/ || true",
     "deploy": "ng deploy --base-href /rclone-manager/ --repo https://github.com/Zarestia-Dev/rclone-manager.git",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
