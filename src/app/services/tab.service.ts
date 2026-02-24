@@ -1,5 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { Location } from '@angular/common';
+import { Injectable, signal } from '@angular/core';
 
 export type AppTab = 'general' | 'downloads' | 'docs';
 
@@ -7,12 +6,16 @@ export type AppTab = 'general' | 'downloads' | 'docs';
   providedIn: 'root',
 })
 export class TabService {
-  private location = inject(Location);
+  /** Reads <base href> baked in by Angular build. Returns '' in dev, '/zarestia/rclone-manager' in prod. */
+  private get basePath(): string {
+    const href = document.querySelector('base')?.getAttribute('href') ?? '/';
+    return href === '/' ? '' : href.replace(/\/$/, '');
+  }
 
   currentTab = signal<AppTab>(this.readTabFromPath());
 
   private readTabFromPath(): AppTab {
-    const path = this.location.path();
+    const path = window.location.pathname.replace(this.basePath, '');
     if (path.startsWith('/docs')) return 'docs';
     if (path.startsWith('/downloads')) return 'downloads';
     return 'general';
@@ -23,12 +26,11 @@ export class TabService {
     window.scrollTo(0, 0);
 
     if (tab === 'general') {
-      this.location.go('/');
+      history.pushState(null, '', `${this.basePath}/`);
     } else if (tab === 'downloads') {
-      this.location.go('/downloads');
+      history.pushState(null, '', `${this.basePath}/downloads`);
     } else if (tab === 'docs') {
-      // Docs will update the path itself when a page is selected
-      this.location.go('/docs');
+      history.pushState(null, '', `${this.basePath}/docs`);
     }
   }
 }

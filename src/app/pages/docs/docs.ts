@@ -1,5 +1,4 @@
 import { Component, inject, signal, ElementRef, ViewChild, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -26,7 +25,12 @@ import { DocService, DocItem, SearchHit } from '../../services/doc.service';
 export class Docs implements OnInit {
   public docService = inject(DocService);
   private sanitizer = inject(DomSanitizer);
-  private location = inject(Location);
+
+  /** Reads <base href> baked in by Angular build. Returns '' in dev, '/zarestia/rclone-manager' in prod. */
+  private get basePath(): string {
+    const href = document.querySelector('base')?.getAttribute('href') ?? '/';
+    return href === '/' ? '' : href.replace(/\/$/, '');
+  }
 
   // Re-expose signals from service for easier template access if needed,
   // though we can also use public docService.
@@ -71,7 +75,7 @@ export class Docs implements OnInit {
         this.docService.docSections.set(data.sections);
         this.docService.quickLinks.set(data.quickLinks);
 
-        const pathParts = this.location.path().split('/');
+        const pathParts = window.location.pathname.replace(this.basePath, '').split('/');
         const pageSlug = pathParts.length >= 3 ? pathParts[2] : '';
         const restoredItem = pageSlug
           ? this.docService.findItemBySlug(data.sections, pageSlug)
@@ -104,11 +108,11 @@ export class Docs implements OnInit {
 
   private updateDeepLink(item: DocItem): void {
     const slug = this.docService.itemSlug(item);
-    const pathParts = this.location.path().split('/');
+    const pathParts = window.location.pathname.replace(this.basePath, '').split('/');
     const currentSlug = pathParts.length >= 3 ? pathParts[2] : '';
     const hash = slug === currentSlug ? window.location.hash : '';
 
-    this.location.go(`/docs/${slug}${hash}`);
+    history.pushState(null, '', `${this.basePath}/docs/${slug}${hash}`);
   }
 
   onSearch(query: string): void {
@@ -243,8 +247,8 @@ export class Docs implements OnInit {
     const target = this.contentArea?.nativeElement.querySelector(`#${CSS.escape(id)}`);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      const currentPath = this.location.path(false); // path without hash
-      this.location.go(currentPath, '', id);
+      const pathWithoutHash = window.location.pathname;
+      history.pushState(null, '', `${pathWithoutHash}#${id}`);
     }
   }
 
