@@ -1,0 +1,162 @@
+import { Injectable, inject, signal } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { map, shareReplay } from 'rxjs';
+import { WikiService } from './wiki.service';
+
+export interface DocItem {
+  title: string;
+  description?: string;
+  url?: string;
+  assetPath?: string;
+  isExternal?: boolean;
+  icon?: string;
+  type?: 'primary' | 'accent' | 'warn' | 'basic';
+}
+
+export interface DocSection {
+  title: string;
+  icon: string;
+  description: string;
+  items: DocItem[];
+}
+
+export interface SearchHit {
+  item: DocItem;
+  sectionTitle: string;
+  snippet: SafeHtml;
+  matchType: 'title' | 'content' | 'description';
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class DocService {
+  private wikiService = inject(WikiService);
+  private sanitizer = inject(DomSanitizer);
+
+  docSections = signal<DocSection[]>([]);
+  quickLinks = signal<DocItem[]>([]);
+  searchIndex = new Map<string, string>(); // assetPath -> content
+  isIndexing = signal(false);
+
+  // Cache summary to avoid redundant fetches
+  private summary$ = this.wikiService.fetchSidebar().pipe(
+    map((content) => this.parseSummary(content)),
+    shareReplay(1),
+  );
+
+  loadSummary() {
+    return this.summary$;
+  }
+
+  fetchPage(path: string) {
+    return this.wikiService.fetchPage(path);
+  }
+
+  startIndexing(sections: DocSection[]) {
+    const allItems = sections.flatMap((s) => s.items).filter((i) => i.assetPath);
+    if (!allItems.length || this.isIndexing()) return;
+
+    this.isIndexing.set(true);
+    let indexed = 0;
+
+    allItems.forEach((item) => {
+      this.wikiService.fetchPage(item.assetPath!).subscribe({
+        next: (content) => {
+          this.searchIndex.set(item.assetPath!, content.toLowerCase());
+          if (++indexed === allItems.length) this.isIndexing.set(false);
+        },
+        error: () => {
+          if (++indexed === allItems.length) this.isIndexing.set(false);
+        },
+      });
+    });
+  }
+
+  private parseSummary(content: string): { sections: DocSection[]; quickLinks: DocItem[] } {
+    const sections: DocSection[] = [];
+    const quickLinks: DocItem[] = [];
+    let currentSection: DocSection | null = null;
+    let inQuickLinks = false;
+
+    content.split('\n').forEach((line) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith('# ')) return;
+
+      if (trimmed.startsWith('## ')) {
+        const [, title, metaStr] = trimmed.match(/^## (.*?)(?:\s*\{(.*)\})?$/) || [];
+        if (!title) return;
+
+        if (title.trim() === 'Quick Links') {
+          inQuickLinks = true;
+          currentSection = null;
+        } else {
+          inQuickLinks = false;
+          currentSection = {
+            title: title.trim(),
+            icon: this.parseMetadata(metaStr)['icon'] || 'folder',
+            description: this.parseMetadata(metaStr)['description'] || '',
+            items: [],
+          };
+          sections.push(currentSection);
+        }
+      } else if (trimmed.startsWith('- ')) {
+        const [, title, pathOrUrl, metaStr] =
+          trimmed.match(/^- \[(.*?)\]\((.*?)\)(?:\s*\{(.*)\})?$/) || [];
+        if (!title) return;
+
+        const metadata = this.parseMetadata(metaStr);
+        const item: DocItem = {
+          title: title.trim(),
+          icon: metadata['icon'],
+          description: metadata['description'],
+          isExternal: pathOrUrl.startsWith('http'),
+          url: pathOrUrl.startsWith('http') ? pathOrUrl : undefined,
+          assetPath: pathOrUrl.startsWith('http') ? undefined : pathOrUrl,
+          type: metadata['type'] as 'primary' | 'accent' | 'warn' | 'basic',
+        };
+
+        if (inQuickLinks) quickLinks.push(item);
+        else if (currentSection) currentSection.items.push(item);
+      }
+    });
+
+    return { sections, quickLinks };
+  }
+
+  private parseMetadata(metaStr?: string): Record<string, string> {
+    const meta: Record<string, string> = {};
+    if (!metaStr) return meta;
+
+    metaStr.split(',').forEach((pair) => {
+      const [key, value] = pair.split('=').map((s) => s.trim());
+      if (key && value) {
+        meta[key] = value.replace(/^["'](.*)["']$/, '$1');
+      }
+    });
+    return meta;
+  }
+
+  itemSlug(item: DocItem): string {
+    if (item.assetPath) {
+      return item.assetPath.split('/').pop()?.replace(/\.md$/i, '') ?? this.titleToSlug(item.title);
+    }
+    return this.titleToSlug(item.title);
+  }
+
+  titleToSlug(title: string): string {
+    return title
+      .toLowerCase()
+      .replace(/\s+/g, '-')
+      .replace(/[^a-z0-9-]/g, '');
+  }
+
+  findItemBySlug(sections: DocSection[], slug: string): DocItem | null {
+    for (const section of sections) {
+      for (const item of section.items) {
+        if (this.itemSlug(item) === slug) return item;
+      }
+    }
+    return null;
+  }
+}

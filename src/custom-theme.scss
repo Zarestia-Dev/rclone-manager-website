@@ -714,6 +714,14 @@ body {
   font-family: system-ui, Inter, sans-serif;
   overflow: auto;
 
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: var(--divider-radius);
+  }
+
   // Headless Mode Overrides - Orange/Yellow Theme
   &.mode-headless {
     --primary-color: var(--gnome-orange-3);
@@ -1180,6 +1188,16 @@ mat-accordion {
   word-wrap: break-word;
   color: var(--window-fg-color);
 
+  .heading-anchor {
+    opacity: 0;
+    margin-right: 0.4em;
+    font-size: 0.85em;
+    transition: var(--transition-fast);
+    &:hover {
+      opacity: 1 !important;
+    }
+  }
+
   // Headings
   h1,
   h2,
@@ -1192,6 +1210,10 @@ mat-accordion {
     font-weight: 600;
     line-height: 1.25;
     color: var(--window-fg-color);
+
+    &:hover .heading-anchor {
+      opacity: 1;
+    }
   }
 
   h1 {
@@ -1289,6 +1311,45 @@ mat-accordion {
       border: 0;
       color: var(--window-fg-color);
     }
+
+    button {
+      position: absolute;
+      top: var(--space-xs);
+      right: var(--space-xs);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-xs);
+      cursor: pointer;
+      user-select: none;
+      transition:
+        opacity 0.15s,
+        background 0.15s,
+        color 0.15s;
+      color: var(--dim-color);
+
+      span {
+        font-size: 1rem;
+        width: 1rem;
+        height: 1rem;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--window-fg-color);
+      }
+
+      &.copied {
+        color: var(--primary-color);
+        box-shadow: 0 0 0 1px var(--primary-color);
+        background: rgba(var(--primary-color-rgb), 0.12);
+      }
+    }
   }
 
   // Blockquotes
@@ -1384,7 +1445,6 @@ mat-accordion {
 // ============================================================================
 
 .page-container {
-  max-width: 80vw;
   width: 100%;
   margin: 0 auto;
   padding: 2rem;
@@ -1392,8 +1452,7 @@ mat-accordion {
 
   // Ensure content doesn't touch edges on small screens
   @media (max-width: 768px) {
-    max-width: 95vw;
-    padding: 1.5rem;
+    padding: 1rem;
   }
 }
 

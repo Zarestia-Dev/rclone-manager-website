@@ -2,39 +2,41 @@
   <div class="docs-detail-layout">
     <!-- Sidebar Navigation -->
     <aside class="docs-sidebar animate-fade-in-right">
-      <div class="sidebar-search">
-        <mat-icon>search</mat-icon>
-        <input type="text" placeholder="Search documentation..." [value]="searchQuery()"
-          (input)="onSearch($any($event.target).value)" aria-label="Search documentation">
-        @if (isIndexing()) {
-          <mat-spinner diameter="16" class="search-spinner"></mat-spinner>
-        }
 
-        <!-- Advanced Search Results Overlay -->
+      <!-- Search -->
+      <div class="sidebar-search-wrap">
+        <div class="sidebar-search">
+          <mat-icon>search</mat-icon>
+          <input type="text" placeholder="Search docs..." [value]="searchQuery()"
+            (input)="onSearch($any($event.target).value)" aria-label="Search documentation">
+          @if (isIndexing()) {
+          <mat-spinner diameter="14" class="search-spinner"></mat-spinner>
+          }
+        </div>
+
+        <!-- Results overlay — sibling not child, avoids height clip -->
         @if (searchQuery().length >= 2) {
-          <div class="search-results-overlay animate-fade-in-up">
-            <div class="results-header">
-              <span>{{ searchHits().length }} Results Found</span>
-              <button mat-icon-button (click)="onSearch('')"><mat-icon>close</mat-icon></button>
-            </div>
-            
-            <div class="results-list">
-              @for (hit of searchHits(); track hit.item.title) {
-                <div class="search-hit" (click)="selectItem(hit.item, searchQuery())" 
-                  (keydown.enter)="selectItem(hit.item, searchQuery())"
-                  tabindex="0" role="button" aria-label="Navigate to search result">
-                  <div class="hit-meta">
-                    <mat-icon>{{ hit.item.icon || 'description' }}</mat-icon>
-                    <span class="hit-section">{{ hit.sectionTitle }}</span>
-                  </div>
-                  <div class="hit-title">{{ hit.item.title }}</div>
-                  <div class="hit-snippet" [innerHTML]="hit.snippet"></div>
-                </div>
-              } @empty {
-                <div class="no-results">No matches found for "{{ searchQuery() }}"</div>
-              }
-            </div>
+        <div class="search-results-overlay animate-fade-in-up">
+          <div class="results-header">
+            <span>{{ searchHits().length }} Result{{ searchHits().length !== 1 ? 's' : '' }}</span>
+            <button mat-icon-button (click)="onSearch('')"><mat-icon>close</mat-icon></button>
           </div>
+          <div class="results-list">
+            @for (hit of searchHits(); track hit.item.title) {
+            <div class="search-hit" (click)="selectItem(hit.item, searchQuery())"
+              (keydown.enter)="selectItem(hit.item, searchQuery())" tabindex="0" role="button">
+              <div class="hit-meta">
+                <mat-icon>{{ hit.item.icon || 'description' }}</mat-icon>
+                <span class="hit-section">{{ hit.sectionTitle }}</span>
+              </div>
+              <div class="hit-title">{{ hit.item.title }}</div>
+              <div class="hit-snippet" [innerHTML]="hit.snippet"></div>
+            </div>
+            } @empty {
+            <div class="no-results">No matches for "{{ searchQuery() }}"</div>
+            }
+          </div>
+        </div>
         }
       </div>
 
@@ -74,15 +76,16 @@
 
     <!-- Content Area -->
     <div class="docs-content-wrapper">
-      <div class="docs-content-card animate-fade-in-up">
-        @if (loading()) {
-        <div class="loading-overlay">
-          <mat-spinner diameter="48"></mat-spinner>
-          <p>Loading Documentation...</p>
-        </div>
-        }
+      <div class="docs-content-main">
+        <div class="docs-content-card animate-fade-in-up">
+          @if (loading()) {
+          <div class="loading-overlay">
+            <mat-spinner diameter="48"></mat-spinner>
+            <p>Loading Documentation...</p>
+          </div>
+          }
 
-        @if (selectedItem()) {
+          @if (selectedItem()) {
           <article class="markdown-body" [innerHTML]="renderedContent()" #contentArea></article>
 
           <mat-divider></mat-divider>
@@ -90,18 +93,39 @@
           <div class="docs-footer">
             <p>Found a mistake? Help us improve the docs!</p>
             <button mat-stroked-button
-              (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager-website/edit/master/public/docs/' + selectedItem()?.assetPath)">
+              (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager-website/blob/main/public/docs/' + selectedItem()?.assetPath)">
               <mat-icon>edit</mat-icon>
               Edit this page on GitHub
             </button>
           </div>
-        } @else {
+          } @else {
           <div class="empty-state">
             <mat-icon>description</mat-icon>
             <p>Select a topic to start reading</p>
           </div>
-        }
+          }
+        </div>
       </div>
+
+      <!-- Right Side Table of Contents -->
+      @if (toc().length > 0) {
+      <aside class="docs-toc-container animate-fade-in-right">
+        <div class="toc-card">
+          <h4 class="toc-title">
+            <mat-icon>list</mat-icon>
+            On this page
+          </h4>
+          <nav class="toc-nav">
+            @for (link of toc(); track link.id) {
+            <a href="javascript:void(0)" class="toc-link" [class.sub-item]="link.level > 2"
+              [style.padding-left.px]="(link.level - 2) * 16" (click)="scrollToSection(link.id, $event)">
+              {{ link.text }}
+            </a>
+            }
+          </nav>
+        </div>
+      </aside>
+      }
     </div>
   </div>
 </div>

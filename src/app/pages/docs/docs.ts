@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, inject, signal, ElementRef, ViewChild, OnInit } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -7,31 +7,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
-import { WikiService } from '../../services/wiki.service';
-
-export interface DocItem {
-  title: string;
-  description?: string;
-  url?: string;
-  assetPath?: string;
-  isExternal?: boolean;
-  icon?: string;
-  type?: 'primary' | 'accent' | 'warn' | 'basic';
-}
-
-export interface DocSection {
-  title: string;
-  icon: string;
-  description: string;
-  items: DocItem[];
-}
-
-export interface SearchHit {
-  item: DocItem;
-  sectionTitle: string;
-  snippet: SafeHtml;
-  matchType: 'title' | 'content' | 'description';
-}
+import { DocService, DocItem, SearchHit } from '../../services/doc.service';
 
 @Component({
   selector: 'app-docs',
@@ -47,129 +23,67 @@ export interface SearchHit {
   styleUrl: './docs.scss',
 })
 export class Docs implements OnInit {
-  private wikiService = inject(WikiService);
+  public docService = inject(DocService);
   private sanitizer = inject(DomSanitizer);
 
-  docSections = signal<DocSection[]>([]);
-  quickLinks = signal<DocItem[]>([]);
+  // Re-expose signals from service for easier template access if needed,
+  // though we can also use public docService.
+  docSections = this.docService.docSections;
+  quickLinks = this.docService.quickLinks;
+  isIndexing = this.docService.isIndexing;
 
-  // Search state
+  // Local component state
   searchQuery = signal('');
   searchHits = signal<SearchHit[]>([]);
-  isIndexing = signal(false);
-  private searchIndex = new Map<string, string>(); // assetPath -> content
-
   selectedItem = signal<DocItem | null>(null);
+  toc = signal<{ id: string; text: string; level: number }[]>([]);
   renderedContent = signal<SafeHtml>('');
   loading = signal(false);
 
   @ViewChild('contentArea') contentArea?: ElementRef;
 
   constructor() {
-    // Re-highlight and attach listeners when content changes
-    effect(() => {
-      if (this.renderedContent()) {
-        this.attachLinkListeners();
-      }
-    });
-
-    // Configure marked
     const renderer = new marked.Renderer();
-    marked.setOptions({
-      renderer,
-      breaks: true,
-      gfm: true,
-    } as Parameters<typeof marked.setOptions>[0]);
+    renderer.heading = (text: string, level: number): string => {
+      const id = text
+        .toLowerCase()
+        .replace(/<[^>]+>/g, '')
+        .replace(/[^\w\s-]/g, '')
+        .trim()
+        .replace(/\s+/g, '-');
+      return `<h${level} id="${id}"><a class="heading-anchor" href="#${id}" aria-label="Link to section">§</a>${text}</h${level}>`;
+    };
+    marked.setOptions({ renderer, breaks: true, gfm: true } as Parameters<
+      typeof marked.setOptions
+    >[0]);
   }
 
   ngOnInit(): void {
-    this.loadSummary();
+    this.loadDocs();
   }
 
-  private loadSummary(): void {
+  private loadDocs(): void {
     this.loading.set(true);
-    this.wikiService.fetchSidebar().subscribe({
-      next: (content) => {
-        const { sections, quickLinks } = this.parseSummary(content);
-        this.docSections.set(sections);
-        this.quickLinks.set(quickLinks);
+    this.docService.loadSummary().subscribe({
+      next: (data) => {
+        this.docService.docSections.set(data.sections);
+        this.docService.quickLinks.set(data.quickLinks);
 
-        // Auto-select first item (Home)
-        if (sections.length > 0 && sections[0].items.length > 0) {
-          this.selectItem(sections[0].items[0]);
-        }
+        const pathParts = window.location.pathname.split('/');
+        const pageSlug = pathParts.length >= 3 ? pathParts[2] : '';
+        const restoredItem = pageSlug
+          ? this.docService.findItemBySlug(data.sections, pageSlug)
+          : null;
+
+        const itemToSelect = restoredItem ?? (data.sections[0]?.items[0] || null);
+
+        if (itemToSelect) this.selectItem(itemToSelect);
+
         this.loading.set(false);
-        this.startIndexing();
+        this.docService.startIndexing(data.sections);
       },
-      error: (err) => {
-        console.error('Error loading documentation summary:', err);
-        this.loading.set(false);
-      },
+      error: () => this.loading.set(false),
     });
-  }
-
-  private parseSummary(content: string): { sections: DocSection[]; quickLinks: DocItem[] } {
-    const sections: DocSection[] = [];
-    const quickLinks: DocItem[] = [];
-    let currentSection: DocSection | null = null;
-    let inQuickLinks = false;
-
-    content.split('\n').forEach((line) => {
-      const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('# ')) return;
-
-      if (trimmed.startsWith('## ')) {
-        const [, title, metaStr] = trimmed.match(/^## (.*?)(?:\s*\{(.*)\})?$/) || [];
-        if (!title) return;
-
-        if (title.trim() === 'Quick Links') {
-          inQuickLinks = true;
-          currentSection = null;
-        } else {
-          inQuickLinks = false;
-          currentSection = {
-            title: title.trim(),
-            icon: this.parseMetadata(metaStr)['icon'] || 'folder',
-            description: this.parseMetadata(metaStr)['description'] || '',
-            items: [],
-          };
-          sections.push(currentSection);
-        }
-      } else if (trimmed.startsWith('- ')) {
-        const [, title, pathOrUrl, metaStr] =
-          trimmed.match(/^- \[(.*?)\]\((.*?)\)(?:\s*\{(.*)\})?$/) || [];
-        if (!title) return;
-
-        const metadata = this.parseMetadata(metaStr);
-        const item: DocItem = {
-          title: title.trim(),
-          icon: metadata['icon'],
-          description: metadata['description'],
-          isExternal: pathOrUrl.startsWith('http'),
-          url: pathOrUrl.startsWith('http') ? pathOrUrl : undefined,
-          assetPath: pathOrUrl.startsWith('http') ? undefined : pathOrUrl,
-          type: metadata['type'] as 'primary' | 'accent' | 'warn' | 'basic',
-        };
-
-        if (inQuickLinks) quickLinks.push(item);
-        else if (currentSection) currentSection.items.push(item);
-      }
-    });
-
-    return { sections, quickLinks };
-  }
-
-  private parseMetadata(metaStr?: string): Record<string, string> {
-    const meta: Record<string, string> = {};
-    if (!metaStr) return meta;
-
-    metaStr.split(',').forEach((pair) => {
-      const [key, value] = pair.split('=').map((s) => s.trim());
-      if (key && value) {
-        meta[key] = value.replace(/^["'](.*)["']$/, '$1');
-      }
-    });
-    return meta;
   }
 
   selectItem(item: DocItem, searchTerm?: string): void {
@@ -177,41 +91,27 @@ export class Docs implements OnInit {
       window.open(item.url, '_blank');
       return;
     }
-
     if (!item.assetPath) return;
 
     this.selectedItem.set(item);
     const query = searchTerm || this.searchQuery();
-    this.searchQuery.set(''); // Clear search on item selection
+    this.searchQuery.set('');
     this.loadContent(item.assetPath, query);
+    this.updateDeepLink(item);
   }
 
-  private startIndexing(): void {
-    const allItems = this.docSections()
-      .flatMap((s) => s.items)
-      .filter((i) => i.assetPath);
-    if (!allItems.length) return;
+  private updateDeepLink(item: DocItem): void {
+    const slug = this.docService.itemSlug(item);
+    const pathParts = window.location.pathname.split('/');
+    const currentSlug = pathParts.length >= 3 ? pathParts[2] : '';
+    const hash = slug === currentSlug ? window.location.hash : '';
 
-    this.isIndexing.set(true);
-    let indexed = 0;
-
-    allItems.forEach((item) => {
-      this.wikiService.fetchPage(item.assetPath!).subscribe({
-        next: (content) => {
-          this.searchIndex.set(item.assetPath!, content.toLowerCase());
-          if (++indexed === allItems.length) this.isIndexing.set(false);
-        },
-        error: () => {
-          if (++indexed === allItems.length) this.isIndexing.set(false);
-        },
-      });
-    });
+    history.pushState(null, '', `/docs/${slug}${hash}`);
   }
 
   onSearch(query: string): void {
     this.searchQuery.set(query);
     const q = query.toLowerCase().trim();
-
     if (q.length < 2) {
       this.searchHits.set([]);
       return;
@@ -220,7 +120,7 @@ export class Docs implements OnInit {
     const hits: SearchHit[] = [];
     this.docSections().forEach((section) => {
       section.items.forEach((item) => {
-        const content = item.assetPath ? this.searchIndex.get(item.assetPath) : '';
+        const content = item.assetPath ? this.docService.searchIndex.get(item.assetPath) : '';
         const titleMatch = item.title.toLowerCase().includes(q);
         const descMatch = item.description?.toLowerCase().includes(q);
         const contentMatch = content?.includes(q);
@@ -258,17 +158,14 @@ export class Docs implements OnInit {
   private highlightMatch(text: string, query: string): SafeHtml {
     if (!query) return text;
     const regex = new RegExp(`(${query})`, 'gi');
-    const highlighted = text.replace(regex, '<mark>$1</mark>');
-    return this.sanitizer.bypassSecurityTrustHtml(highlighted);
+    return this.sanitizer.bypassSecurityTrustHtml(text.replace(regex, '<mark>$1</mark>'));
   }
 
   private loadContent(path: string, searchTerm?: string): void {
     this.loading.set(true);
-    this.wikiService.fetchPage(path).subscribe({
+    this.docService.fetchPage(path).subscribe({
       next: (markdown) => {
         let html = marked.parse(markdown) as string;
-
-        // Highlight search term in the main content if provided
         if (searchTerm && searchTerm.length >= 2) {
           const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
           const regex = new RegExp(`(${escaped})`, 'gi');
@@ -281,25 +178,43 @@ export class Docs implements OnInit {
             )
             .join('');
         }
-
         this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(html));
         this.loading.set(false);
-
-        // Wait for rendering then scroll
+        this.extractToc();
         setTimeout(() => {
+          this.attachLinkListeners();
+          this.attachCopyButtons();
           this.scrollToMatchOrTop(searchTerm);
         }, 100);
       },
-      error: (err) => {
-        console.error('Error loading markdown:', err);
+      error: () => {
         this.renderedContent.set(
           this.sanitizer.bypassSecurityTrustHtml(
-            '<p class="error-text">Error loading documentation content.</p>',
+            '<p class="error-text">Error loading content.</p>',
           ),
         );
         this.loading.set(false);
       },
     });
+  }
+
+  private extractToc(): void {
+    // We use a small delay to ensure content is in DOM.
+    setTimeout(() => {
+      if (!this.contentArea) return;
+      const headings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
+      const tocItems: { id: string; text: string; level: number }[] = [];
+      headings.forEach((h: HTMLElement) => {
+        if (h.id) {
+          tocItems.push({
+            id: h.id,
+            text: h.innerText.replace('§', '').trim(),
+            level: parseInt(h.tagName.substring(1)),
+          });
+        }
+      });
+      this.toc.set(tocItems);
+    }, 0);
   }
 
   private scrollToMatchOrTop(searchTerm?: string): void {
@@ -311,19 +226,70 @@ export class Docs implements OnInit {
         found = true;
       }
     }
-
-    if (!found) {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!found && window.location.hash && this.contentArea) {
+      const target = this.contentArea.nativeElement.querySelector(window.location.hash);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        found = true;
+      }
     }
+    if (!found) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  scrollToSection(id: string, event?: Event): void {
+    if (event) event.preventDefault();
+    const target = this.contentArea?.nativeElement.querySelector(`#${CSS.escape(id)}`);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const url = new URL(window.location.href);
+      url.hash = id;
+      history.pushState(null, '', url.toString());
+    }
+  }
+
+  private attachCopyButtons(): void {
+    if (!this.contentArea) return;
+    const preBlocks = this.contentArea.nativeElement.querySelectorAll('pre');
+    preBlocks.forEach((pre: HTMLElement) => {
+      // Avoid adding twice if content is reloaded
+      if (pre.querySelector('.code-copy-btn')) return;
+
+      pre.style.position = 'relative';
+
+      const btn = document.createElement('button');
+      btn.className = 'code-copy-btn';
+      btn.title = 'Copy code';
+      btn.innerHTML = '<span class="material-icons">content_copy</span>';
+
+      btn.addEventListener('click', async () => {
+        const code = pre.querySelector('code');
+        const text = code?.innerText ?? pre.innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.innerHTML = '<span class="material-icons">check</span>';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.innerHTML = '<span class="material-icons">content_copy</span>';
+            btn.classList.remove('copied');
+          }, 2000);
+        } catch {
+          // clipboard not available (non-https)
+        }
+      });
+
+      pre.appendChild(btn);
+    });
   }
 
   private attachLinkListeners(): void {
     if (!this.contentArea) return;
-
     const links = this.contentArea.nativeElement.querySelectorAll('a');
     links.forEach((link: HTMLAnchorElement) => {
       const href = link.getAttribute('href');
-      if (href && !href.startsWith('http') && !href.startsWith('mailto') && !href.startsWith('#')) {
+      if (!href) return;
+      if (href.startsWith('#')) {
+        link.addEventListener('click', (event) => this.scrollToSection(href.slice(1), event));
+      } else if (!href.startsWith('http') && !href.startsWith('mailto')) {
         link.addEventListener('click', (event) => {
           event.preventDefault();
           this.handleInternalLink(href);
@@ -334,7 +300,6 @@ export class Docs implements OnInit {
 
   private handleInternalLink(href: string): void {
     const decodedHref = decodeURIComponent(href).replace(/-/g, ' ');
-
     for (const section of this.docSections()) {
       const item = section.items.find((i: DocItem) => {
         if (!i.assetPath) return false;
@@ -349,11 +314,6 @@ export class Docs implements OnInit {
         return;
       }
     }
-    console.warn('Could not resolve internal link:', href);
-  }
-
-  private scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   openExternalLink(url: string | undefined): void {
