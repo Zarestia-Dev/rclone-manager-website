@@ -1,4 +1,5 @@
 import { Component, inject, signal, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -25,6 +26,7 @@ import { DocService, DocItem, SearchHit } from '../../services/doc.service';
 export class Docs implements OnInit {
   public docService = inject(DocService);
   private sanitizer = inject(DomSanitizer);
+  private location = inject(Location);
 
   // Re-expose signals from service for easier template access if needed,
   // though we can also use public docService.
@@ -69,7 +71,7 @@ export class Docs implements OnInit {
         this.docService.docSections.set(data.sections);
         this.docService.quickLinks.set(data.quickLinks);
 
-        const pathParts = window.location.pathname.split('/');
+        const pathParts = this.location.path().split('/');
         const pageSlug = pathParts.length >= 3 ? pathParts[2] : '';
         const restoredItem = pageSlug
           ? this.docService.findItemBySlug(data.sections, pageSlug)
@@ -102,11 +104,11 @@ export class Docs implements OnInit {
 
   private updateDeepLink(item: DocItem): void {
     const slug = this.docService.itemSlug(item);
-    const pathParts = window.location.pathname.split('/');
+    const pathParts = this.location.path().split('/');
     const currentSlug = pathParts.length >= 3 ? pathParts[2] : '';
     const hash = slug === currentSlug ? window.location.hash : '';
 
-    history.pushState(null, '', `/docs/${slug}${hash}`);
+    this.location.go(`/docs/${slug}${hash}`);
   }
 
   onSearch(query: string): void {
@@ -241,9 +243,8 @@ export class Docs implements OnInit {
     const target = this.contentArea?.nativeElement.querySelector(`#${CSS.escape(id)}`);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      const url = new URL(window.location.href);
-      url.hash = id;
-      history.pushState(null, '', url.toString());
+      const currentPath = this.location.path(false); // path without hash
+      this.location.go(currentPath, '', id);
     }
   }
 

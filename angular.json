@@ -60,6 +60,7 @@
                   "maximumError": "15kB"
                 }
               ],
+              "baseHref": "/zarestia/rclone-manager/",
               "outputHashing": "all",
               "optimization": {
                 "scripts": true,

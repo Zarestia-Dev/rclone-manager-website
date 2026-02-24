@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { Location } from '@angular/common';
 
 export type AppTab = 'general' | 'downloads' | 'docs';
 
@@ -6,10 +7,12 @@ export type AppTab = 'general' | 'downloads' | 'docs';
   providedIn: 'root',
 })
 export class TabService {
+  private location = inject(Location);
+
   currentTab = signal<AppTab>(this.readTabFromPath());
 
   private readTabFromPath(): AppTab {
-    const path = window.location.pathname;
+    const path = this.location.path();
     if (path.startsWith('/docs')) return 'docs';
     if (path.startsWith('/downloads')) return 'downloads';
     return 'general';
@@ -20,12 +23,12 @@ export class TabService {
     window.scrollTo(0, 0);
 
     if (tab === 'general') {
-      history.pushState(null, '', '/');
+      this.location.go('/');
     } else if (tab === 'downloads') {
-      history.pushState(null, '', '/downloads');
+      this.location.go('/downloads');
     } else if (tab === 'docs') {
       // Docs will update the path itself when a page is selected
-      history.pushState(null, '', '/docs');
+      this.location.go('/docs');
     }
   }
 }
