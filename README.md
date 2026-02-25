@@ -69,6 +69,7 @@ src/
 ## 🎨 Theme
 
 The website uses the same custom Adwaita theme as the RClone Manager desktop application, including:
+
 - Custom color palette (Green primary, Blue accent)
 - Custom spacing and border radius scales
 - Light/dark theme support
@@ -78,19 +79,23 @@ The website uses the same custom Adwaita theme as the RClone Manager desktop app
 
 The site is automatically deployed to GitHub Pages when changes are pushed to the `main` branch via GitHub Actions.
 
+## 🤝 Contributing
+
+We welcome contributions of all kinds! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to get started, especially regarding documentation and our custom icon system.
+
 ## 📝 Adding Content
 
 ### Docs Page
-Edit `src/app/pages/docs/docs.html` to add documentation content.
 
-### Downloads Page
-Edit `src/app/pages/downloads/downloads.html` to add download links.
+Documentation is managed via Markdown files in the `public/docs/` directory.
 
-### FAQ Page
-Edit `src/app/pages/faq/faq.html` to add FAQ content.
+- Edit existing `.md` files or add new ones.
+- Update `public/docs/sidebar.md` to update the navigation menu.
+- Use `[[icon:name]]` syntax for inline Material Icons (see [CONTRIBUTING.md](CONTRIBUTING.md) for details).
 
-### Contact Page
-Edit `src/app/pages/contact/contact.html` to add contact information.
+### Static Pages
+
+For other pages, edit the corresponding components in `src/app/pages/`.
 
 ## 📄 License
 

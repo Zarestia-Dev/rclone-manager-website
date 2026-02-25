@@ -53,6 +53,54 @@ export class DocService {
     return this.wikiService.fetchPage(path);
   }
 
+  search(query: string): SearchHit[] {
+    const q = query.toLowerCase().trim();
+    if (q.length < 2) return [];
+
+    const hits: SearchHit[] = [];
+    this.docSections().forEach((section) => {
+      section.items.forEach((item) => {
+        const content = item.assetPath ? this.searchIndex.get(item.assetPath) : '';
+        const titleMatch = item.title.toLowerCase().includes(q);
+        const descMatch = item.description?.toLowerCase().includes(q);
+        const contentMatch = content?.includes(q);
+
+        if (titleMatch || descMatch || contentMatch) {
+          hits.push({
+            item,
+            sectionTitle: section.title,
+            snippet: this.highlightMatch(
+              contentMatch ? this.extractSnippet(content!, q) : item.description || '',
+              query,
+            ),
+            matchType: titleMatch ? 'title' : descMatch ? 'description' : 'content',
+          });
+        }
+      });
+    });
+    return hits;
+  }
+
+  private extractSnippet(content: string, query: string): string {
+    const idx = content.indexOf(query);
+    const start = Math.max(0, idx - 40);
+    const end = Math.min(content.length, idx + query.length + 60);
+    return (
+      (start > 0 ? '...' : '') +
+      content
+        .substring(start, end)
+        .replace(/[#*`_]/g, '')
+        .replace(/\s+/g, ' ') +
+      (end < content.length ? '...' : '')
+    );
+  }
+
+  private highlightMatch(text: string, query: string): SafeHtml {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, 'gi');
+    return this.sanitizer.bypassSecurityTrustHtml(text.replace(regex, '<mark>$1</mark>'));
+  }
+
   startIndexing(sections: DocSection[]) {
     const allItems = sections.flatMap((s) => s.items).filter((i) => i.assetPath);
     if (!allItems.length || this.isIndexing()) return;

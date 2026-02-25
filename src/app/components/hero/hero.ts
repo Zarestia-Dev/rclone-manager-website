@@ -4,10 +4,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { ModeService } from '../../services/mode.service';
 import { HERO_CONTENT } from '../../constants/hero.constants';
+import { AnimatedLogoComponent } from '../animated-logo/animated-logo';
 
 @Component({
   selector: 'app-hero',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule, AnimatedLogoComponent],
   templateUrl: './hero.html',
   styleUrl: './hero.scss',
 })

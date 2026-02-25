@@ -27,8 +27,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: $size * 2; // Usually padding creates size, but this is a base
-  height: $size * 2;
+  width: calc(#{$size} * 2);
+  height: calc(#{$size} * 2);
 
   mat-icon {
     color: var(--primary-color);
@@ -46,4 +46,15 @@
   @media (max-width: 768px) {
     margin-bottom: var(--space-3xl, 3rem);
   }
+}
+
+// Sticky layout container
+@mixin sticky-panel($top: 90px, $width: var(--sidebar-width)) {
+  width: $width;
+  flex-shrink: 0;
+  position: sticky;
+  top: $top;
+  max-height: calc(100dvh - #{$top} - var(--space-xl));
+  display: flex;
+  flex-direction: column;
 }

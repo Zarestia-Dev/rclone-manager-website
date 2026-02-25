@@ -1,9 +1,5 @@
 @use '../../../styles/mixins' as *;
 
-.downloads-header {
-  text-align: center;
-}
-
 // Loading and Error States
 .loading-section,
 .error-section {
@@ -23,7 +19,7 @@
         justify-content: center;
         gap: var(--space-md);
         text-align: center;
-        min-height: 12.5rem; // 200px
+        min-height: 200px;
 
         mat-spinner {
           margin-bottom: var(--space-xs);
@@ -39,14 +35,14 @@
         p {
           color: var(--text-muted);
           margin: 0;
-          font-size: 0.95rem;
-          max-width: 25rem; // 400px
+          font-size: var(--font-size-md);
+          max-width: 400px;
         }
 
         .error-icon {
-          font-size: 3rem !important;
-          width: 3rem !important;
-          height: 3rem !important;
+          font-size: var(--icon-size-xl) !important;
+          width: var(--icon-size-xl) !important;
+          height: var(--icon-size-xl) !important;
           color: var(--warn-color);
           margin-bottom: var(--space-xs);
         }
@@ -100,7 +96,7 @@
       .version-date {
         color: var(--text-muted);
         margin: 0 0 var(--space-md) 0;
-        font-size: 0.95rem;
+        font-size: var(--font-size-md);
       }
 
       .version-highlights {
@@ -117,9 +113,9 @@
 
           li {
             color: var(--window-fg-color);
-            font-size: 0.9rem;
+            font-size: var(--font-size-md);
             line-height: 1.5;
-            margin-bottom: 0.25rem;
+            margin-bottom: var(--space-xxs);
           }
         }
       }
@@ -141,12 +137,12 @@
     align-items: center;
     gap: 0.25rem;
     color: var(--text-muted);
-    font-size: 0.85rem;
+    font-size: var(--font-size-sm);
 
     mat-icon {
-      font-size: 1rem;
-      width: 1rem;
-      height: 1rem;
+      font-size: var(--icon-size-sm);
+      width: var(--icon-size-sm);
+      height: var(--icon-size-sm);
       color: var(--primary-color);
     }
   }
@@ -162,7 +158,10 @@
   margin-bottom: var(--section-gap);
 
   .platforms-grid {
-    @include grid-responsive(21.875rem, var(--space-2xl)); // 350px
+    @include grid-responsive(
+      min(var(--icon-container-size) * 5.5, 100%),
+      var(--space-2xl)
+    ); // ~350px
     align-items: start;
 
     @media (max-width: 768px) {
@@ -178,7 +177,7 @@
       padding-bottom: var(--space-md);
 
       .platform-icon {
-        @include icon-circle(1.5rem); // 24px
+        @include icon-circle(var(--icon-size-md));
       }
     }
 
@@ -189,7 +188,7 @@
 
     mat-card-subtitle {
       color: var(--text-muted);
-      font-size: 0.9rem;
+      font-size: var(--font-size-md);
     }
 
     .download-options {
@@ -198,9 +197,9 @@
       gap: 0.75rem;
 
       .section-subtitle {
-        font-size: 0.9rem;
+        font-size: var(--font-size-md);
         font-weight: 600;
-        margin: var(--space-xs) 0 0.25rem 0;
+        margin: var(--space-xs) 0 var(--space-xxs) 0;
         color: var(--text-muted);
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -211,11 +210,11 @@
         justify-content: space-between;
         background: var(--window-bg-color);
         align-items: center;
-        padding: 0.75rem;
+        padding: var(--space-sm);
         box-shadow: var(--shadow-gnome);
         border-radius: var(--radius-xs);
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: var(--transition-standard);
 
         @media (max-width: 640px) {
           flex-direction: column;
@@ -242,7 +241,7 @@
           }
 
           .download-name {
-            font-size: 0.95rem;
+            font-size: var(--font-size-base);
             font-weight: 500;
             margin: 0;
             color: var(--window-fg-color);
@@ -251,7 +250,7 @@
           .download-meta {
             display: flex;
             gap: var(--space-md);
-            font-size: 0.85rem;
+            font-size: var(--font-size-sm);
             color: var(--text-muted);
 
             @media (max-width: 640px) {
@@ -268,15 +267,15 @@
               background: rgba(var(--primary-color-rgb), 0.1);
               padding: 0.1rem 0.4rem;
               border-radius: var(--radius-xxs);
-              font-size: 0.8rem;
+              font-size: var(--font-size-xs);
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
               max-width: 100%;
 
               @media (max-width: 640px) {
-                white-space: normal;
-                word-break: break-word;
+                white-space: pre-wrap;
+                word-break: break-all;
               }
             }
           }
@@ -297,7 +296,7 @@
 
         .download-icon {
           color: var(--primary-color);
-          transition: transform 0.3s ease;
+          transition: transform var(--transition-standard);
 
           @media (max-width: 640px) {
             align-self: flex-end;
@@ -347,7 +346,7 @@
 
           li {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: var(--font-size-md);
             line-height: 1.5;
             margin-bottom: var(--space-xs);
 
@@ -364,12 +363,6 @@
 // Changelog Section
 .changelog-section {
   margin-bottom: var(--space-2xl);
-
-  .changelog-subtitle {
-    color: var(--text-muted);
-    margin: 0 0 var(--space-2xl) 0;
-    font-size: var(--font-size-base);
-  }
 
   .changelog-accordion {
     margin-bottom: var(--space-2xl);
@@ -388,7 +381,7 @@
 
         .version-number {
           font-weight: 600;
-          font-size: 1.1rem;
+          font-size: var(--font-size-xl);
           color: var(--window-fg-color);
         }
 
@@ -421,9 +414,9 @@
             margin: 0 0 0.75rem 0;
 
             mat-icon {
-              font-size: 1.125rem; // 18px
-              width: 1.125rem;
-              height: 1.125rem;
+              font-size: var(--icon-size-sm);
+              width: var(--icon-size-sm);
+              height: var(--icon-size-sm);
             }
           }
 
@@ -435,35 +428,10 @@
               color: var(--window-fg-color);
               line-height: 1.5;
               margin-bottom: var(--space-xs);
-              font-size: 0.9rem;
+              font-size: var(--font-size-md);
 
               &:last-child {
                 margin-bottom: 0;
-              }
-
-              // Markdown styles
-              ::ng-deep code {
-                background: rgba(var(--primary-color-rgb), 0.1);
-                color: var(--primary-color);
-                padding: 0.1rem 0.3rem;
-                border-radius: var(--radius-xxs);
-                font-family: monospace;
-                font-size: 0.85em;
-              }
-
-              ::ng-deep a {
-                color: var(--accent-color);
-                text-decoration: none;
-                font-weight: 500;
-
-                &:hover {
-                  text-decoration: underline;
-                }
-              }
-
-              ::ng-deep strong {
-                font-weight: 600;
-                color: var(--window-fg-color);
               }
             }
           }

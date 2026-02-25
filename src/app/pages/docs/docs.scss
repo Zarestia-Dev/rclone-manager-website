@@ -11,13 +11,7 @@
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 .docs-sidebar {
-  width: var(--sidebar-width);
-  flex-shrink: 0;
-  position: sticky;
-  top: 90px;
-  max-height: calc(100dvh - 80px - var(--space-xl));
-  display: flex;
-  flex-direction: column;
+  @include sticky-panel;
   background: var(--sidebar-bg-color);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-gnome);
@@ -214,6 +208,7 @@
   font-size: var(--font-size-sm);
   color: var(--window-fg-color);
   text-align: left;
+  transition: var(--transition-fast);
 
   ::ng-deep .mdc-button__label {
     display: flex;
@@ -229,12 +224,14 @@
     color: var(--dim-color);
     flex-shrink: 0;
   }
+
   .item-title {
     flex: 1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
   .external-icon {
     font-size: var(--icon-size-xs);
     width: var(--icon-size-xs);
@@ -243,6 +240,7 @@
     margin-left: auto;
   }
 
+  // Highlight pattern
   &.active {
     background: rgba(var(--primary-color-rgb), 0.12);
     color: var(--primary-color);
@@ -251,6 +249,7 @@
       color: var(--primary-color);
     }
   }
+
   &:hover:not(.active) {
     background: var(--hover-bg-color);
   }
@@ -300,11 +299,7 @@
 
 // ─── Table of Contents ────────────────────────────────────────────────────────
 .docs-toc-container {
-  width: clamp(180px, 18%, 240px);
-  flex-shrink: 0;
-  position: sticky;
-  top: 72px;
-  max-height: calc(100dvh - 72px - var(--space-xl));
+  @include sticky-panel($top: 72px, $width: clamp(180px, 18%, 240px));
   overflow-y: auto;
 
   .toc-card {
@@ -321,6 +316,7 @@
     letter-spacing: 0.06em;
     color: var(--dim-color);
     margin: 0 0 var(--space-xs) 0;
+
     mat-icon {
       font-size: 1rem;
       width: 1rem;
@@ -348,8 +344,15 @@
       background: rgba(var(--primary-color-rgb), 0.05);
     }
 
+    &.active {
+      color: var(--primary-color);
+      border-left-color: var(--primary-color);
+      font-weight: 500;
+    }
+
     &.sub-item {
       opacity: 0.75;
+      padding-left: var(--space-lg);
     }
   }
 }
@@ -406,10 +409,8 @@
 
   .docs-sidebar {
     width: 100%;
-    position: relative;
-    top: 0;
+    position: static;
     max-height: none;
-    overflow: visible;
   }
 
   .sidebar-search-wrap {
@@ -419,7 +420,6 @@
     left: 0;
     right: 0;
   }
-
   .docs-content-card {
     padding: var(--space-lg);
   }

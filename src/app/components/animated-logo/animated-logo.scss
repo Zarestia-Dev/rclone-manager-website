@@ -1,0 +1,69 @@
+/* --- UNIVERSAL CENTERING FIX --- */
+g {
+  transform-origin: center;
+  transform-box: view-box;
+}
+
+.svg-logo {
+  width: 100%;
+  height: 100%;
+  max-width: 128px;
+  max-height: 128px;
+}
+
+/* --- SVG ANIMATION KEYFRAMES (ENTRANCE) --- */
+@keyframes materialPop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes chromeSnap {
+  0% {
+    transform: scale(0.3) rotate(-135deg);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.05) rotate(5deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* --- APPLYING ANIMATIONS --- */
+.bg-shadow {
+  opacity: 0;
+  animation: materialPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.bg-base {
+  opacity: 0;
+  animation: materialPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+}
+
+.shape-dark-blue {
+  opacity: 0;
+  animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;
+}
+
+.shape-light-blue {
+  opacity: 0;
+  animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.22s forwards;
+}
+
+.shape-lighter-blue {
+  opacity: 0;
+  animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.29s forwards;
+}

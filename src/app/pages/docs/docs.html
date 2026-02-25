@@ -118,7 +118,7 @@
           <nav class="toc-nav">
             @for (link of toc(); track link.id) {
             <a href="javascript:void(0)" class="toc-link" [class.sub-item]="link.level > 2"
-              [style.padding-left.px]="(link.level - 2) * 16" (click)="scrollToSection(link.id, $event)">
+              [class.active]="activeTocId() === link.id" (click)="scrollToSection(link.id, $event)">
               {{ link.text }}
             </a>
             }

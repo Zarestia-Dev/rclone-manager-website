@@ -108,7 +108,7 @@
     right: 0;
     bottom: 0;
     background: rgba(255, 255, 255, 0.01);
-    backdrop-filter: blur(80px); // Increased blur for better blending
+    backdrop-filter: blur(80px);
     z-index: 1;
   }
 }
@@ -173,7 +173,7 @@
   transform: translateY(20px) scale(0.95);
   visibility: hidden;
   pointer-events: none;
-  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: var(--transition-slow);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -188,31 +188,8 @@
   }
 }
 
-.hero-logo {
-  width: 7.5rem; // 120px
-  height: 7.5rem; // 120px
-  filter: drop-shadow(0 0.625rem 1.875rem rgba(0, 0, 0, 0.2));
-  transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-
-  @media (max-width: 768px) {
-    width: 5.625rem; // 90px
-    height: 5.625rem; // 90px
-  }
-}
-
-.animate-swap {
-  animation: swapContent 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-@keyframes swapContent {
-  from {
-    opacity: 0;
-    transform: translateY(15px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+app-animated-logo {
+  transition: var(--transition-slow);
 }
 
 .hero-title {
@@ -241,7 +218,7 @@
   margin: 0;
 
   @media (max-width: 768px) {
-    font-size: 1.1rem;
+    font-size: var(--font-size-lg);
   }
 
   @media (max-width: 480px) {
@@ -268,7 +245,7 @@
     padding: var(--space-sm) var(--space-2xl);
     font-size: var(--font-size-base);
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: var(--transition-standard);
 
     mat-icon {
       margin-right: var(--space-xs);
@@ -293,7 +270,7 @@
   margin-top: var(--space-2xl);
 
   .scroll-btn {
-    transition: all 0.3s ease;
+    transition: var(--transition-standard);
     animation: bounce 2s ease-in-out infinite;
 
     mat-icon {
@@ -340,9 +317,9 @@
       height: 40px;
 
       mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
+        font-size: var(--icon-size-md);
+        width: var(--icon-size-md);
+        height: var(--icon-size-md);
       }
     }
 

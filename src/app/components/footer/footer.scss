@@ -3,7 +3,7 @@
 .footer {
   background: var(--window-bg-color);
   border-top: 1px solid var(--border-color);
-  padding: 3rem 2rem 1.5rem;
+  padding: var(--space-2xl) var(--space-xl) var(--space-lg);
 
   &-container {
     max-width: 1200px;
@@ -13,8 +13,8 @@
   &-content {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 3rem;
-    margin-bottom: 2rem;
+    gap: var(--space-2xl);
+    margin-bottom: var(--space-xl);
 
     @media (max-width: 960px) {
       grid-template-columns: repeat(2, 1fr);
@@ -46,8 +46,8 @@
       a {
         color: var(--text-muted);
         text-decoration: none;
-        transition: color 0.3s ease;
-        font-size: 0.9rem;
+        transition: var(--transition-standard);
+        font-size: var(--font-size-md);
         cursor: pointer;
 
         &:hover {
@@ -61,10 +61,10 @@
 .footer-logo {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
   font-weight: 600;
-  font-size: 1.125rem;
+  font-size: var(--font-size-xl);
 
   img {
     width: 36px;
@@ -74,7 +74,7 @@
 
 .footer-description {
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: var(--font-size-md);
   line-height: 1.6;
   margin: 0;
   max-width: 300px;
@@ -86,7 +86,7 @@
 
   a {
     color: var(--window-fg-color);
-    transition: all 0.3s ease;
+    transition: var(--transition-standard);
 
     &:hover {
       color: var(--primary-color);
@@ -95,13 +95,13 @@
 }
 
 .footer-bottom {
-  padding-top: 2rem;
+  padding-top: var(--space-xl);
   border-top: 1px solid var(--border-color);
   text-align: center;
 
   p {
     color: var(--text-muted);
-    font-size: 0.875rem;
+    font-size: var(--font-size-md);
     margin: 0;
   }
 }

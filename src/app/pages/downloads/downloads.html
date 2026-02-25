@@ -1,5 +1,5 @@
 <div class="page-container">
-  <div class="downloads-header animate-fade-in-up">
+  <div class="page-header animate-fade-in-up">
     <h1 class="page-title">Downloads</h1>
     <p class="page-subtitle">Get RClone Manager for your platform</p>
   </div>
@@ -168,7 +168,7 @@
       <mat-icon>history</mat-icon>
       What's New
     </h2>
-    <p class="changelog-subtitle">
+    <p class="section-subtitle">
       See what's been improved in each version
     </p>
 
@@ -189,7 +189,7 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
 
-        <div class="changelog-content">
+        <div class="changelog-content markdown-body">
           @for (section of getSections(version); track section) {
           <div class="change-section" [class]="section">
             <h4><mat-icon>{{ getSectionIcon(section) }}</mat-icon>{{ getSectionTitle(section) }}</h4>

@@ -5,13 +5,13 @@
   background: var(--window-bg-color);
 
   &-container {
-    max-width: 75rem; // 1200px
+    max-width: 1200px;
     margin: 0 auto;
   }
 }
 
 .features-grid {
-  @include grid-responsive(18.75rem, var(--container-gap)); // 300px
+  @include grid-responsive(min(18.75rem, 100%), var(--container-gap)); // 300px
 }
 
 .feature-card {
@@ -29,21 +29,18 @@
 }
 
 .feature-icon {
-  @include icon-circle(2rem); // 32px
-  width: 4rem; // 64px
-  height: 4rem; // 64px
-  // border-radius: var(--icon-radius); // Removed override as icon-circle handles it
+  @include icon-circle(var(--icon-size-lg));
 }
 
 .feature-title {
   font-size: var(--font-size-xl);
   font-weight: 600;
   margin: 0;
-  color: var(--app-text-color);
+  color: var(--window-fg-color);
 }
 
 .feature-description {
-  font-size: 0.95rem;
+  font-size: var(--font-size-md);
   color: var(--text-muted);
   line-height: 1.6;
   margin: 0;

@@ -45,6 +45,7 @@ export class Docs implements OnInit {
   toc = signal<{ id: string; text: string; level: number }[]>([]);
   renderedContent = signal<SafeHtml>('');
   loading = signal(false);
+  activeTocId = signal('');
 
   @ViewChild('contentArea') contentArea?: ElementRef;
 
@@ -66,6 +67,31 @@ export class Docs implements OnInit {
 
   ngOnInit(): void {
     this.loadDocs();
+    this.initScrollListener();
+  }
+
+  private initScrollListener(): void {
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!this.contentArea || this.toc().length === 0) return;
+
+        const headings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
+        let currentId = '';
+
+        for (const h of headings) {
+          const rect = h.getBoundingClientRect();
+          if (rect.top < 150) {
+            currentId = h.id;
+          } else {
+            break;
+          }
+        }
+
+        this.activeTocId.set(currentId || (this.toc()[0]?.id ?? ''));
+      },
+      { passive: true },
+    );
   }
 
   private loadDocs(): void {
@@ -117,54 +143,7 @@ export class Docs implements OnInit {
 
   onSearch(query: string): void {
     this.searchQuery.set(query);
-    const q = query.toLowerCase().trim();
-    if (q.length < 2) {
-      this.searchHits.set([]);
-      return;
-    }
-
-    const hits: SearchHit[] = [];
-    this.docSections().forEach((section) => {
-      section.items.forEach((item) => {
-        const content = item.assetPath ? this.docService.searchIndex.get(item.assetPath) : '';
-        const titleMatch = item.title.toLowerCase().includes(q);
-        const descMatch = item.description?.toLowerCase().includes(q);
-        const contentMatch = content?.includes(q);
-
-        if (titleMatch || descMatch || contentMatch) {
-          hits.push({
-            item,
-            sectionTitle: section.title,
-            snippet: this.highlightMatch(
-              contentMatch ? this.extractSnippet(content!, q) : item.description || '',
-              query,
-            ),
-            matchType: titleMatch ? 'title' : descMatch ? 'description' : 'content',
-          });
-        }
-      });
-    });
-    this.searchHits.set(hits);
-  }
-
-  private extractSnippet(content: string, query: string): string {
-    const idx = content.indexOf(query);
-    const start = Math.max(0, idx - 40);
-    const end = Math.min(content.length, idx + query.length + 60);
-    return (
-      (start > 0 ? '...' : '') +
-      content
-        .substring(start, end)
-        .replace(/[#*`_]/g, '')
-        .replace(/\s+/g, ' ') +
-      (end < content.length ? '...' : '')
-    );
-  }
-
-  private highlightMatch(text: string, query: string): SafeHtml {
-    if (!query) return text;
-    const regex = new RegExp(`(${query})`, 'gi');
-    return this.sanitizer.bypassSecurityTrustHtml(text.replace(regex, '<mark>$1</mark>'));
+    this.searchHits.set(this.docService.search(query));
   }
 
   private loadContent(path: string, searchTerm?: string): void {
@@ -173,17 +152,9 @@ export class Docs implements OnInit {
       next: (markdown) => {
         let html = marked.parse(markdown) as string;
         if (searchTerm && searchTerm.length >= 2) {
-          const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          const regex = new RegExp(`(${escaped})`, 'gi');
-          html = html
-            .split(/(<[^>]*>)/)
-            .map((part) =>
-              part.startsWith('<')
-                ? part
-                : part.replace(regex, '<mark class="content-highlight">$1</mark>'),
-            )
-            .join('');
+          html = this.highlightContent(html, searchTerm);
         }
+        html = this.processCustomIcons(html);
         this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(html));
         this.loading.set(false);
         this.extractToc();
@@ -202,6 +173,30 @@ export class Docs implements OnInit {
         this.loading.set(false);
       },
     });
+  }
+
+  /**
+   * Replaces custom icon syntax [[icon:name]] or [[icon:name.color]]
+   * with Material Icon HTML spans.
+   */
+  private processCustomIcons(html: string): string {
+    return html.replace(/\[\[icon:([a-z0-9_]+)(?:\.([a-z]+))?\]\]/g, (_, name, color) => {
+      const cls = color ? ` ${color}` : '';
+      return `<span class="material-icons md-icon${cls}">${name}</span>`;
+    });
+  }
+
+  private highlightContent(html: string, term: string): string {
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    return html
+      .split(/(<[^>]*>)/)
+      .map((part) =>
+        part.startsWith('<')
+          ? part
+          : part.replace(regex, '<mark class="content-highlight">$1</mark>'),
+      )
+      .join('');
   }
 
   private extractToc(): void {
