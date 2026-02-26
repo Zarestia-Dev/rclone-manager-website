@@ -43,27 +43,38 @@ g {
 }
 
 /* --- APPLYING ANIMATIONS --- */
-.bg-shadow {
-  opacity: 0;
-  animation: materialPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.bg-base {
-  opacity: 0;
-  animation: materialPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
-}
-
-.shape-dark-blue {
-  opacity: 0;
-  animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;
-}
-
-.shape-light-blue {
-  opacity: 0;
-  animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.22s forwards;
-}
-
+.bg-shadow,
+.bg-base,
+.shape-dark-blue,
+.shape-light-blue,
 .shape-lighter-blue {
   opacity: 0;
-  animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.29s forwards;
+  animation: none;
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  animation: none;
+}
+
+:host-context(.app-container.page-loaded) {
+  .bg-shadow {
+    animation: materialPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .bg-base {
+    animation: materialPop 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.05s forwards;
+  }
+
+  .shape-dark-blue {
+    animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s forwards;
+  }
+
+  .shape-light-blue {
+    animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.22s forwards;
+  }
+
+  .shape-lighter-blue {
+    animation: chromeSnap 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.29s forwards;
+  }
 }

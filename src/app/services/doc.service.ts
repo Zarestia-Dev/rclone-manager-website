@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { map, shareReplay } from 'rxjs';
 import { WikiService } from './wiki.service';
@@ -36,8 +36,15 @@ export class DocService {
 
   docSections = signal<DocSection[]>([]);
   quickLinks = signal<DocItem[]>([]);
+  searchQuery = signal('');
   searchIndex = new Map<string, string>(); // assetPath -> content
   isIndexing = signal(false);
+
+  // Computed search hits based on query
+  searchHits = computed(() => {
+    const query = this.searchQuery();
+    return this.search(query);
+  });
 
   // Cache summary to avoid redundant fetches
   private summary$ = this.wikiService.fetchSidebar().pipe(
@@ -95,10 +102,37 @@ export class DocService {
     );
   }
 
+  /**
+   * Replaces custom icon syntax [[icon:name]] or [[icon:name.color]]
+   * with Material Icon HTML spans.
+   */
+  processCustomIcons(html: string): string {
+    return html.replace(/\[\[icon:([a-z0-9_]+)(?:\.([a-z]+))?\]\]/g, (_, name, color) => {
+      const cls = color ? ` ${color}` : '';
+      return `<span class="material-icons md-icon${cls}">${name}</span>`;
+    });
+  }
+
+  highlightContent(html: string, term: string): string {
+    if (!term || term.length < 2) return html;
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    return html
+      .split(/(<[^>]*>)/)
+      .map((part) =>
+        part.startsWith('<')
+          ? part
+          : part.replace(regex, '<mark class="content-highlight">$1</mark>'),
+      )
+      .join('');
+  }
+
   private highlightMatch(text: string, query: string): SafeHtml {
     if (!query) return text;
     const regex = new RegExp(`(${query})`, 'gi');
-    return this.sanitizer.bypassSecurityTrustHtml(text.replace(regex, '<mark>$1</mark>'));
+    return this.sanitizer.bypassSecurityTrustHtml(
+      text.replace(regex, '<mark class="search-highlight">$1</mark>'),
+    );
   }
 
   startIndexing(sections: DocSection[]) {

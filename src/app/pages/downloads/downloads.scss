@@ -19,7 +19,7 @@
         justify-content: center;
         gap: var(--space-md);
         text-align: center;
-        min-height: 200px;
+        min-height: 12.5rem; // ~200px
 
         mat-spinner {
           margin-bottom: var(--space-xs);
@@ -36,7 +36,7 @@
           color: var(--text-muted);
           margin: 0;
           font-size: var(--font-size-md);
-          max-width: 400px;
+          max-width: 25rem; // ~400px
         }
 
         .error-icon {
@@ -109,7 +109,7 @@
 
         ul {
           margin: 0;
-          padding-left: 1.25rem;
+          padding-left: var(--space-lg);
 
           li {
             color: var(--window-fg-color);
@@ -135,7 +135,7 @@
   .stat {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
+    gap: var(--space-xxs);
     color: var(--text-muted);
     font-size: var(--font-size-sm);
 
@@ -166,7 +166,7 @@
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
-      gap: 1.25rem;
+      gap: var(--space-lg);
     }
   }
 
@@ -194,7 +194,7 @@
     .download-options {
       display: flex;
       flex-direction: column;
-      gap: 0.75rem;
+      gap: var(--space-sm);
 
       .section-subtitle {
         font-size: var(--font-size-md);
@@ -230,7 +230,7 @@
         .download-info {
           display: flex;
           flex-direction: column;
-          gap: 0.25rem;
+          gap: var(--space-xxs);
           flex: 1;
           min-width: 0;
           padding-right: var(--space-md);
@@ -255,7 +255,7 @@
 
             @media (max-width: 640px) {
               flex-wrap: wrap;
-              gap: 0.5rem 0.75rem;
+              gap: var(--space-xs) var(--space-sm);
             }
 
             .architecture {
@@ -265,6 +265,7 @@
             .command-preview {
               font-family: 'JetBrains Mono', monospace;
               background: rgba(var(--primary-color-rgb), 0.1);
+              color: var(--primary-color);
               padding: 0.1rem 0.4rem;
               border-radius: var(--radius-xxs);
               font-size: var(--font-size-xs);
@@ -342,7 +343,7 @@
 
         ul {
           margin: 0;
-          padding-left: 1.25rem;
+          padding-left: var(--space-lg);
 
           li {
             color: var(--text-muted);
@@ -377,7 +378,7 @@
       .version-header {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: var(--space-sm);
 
         .version-number {
           font-weight: 600;
@@ -411,7 +412,7 @@
             gap: var(--space-xs);
             font-size: var(--font-size-base);
             font-weight: 600;
-            margin: 0 0 0.75rem 0;
+            margin: 0 0 var(--space-sm) 0;
 
             mat-icon {
               font-size: var(--icon-size-sm);
@@ -422,7 +423,7 @@
 
           ul {
             margin: 0;
-            padding-left: 1.5rem;
+            padding-left: var(--space-xl);
 
             li {
               color: var(--window-fg-color);

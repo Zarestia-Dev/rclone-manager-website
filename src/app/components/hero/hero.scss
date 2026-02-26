@@ -1,10 +1,9 @@
 .hero {
   position: relative;
-  min-height: 100vh;
+  min-height: calc(100vh - var(--titlebar-height));
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--content-padding);
   overflow: hidden;
 
   // Headless Mode - Blob Positions & Colors
@@ -45,8 +44,8 @@
     .hero-title.headless {
       background: linear-gradient(135deg, var(--gnome-orange-3), var(--gnome-yellow-4));
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
       background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
   }
 }
@@ -87,7 +86,7 @@
     background: var(--accent-color);
     width: 60vw;
     height: 60vw;
-    animation: float-reverse 14s infinite ease-in-out;
+    animation: float-reverse 7s infinite ease-in-out;
     opacity: 0.3;
   }
 
@@ -107,7 +106,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(255, 255, 255, 0.01);
+    background: var(--bg-elevated);
     backdrop-filter: blur(80px);
     z-index: 1;
   }
@@ -164,7 +163,7 @@
   width: 100%;
   align-items: center;
   justify-items: center;
-  min-height: 180px;
+  min-height: calc(var(--space-xl) * 7.5);
 }
 
 .mode-content {
@@ -228,7 +227,7 @@ app-animated-logo {
   .tech-stack {
     display: block;
     margin-top: var(--space-sm);
-    font-size: 0.9em;
+    font-size: var(--font-size-md);
     font-weight: 500;
     opacity: 0.85;
   }
@@ -313,8 +312,8 @@ app-animated-logo {
     margin-top: var(--space-xl);
 
     .scroll-btn {
-      width: 40px;
-      height: 40px;
+      width: var(--icon-container-size);
+      height: var(--icon-container-size);
 
       mat-icon {
         font-size: var(--icon-size-md);

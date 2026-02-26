@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -47,15 +47,7 @@ export class Roadmap implements OnInit {
     return marked.parseInline(text) as string;
   }
 
-  get doneItems(): RoadmapItem[] {
-    return this.allItems().filter((i) => i.status === 'done');
-  }
-
-  get inProgressItems(): RoadmapItem[] {
-    return this.allItems().filter((i) => i.status === 'in-progress');
-  }
-
-  get todoItems(): RoadmapItem[] {
-    return this.allItems().filter((i) => i.status === 'todo');
-  }
+  doneItems = computed(() => this.allItems().filter((i) => i.status === 'done'));
+  inProgressItems = computed(() => this.allItems().filter((i) => i.status === 'in-progress'));
+  todoItems = computed(() => this.allItems().filter((i) => i.status === 'todo'));
 }

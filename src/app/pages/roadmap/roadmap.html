@@ -1,0 +1,80 @@
+<div class="page-container">
+    <div class="page-header animate-fade-in-up">
+        <h1>Roadmap & Future</h1>
+        <p>See what's coming next and track our development progress.</p>
+    </div>
+
+    <app-roadmap></app-roadmap>
+
+    <div class="split-grid">
+        <section class="incoming-section">
+            <div class="section-header">
+                <mat-icon ripple>auto_awesome</mat-icon>
+                <h2>Incoming Features</h2>
+                <span class="badge">Unreleased</span>
+            </div>
+
+            <div class="content-card" [class.loading]="isLoading()">
+                @if (isLoading()) {
+                <div class="loading-state">
+                    <mat-spinner diameter="40"></mat-spinner>
+                </div>
+                } @else if (incomingChanges().length > 0) {
+                <div class="changes-list">
+                    @for (section of incomingChanges(); track section.title) {
+                    <div class="change-group">
+                        <h3>{{ section.title }}</h3>
+                        <ul>
+                            @for (item of section.items; track item) {
+                            <li>{{ item }}</li>
+                            }
+                        </ul>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <p class="empty-state">No unreleased changes found in changelog.</p>
+                }
+            </div>
+        </section>
+
+        <section class="issues-section">
+            <div class="section-header">
+                <mat-icon ripple>bug_report</mat-icon>
+                <h2>Development Issues</h2>
+                <span class="badge">{{ developmentIssues().length }} Open</span>
+            </div>
+
+            <div class="content-card" [class.loading]="isLoading()">
+                @if (isLoading()) {
+                <div class="loading-state">
+                    <mat-spinner diameter="40"></mat-spinner>
+                </div>
+                } @else if (developmentIssues().length > 0) {
+                <div class="issues-list">
+                    @for (issue of developmentIssues(); track issue.number) {
+                    <a [href]="issue.html_url" target="_blank" class="issue-item">
+                        <div class="issue-main">
+                            <span class="issue-number">#{{ issue.number }}</span>
+                            <span class="issue-title">{{ issue.title }}</span>
+                        </div>
+                        <div class="issue-meta">
+                            <div class="issue-labels">
+                                @for (label of issue.labels; track label.name) {
+                                <span class="label-chip" [style.border-color]="'#' + label.color">
+                                    {{ label.name }}
+                                </span>
+                                }
+                            </div>
+                            <span class="issue-date">{{ getRelativeTime(issue.updated_at) }}</span>
+                        </div>
+                    </a>
+                    }
+                </div>
+                } @else {
+                <p class="empty-state">No open issues found.</p>
+                }
+            </div>
+        </section>
+    </div>
+</div>

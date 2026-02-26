@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { TabService, AppTab } from '../../services/tab.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,9 +18,10 @@ export class Hero {
   heroContent = HERO_CONTENT;
   modes = ['desktop', 'headless'] as const;
 
-  getModeContent(mode: 'desktop' | 'headless') {
+  activeContent = computed(() => {
+    const mode = this.modeService.currentMode();
     return this.heroContent[mode];
-  }
+  });
 
   scrollToFeatures() {
     const featuresSection = document.querySelector('app-features');

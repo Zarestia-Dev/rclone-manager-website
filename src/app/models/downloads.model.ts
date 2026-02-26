@@ -8,9 +8,12 @@ export interface DownloadPlatform {
 
 export interface DownloadOption {
   name: string;
+  displayName?: string;
   architecture: string;
   size: string;
   url: string;
+  type?: string;
+  platformIndex?: number;
 }
 
 export interface PackageManagerOption {

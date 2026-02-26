@@ -1,0 +1,98 @@
+<div class="page-container">
+    <div class="page-header animate-fade-in-up">
+        <h1>Community & Support</h1>
+        <p>Join our growing community and help us build the best RClone manager.</p>
+    </div>
+
+    <section class="contributors-section">
+        <div class="section-header">
+            <mat-icon ripple>groups</mat-icon>
+            <h2>Contributors</h2>
+            @if (contributorsCount() > 0) {
+            <span class="badge">{{ contributorsCount() }} People</span>
+            }
+        </div>
+
+        <div class="contributors-grid" [class.loading]="isLoading()">
+            @if (isLoading()) {
+            <div class="loading-state">
+                <mat-spinner diameter="40"></mat-spinner>
+            </div>
+            } @else if (contributors().length > 0) {
+            @for (user of contributors(); track user.login) {
+            <a [href]="user.html_url" target="_blank" class="contributor-card">
+                <img [src]="user.avatar_url" [alt]="user.login" />
+                <span class="name">{{ user.login }}</span>
+                <span class="count">{{ user.contributions }} commits</span>
+            </a>
+            }
+            } @else {
+            <p class="empty-state">No contributors found.</p>
+            }
+        </div>
+    </section>
+
+    <section class="donate-section disabled">
+        <div class="section-header">
+            <mat-icon ripple>volunteer_activism</mat-icon>
+            <h2>Support the Project</h2>
+        </div>
+
+        <div class="donate-grid">
+            @for (option of donateOptions; track option.name) {
+            <div class="donate-card">
+                <div class="icon-box">
+                    <mat-icon>{{ option.icon }}</mat-icon>
+                </div>
+                <h3>{{ option.name }}</h3>
+                <p>{{ option.description }}</p>
+                <a [href]="option.url" target="_blank" mat-flat-button>
+                    Donate Now
+                </a>
+            </div>
+            }
+        </div>
+    </section>
+    <section class="translation-section">
+        <div class="section-header">
+            <mat-icon ripple>translate</mat-icon>
+            <h2>Help to Translate</h2>
+        </div>
+
+        <div class="donate-grid">
+            @for (option of translationOptions; track option.name) {
+            <div class="donate-card">
+                <div class="icon-box">
+                    <mat-icon>{{ option.icon }}</mat-icon>
+                </div>
+                <h3>{{ option.name }}</h3>
+                <p>{{ option.description }}</p>
+                <a [href]="option.url" target="_blank" mat-flat-button>
+                    Help Translate
+                </a>
+            </div>
+            }
+        </div>
+    </section>
+
+    <section class="involved-section">
+        <div class="section-header">
+            <mat-icon ripple>code</mat-icon>
+            <h2>Get Involved</h2>
+        </div>
+        <div class="involved-content">
+            <p>RClone Manager is an open-source project. We welcome contributions of all types: code, documentation, bug
+                reports, and feature requests.</p>
+            <div class="button-container">
+                <a href="https://github.com/Zarestia-Dev/rclone-manager" target="_blank" mat-stroked-button>
+                    <mat-icon>code</mat-icon>
+                    Source Code
+                </a>
+                <a href="https://github.com/Zarestia-Dev/rclone-manager/issues" target="_blank" mat-stroked-button>
+                    <mat-icon>bug_report</mat-icon>
+                    Report Issue
+                </a>
+            </div>
+        </div>
+    </section>
+</div>

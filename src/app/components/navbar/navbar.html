@@ -6,18 +6,18 @@
     </a>
 
     <button class="mobile-menu-btn" mat-icon-button (click)="toggleMobileMenu()">
-      <mat-icon>{{ isMobileMenuOpen ? 'close' : 'menu' }}</mat-icon>
+      <mat-icon>{{ isMobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
     </button>
 
-    <div class="nav-links" [class.open]="isMobileMenuOpen">
+    <div class="nav-links" [class.open]="isMobileMenuOpen()">
       <!-- Mode Toggle -->
       <button class="mode-toggle" (click)="toggleMode()">
         <span class="toggle-track">
           <span class="toggle-indicator" [class.headless]="modeService.currentMode() === 'headless'">
-            <mat-icon>{{ modeService.currentMode() === 'desktop' ? 'monitor' : 'dns' }}</mat-icon>
+            <mat-icon>{{ modeService.modeIcon() }}</mat-icon>
           </span>
         </span>
-        <span class="toggle-label">{{ modeService.currentMode() === 'desktop' ? 'Desktop' : 'Headless' }}</span>
+        <span class="toggle-label">{{ modeService.modeLabel() }}</span>
       </button>
 
       @for (link of navLinks; track link.label) {

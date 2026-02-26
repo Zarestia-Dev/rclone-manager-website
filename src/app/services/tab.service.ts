@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 
-export type AppTab = 'general' | 'downloads' | 'docs';
+export type AppTab = 'general' | 'downloads' | 'docs' | 'roadmap' | 'community';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +18,8 @@ export class TabService {
     const path = window.location.pathname.replace(this.basePath, '');
     if (path.startsWith('/docs')) return 'docs';
     if (path.startsWith('/downloads')) return 'downloads';
+    if (path.startsWith('/roadmap')) return 'roadmap';
+    if (path.startsWith('/community')) return 'community';
     return 'general';
   }
 
@@ -25,12 +27,14 @@ export class TabService {
     this.currentTab.set(tab);
     window.scrollTo(0, 0);
 
-    if (tab === 'general') {
-      history.pushState(null, '', `${this.basePath}/`);
-    } else if (tab === 'downloads') {
-      history.pushState(null, '', `${this.basePath}/downloads`);
-    } else if (tab === 'docs') {
-      history.pushState(null, '', `${this.basePath}/docs`);
-    }
+    const pathMap: Record<AppTab, string> = {
+      general: '',
+      downloads: 'downloads',
+      docs: 'docs',
+      roadmap: 'roadmap',
+      community: 'community',
+    };
+
+    history.pushState(null, '', `${this.basePath}/${pathMap[tab]}`);
   }
 }

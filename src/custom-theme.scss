@@ -569,7 +569,7 @@ $dark-theme: (
   --legend-gap-mobile: var(--space-sm);
 
   // Layout Constants
-  --titlebar-height: 40px;
+  --titlebar-height: 74px;
   --sidebar-width: 250px;
   --status-bar-height: 48px;
 
@@ -713,13 +713,23 @@ body {
   margin: 0;
   font-family: system-ui, Inter, sans-serif;
   overflow: auto;
+  // Standard (Firefox - no support for -webkit-scrollbar)
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+  }
 
+  // Chromium & Safari (precise pixel control)
   &::-webkit-scrollbar {
     width: 4px;
+    height: 4px;
   }
   &::-webkit-scrollbar-thumb {
     background: var(--border-color);
     border-radius: var(--divider-radius);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
   }
 
   // Headless Mode Overrides - Orange/Yellow Theme
@@ -1060,15 +1070,6 @@ mat-accordion {
     gap: 12px;
     font-size: clamp(12px, 2vw, 14px);
     font-weight: 500;
-  }
-}
-
-.hide-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-
-  &::-webkit-scrollbar {
-    display: none;
   }
 }
 
@@ -1495,7 +1496,7 @@ mat-accordion {
   text-align: center;
   margin-bottom: 3rem;
 
-  .page-title {
+  h1 {
     font-size: var(--font-size-4xl);
     font-weight: 700;
     margin: 0 0 1rem 0;
@@ -1506,7 +1507,7 @@ mat-accordion {
     }
   }
 
-  .page-subtitle {
+  p {
     font-size: 1.125rem;
     color: var(--text-muted);
     margin: 0 auto;

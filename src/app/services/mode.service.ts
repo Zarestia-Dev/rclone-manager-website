@@ -1,12 +1,15 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal, effect, computed } from '@angular/core';
 
 export type AppMode = 'desktop' | 'headless';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ModeService {
   currentMode = signal<AppMode>(this.getInitialMode());
+
+  modeLabel = computed(() => (this.currentMode() === 'desktop' ? 'Desktop' : 'Headless'));
+  modeIcon = computed(() => (this.currentMode() === 'desktop' ? 'monitor' : 'dns'));
 
   constructor() {
     // Initial apply
@@ -31,11 +34,11 @@ export class ModeService {
 
   private getInitialMode(): AppMode {
     const savedMode = localStorage.getItem('appMode') as AppMode;
-    return (savedMode === 'desktop' || savedMode === 'headless') ? savedMode : 'desktop';
+    return savedMode === 'desktop' || savedMode === 'headless' ? savedMode : 'desktop';
   }
 
   toggleMode() {
-    this.currentMode.update(mode => mode === 'desktop' ? 'headless' : 'desktop');
+    this.currentMode.update((mode) => (mode === 'desktop' ? 'headless' : 'desktop'));
   }
 
   setMode(mode: AppMode) {

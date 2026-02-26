@@ -13,12 +13,12 @@
         @for (mode of modes; track mode) {
         <div class="mode-content" [class.active]="modeService.currentMode() === mode">
           <h1 class="hero-title animate-fade-in-up animate-delay-1" [class.headless]="mode === 'headless'">
-            {{ getModeContent(mode).title }}
+            {{ heroContent[mode].title }}
           </h1>
           <p class="hero-subtitle animate-fade-in-up animate-delay-2">
-            {{ getModeContent(mode).subtitle }}
+            {{ heroContent[mode].subtitle }}
             <br>
-            <span class="tech-stack">{{ getModeContent(mode).techStack }}</span>
+            <span class="tech-stack">{{ heroContent[mode].techStack }}</span>
           </p>
         </div>
         }

@@ -6,6 +6,28 @@ import { environment } from '../../environments/environment';
 const GITHUB_API_BASE = 'https://api.github.com';
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com';
 
+export interface GithubIssue {
+  title: string;
+  html_url: string;
+  number: number;
+  user: {
+    login: string;
+    avatar_url: string;
+  };
+  labels: {
+    name: string;
+    color: string;
+  }[];
+  updated_at: string;
+}
+
+export interface Contributor {
+  login: string;
+  avatar_url: string;
+  html_url: string;
+  contributions: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -82,5 +104,23 @@ export class GithubService {
     return this.http.get(`${GITHUB_RAW_BASE}/${repo}/${branch}/${filePath}`, {
       responseType: 'text',
     });
+  }
+
+  /**
+   * Fetch open issues from a repository.
+   */
+  getIssues(repo: string, labels: string[] = []): Observable<GithubIssue[]> {
+    let path = `/repos/${repo}/issues?state=open&sort=updated`;
+    if (labels.length > 0) {
+      path += `&labels=${labels.join(',')}`;
+    }
+    return this.get<GithubIssue[]>(path);
+  }
+
+  /**
+   * Fetch contributors for a repository.
+   */
+  getContributors(repo: string): Observable<Contributor[]> {
+    return this.get<Contributor[]>(`/repos/${repo}/contributors`);
   }
 }

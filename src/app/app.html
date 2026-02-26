@@ -1,4 +1,4 @@
-<div class="app-container">
+<div class="app-container" [class.page-loaded]="loaded()">
   <app-navbar></app-navbar>
   <main class="main-content">
     @switch (tabService.currentTab()) {
@@ -11,9 +11,15 @@
     @case ('downloads') {
     <app-downloads></app-downloads>
     }
+    @case ('roadmap') {
+    <app-roadmap-page></app-roadmap-page>
+    }
+    @case ('community') {
+    <app-community-page></app-community-page>
+    }
     }
 
-    @if (loaded) {
+    @if (loaded()) {
     <app-footer></app-footer>
     }
   </main>

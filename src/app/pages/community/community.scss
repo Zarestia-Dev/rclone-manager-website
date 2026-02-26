@@ -1,0 +1,189 @@
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm); // 12px
+    margin-bottom: var(--space-2xl); // 32px
+
+    mat-icon {
+      color: var(--primary-color);
+      font-size: var(--icon-size-lg);
+      width: var(--icon-size-lg);
+      height: var(--icon-size-lg);
+    }
+
+    h2 {
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .badge {
+      font-size: var(--font-size-sm);
+      padding: var(--space-xxs) var(--space-sm);
+      border-radius: var(--radius-lg);
+      background: var(--surface-variant);
+      color: var(--primary-color);
+      font-weight: 700;
+    }
+  }
+
+  section {
+    margin-bottom: var(--section-gap);
+  }
+
+  .contributors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11.25rem, 1fr)); // 180px
+    gap: var(--space-xl);
+    position: relative;
+
+    &.loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .contributor-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-xl);
+    background: var(--view-bg-color);
+    box-shadow: var(--shadow-gnome);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--window-fg-color);
+
+    &:hover {
+      img {
+        transform: scale(1.1);
+      }
+    }
+
+    img {
+      width: var(--icon-container-size); // Use container size for avatar
+      height: var(--icon-container-size);
+      border-radius: 50%;
+      margin-bottom: var(--space-md);
+      transition: transform 0.3s ease;
+    }
+
+    .name {
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .count {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+  }
+
+  .donate-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr)); // 300px
+    gap: var(--space-xl);
+  }
+
+  .donate-card {
+    background: var(--view-bg-color);
+    box-shadow: var(--shadow-gnome);
+    border-radius: var(--radius-lg);
+    padding: var(--space-2xl);
+    text-align: center;
+
+    .icon-box {
+      width: var(--icon-container-size);
+      height: var(--icon-container-size);
+      background: var(--surface-variant);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-xl);
+
+      mat-icon {
+        color: var(--primary-color);
+        font-size: var(--icon-size-lg);
+        width: var(--icon-size-lg);
+        height: var(--icon-size-lg);
+      }
+    }
+
+    h3 {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      margin-bottom: var(--space-sm);
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xl);
+      line-height: 1.6;
+    }
+
+    button {
+      width: 100%;
+      height: var(--icon-size-xl);
+      border-radius: var(--button-border-radius);
+      font-weight: 700;
+    }
+  }
+
+  .involved-content {
+    background: var(--view-bg-color);
+    box-shadow: var(--shadow-gnome);
+    border-radius: var(--radius-lg);
+    padding: calc(var(--space-2xl) * 1.5);
+    text-align: center;
+
+    p {
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      margin-bottom: var(--space-2xl);
+      max-width: 50rem; // 800px
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-md);
+    }
+  }
+
+  .donate-section.disabled {
+    position: relative;
+    opacity: 0.6;
+    pointer-events: none;
+    filter: grayscale(0.5);
+
+    .section-header::after {
+      content: '(Coming Soon)';
+      font-size: 0.9rem;
+      color: var(--accent-color);
+      font-weight: 600;
+      text-transform: none;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

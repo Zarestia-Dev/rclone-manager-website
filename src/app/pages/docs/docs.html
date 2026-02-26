@@ -1,30 +1,31 @@
 <div class="page-container animate-fade-in">
   <div class="docs-detail-layout">
     <!-- Sidebar Navigation -->
-    <aside class="docs-sidebar animate-fade-in-right">
+    <aside class="docs-sidebar animate-fade-in-right" [class.hidden]="isMobile()">
 
       <!-- Search -->
       <div class="sidebar-search-wrap">
         <div class="sidebar-search">
           <mat-icon>search</mat-icon>
-          <input type="text" placeholder="Search docs..." [value]="searchQuery()"
-            (input)="onSearch($any($event.target).value)" aria-label="Search documentation">
+          <input type="text" placeholder="Search docs..." [value]="docService.searchQuery()"
+            (input)="onSearch($any($event.target).value)" (focus)="isSearchFocused.set(true)" (blur)="onSearchBlur()"
+            (keydown.escape)="docService.searchQuery.set('')" aria-label="Search documentation">
           @if (isIndexing()) {
           <mat-spinner diameter="14" class="search-spinner"></mat-spinner>
           }
         </div>
 
         <!-- Results overlay — sibling not child, avoids height clip -->
-        @if (searchQuery().length >= 2) {
+        @if (docService.searchQuery().length >= 2 && isSearchFocused()) {
         <div class="search-results-overlay animate-fade-in-up">
           <div class="results-header">
-            <span>{{ searchHits().length }} Result{{ searchHits().length !== 1 ? 's' : '' }}</span>
-            <button mat-icon-button (click)="onSearch('')"><mat-icon>close</mat-icon></button>
+            <span>{{ docService.searchHits().length }} Result{{ docService.searchHits().length !== 1 ? 's' : ''
+              }}</span>
           </div>
           <div class="results-list">
-            @for (hit of searchHits(); track hit.item.title) {
-            <div class="search-hit" (click)="selectItem(hit.item, searchQuery())"
-              (keydown.enter)="selectItem(hit.item, searchQuery())" tabindex="0" role="button">
+            @for (hit of docService.searchHits(); track hit.item.title) {
+            <div class="search-hit" (click)="selectItem(hit.item, docService.searchQuery())"
+              (keydown.enter)="selectItem(hit.item, docService.searchQuery())" tabindex="0" role="button">
               <div class="hit-meta">
                 <mat-icon>{{ hit.item.icon || 'description' }}</mat-icon>
                 <span class="hit-section">{{ hit.sectionTitle }}</span>
@@ -33,7 +34,7 @@
               <div class="hit-snippet" [innerHTML]="hit.snippet"></div>
             </div>
             } @empty {
-            <div class="no-results">No matches for "{{ searchQuery() }}"</div>
+            <div class="no-results">No matches for "{{ docService.searchQuery() }}"</div>
             }
           </div>
         </div>
@@ -109,7 +110,7 @@
 
       <!-- Right Side Table of Contents -->
       @if (toc().length > 0) {
-      <aside class="docs-toc-container animate-fade-in-right">
+      <aside class="docs-toc-container animate-fade-in-left" [class.hidden]="!isWide()">
         <div class="toc-card">
           <h4 class="toc-title">
             <mat-icon>list</mat-icon>
@@ -128,4 +129,8 @@
       }
     </div>
   </div>
+
+  <button mat-fab class="docs-mobile-fab" (click)="openNavSheet()" aria-label="Open documentation menu">
+    <mat-icon>menu_book</mat-icon>
+  </button>
 </div>

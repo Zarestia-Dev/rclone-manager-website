@@ -1,0 +1,112 @@
+.nav-sheet-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 80dvh;
+  background: var(--sidebar-bg-color);
+}
+
+.drag-handle {
+  width: var(--space-2xl); // Closest to 40px
+  height: var(--space-xxs);
+  background: var(--dim-color);
+  opacity: 0.3;
+  border-radius: var(--divider-radius);
+  margin: var(--space-sm) auto;
+  flex-shrink: 0;
+}
+
+.sheet-header {
+  padding: 0 var(--space-lg) var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sheet-search {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: var(--hover-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0 var(--space-sm);
+  height: var(--icon-size-xl); // 3rem
+
+  mat-icon {
+    color: var(--dim-color);
+    font-size: var(--icon-size-md);
+    width: var(--icon-size-md);
+    height: var(--icon-size-md);
+  }
+
+  input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--window-fg-color);
+    font-size: var(--font-size-md);
+    &::placeholder {
+      color: var(--dim-color);
+    }
+  }
+}
+
+.sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md) var(--space-lg) var(--space-2xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.sheet-section-title {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dim-color);
+  margin: 0 0 var(--space-xs) 0;
+  padding-left: var(--space-xs);
+}
+
+.sheet-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sheet-item {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-md);
+  color: var(--window-fg-color);
+  text-align: left;
+  min-height: calc(var(--space-xl) * 2.3); // ~56px touch target
+
+  ::ng-deep .mdc-button__label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    width: 100%;
+  }
+
+  .main-icon {
+    color: var(--dim-color);
+  }
+
+  &.active {
+    background: rgba(var(--primary-color-rgb), 0.12);
+    color: var(--primary-color);
+    font-weight: 500;
+    .main-icon {
+      color: var(--primary-color);
+    }
+  }
+}
+
+.external-icon {
+  font-size: var(--icon-size-xs);
+  width: var(--icon-size-xs);
+  height: var(--icon-size-xs);
+  opacity: 0.4;
+  margin-left: auto;
+}

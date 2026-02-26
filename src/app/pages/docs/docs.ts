@@ -1,13 +1,20 @@
-import { Component, inject, signal, ElementRef, ViewChild, OnInit } from '@angular/core';
+import { Component, inject, signal, ElementRef, ViewChild, OnInit, effect } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import {
+  MatBottomSheet,
+  MatBottomSheetModule,
+  MatBottomSheetRef,
+} from '@angular/material/bottom-sheet';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
-import { DocService, DocItem, SearchHit } from '../../services/doc.service';
+import { DocService, DocItem } from '../../services/doc.service';
+import { ViewportService } from '../../services/viewport.service';
+import { DocsNavSheetComponent, NavSheetData } from './nav-sheet/nav-sheet';
 
 @Component({
   selector: 'app-docs',
@@ -18,6 +25,7 @@ import { DocService, DocItem, SearchHit } from '../../services/doc.service';
     MatDividerModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatBottomSheetModule,
   ],
   templateUrl: './docs.html',
   styleUrl: './docs.scss',
@@ -25,6 +33,13 @@ import { DocService, DocItem, SearchHit } from '../../services/doc.service';
 export class Docs implements OnInit {
   public docService = inject(DocService);
   private sanitizer = inject(DomSanitizer);
+  private bottomSheet = inject(MatBottomSheet);
+  public viewport = inject(ViewportService);
+
+  // Auto-close bottom sheet on resize to desktop
+  private bottomSheetRef: MatBottomSheetRef<DocsNavSheetComponent> | null = null;
+  public isMobile = this.viewport.isMobile;
+  public isWide = this.viewport.isWide;
 
   /** Reads <base href> baked in by Angular build. Returns '' in dev, '/zarestia/rclone-manager' in prod. */
   private get basePath(): string {
@@ -39,13 +54,12 @@ export class Docs implements OnInit {
   isIndexing = this.docService.isIndexing;
 
   // Local component state
-  searchQuery = signal('');
-  searchHits = signal<SearchHit[]>([]);
   selectedItem = signal<DocItem | null>(null);
   toc = signal<{ id: string; text: string; level: number }[]>([]);
   renderedContent = signal<SafeHtml>('');
   loading = signal(false);
   activeTocId = signal('');
+  isSearchFocused = signal(false);
 
   @ViewChild('contentArea') contentArea?: ElementRef;
 
@@ -63,6 +77,14 @@ export class Docs implements OnInit {
     marked.setOptions({ renderer, breaks: true, gfm: true } as Parameters<
       typeof marked.setOptions
     >[0]);
+
+    // Auto-close effect
+    effect(() => {
+      if (!this.isMobile() && this.bottomSheetRef) {
+        this.bottomSheetRef.dismiss();
+        this.bottomSheetRef = null;
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -126,8 +148,8 @@ export class Docs implements OnInit {
     if (!item.assetPath) return;
 
     this.selectedItem.set(item);
-    const query = searchTerm || this.searchQuery();
-    this.searchQuery.set('');
+    const query = searchTerm || this.docService.searchQuery();
+    this.docService.searchQuery.set('');
     this.loadContent(item.assetPath, query);
     this.updateDeepLink(item);
   }
@@ -141,9 +163,34 @@ export class Docs implements OnInit {
     history.pushState(null, '', `${this.basePath}/docs/${slug}${hash}`);
   }
 
+  openNavSheet(): void {
+    const data: NavSheetData = {
+      sections: this.docSections(),
+      quickLinks: this.quickLinks(),
+      selectedItem: this.selectedItem,
+      searchQuery: this.docService.searchQuery,
+      onSelect: (item: DocItem) => this.selectItem(item),
+      onSearch: (query: string) => this.onSearch(query),
+    };
+
+    this.bottomSheetRef = this.bottomSheet.open(DocsNavSheetComponent, {
+      data,
+      panelClass: 'docs-nav-sheet-panel',
+    });
+
+    this.bottomSheetRef.afterDismissed().subscribe(() => {
+      this.bottomSheetRef = null;
+    });
+  }
+
   onSearch(query: string): void {
-    this.searchQuery.set(query);
-    this.searchHits.set(this.docService.search(query));
+    this.docService.searchQuery.set(query);
+  }
+
+  onSearchBlur(): void {
+    setTimeout(() => {
+      this.isSearchFocused.set(false);
+    }, 200);
   }
 
   private loadContent(path: string, searchTerm?: string): void {
@@ -151,17 +198,20 @@ export class Docs implements OnInit {
     this.docService.fetchPage(path).subscribe({
       next: (markdown) => {
         let html = marked.parse(markdown) as string;
-        if (searchTerm && searchTerm.length >= 2) {
-          html = this.highlightContent(html, searchTerm);
+        const query = searchTerm || this.docService.searchQuery();
+
+        if (query && query.length >= 2) {
+          html = this.docService.highlightContent(html, query);
         }
-        html = this.processCustomIcons(html);
+
+        html = this.docService.processCustomIcons(html);
         this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(html));
         this.loading.set(false);
         this.extractToc();
         setTimeout(() => {
           this.attachLinkListeners();
           this.attachCopyButtons();
-          this.scrollToMatchOrTop(searchTerm);
+          this.scrollToMatchOrTop(query);
         }, 100);
       },
       error: () => {
@@ -173,30 +223,6 @@ export class Docs implements OnInit {
         this.loading.set(false);
       },
     });
-  }
-
-  /**
-   * Replaces custom icon syntax [[icon:name]] or [[icon:name.color]]
-   * with Material Icon HTML spans.
-   */
-  private processCustomIcons(html: string): string {
-    return html.replace(/\[\[icon:([a-z0-9_]+)(?:\.([a-z]+))?\]\]/g, (_, name, color) => {
-      const cls = color ? ` ${color}` : '';
-      return `<span class="material-icons md-icon${cls}">${name}</span>`;
-    });
-  }
-
-  private highlightContent(html: string, term: string): string {
-    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const regex = new RegExp(`(${escaped})`, 'gi');
-    return html
-      .split(/(<[^>]*>)/)
-      .map((part) =>
-        part.startsWith('<')
-          ? part
-          : part.replace(regex, '<mark class="content-highlight">$1</mark>'),
-      )
-      .join('');
   }
 
   private extractToc(): void {

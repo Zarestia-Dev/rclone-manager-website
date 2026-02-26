@@ -8,20 +8,31 @@
   z-index: 1000;
   background: var(--window-bg-color);
   transition: var(--transition-standard);
+  height: var(--titlebar-height);
+  border-bottom: 1px solid transparent;
 
   &.scrolled {
     background: rgba(var(--window-bg-color-rgb), 0.6);
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow-gnome);
+    border-bottom-color: var(--border-color);
   }
 
   &-container {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: var(--space-md) var(--space-xl);
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    @media (max-width: 1100px) {
+      justify-content: center;
+    }
+
+    @media (max-width: 860px) {
+      justify-content: space-between;
+    }
   }
 }
 
@@ -36,8 +47,6 @@
   transition: var(--transition-standard);
 
   &:hover {
-    opacity: 0.8;
-
     .logo-img {
       transform: scale(1.05);
     }
@@ -48,11 +57,13 @@
     width: 2.5rem;
     transition: var(--transition-standard);
   }
-}
 
-.logo-text {
-  @media (max-width: 500px) {
+  @media (max-width: 1100px) {
     display: none;
+  }
+
+  @media (max-width: 860px) {
+    display: flex;
   }
 }
 
@@ -60,7 +71,7 @@
   display: none;
   color: var(--window-fg-color);
 
-  @media (max-width: 768px) {
+  @media (max-width: 860px) {
     display: flex;
   }
 }
@@ -70,9 +81,9 @@
   gap: var(--space-lg);
   align-items: center;
 
-  @media (max-width: 768px) {
+  @media (max-width: 860px) {
     position: fixed;
-    top: 4.5625rem; // 73px approx
+    top: var(--titlebar-height);
     left: 0;
     right: 0;
     background: var(--window-bg-color);
@@ -117,7 +128,7 @@
       color: var(--primary-color);
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 860px) {
       width: 100%;
       text-align: center;
       padding: var(--space-md) var(--space-md);
@@ -138,7 +149,7 @@
     display: flex;
     align-items: center;
     gap: var(--space-xs);
-    padding: 0.25rem var(--space-xs);
+    padding: var(--space-xxs) var(--space-xs);
     background: var(--bg-elevated);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
@@ -192,7 +203,7 @@
   }
 
   // Mobile specific adjustments
-  @media (max-width: 768px) {
+  @media (max-width: 860px) {
     .mode-toggle {
       width: 100%;
       justify-content: center;

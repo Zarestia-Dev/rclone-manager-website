@@ -11,7 +11,7 @@
 }
 
 .features-grid {
-  @include grid-responsive(min(18.75rem, 100%), var(--container-gap)); // 300px
+  @include grid-responsive(min(18.75rem, 100%), var(--container-gap));
 }
 
 .feature-card {
