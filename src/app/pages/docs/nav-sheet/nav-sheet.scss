@@ -82,11 +82,11 @@
   text-align: left;
   min-height: calc(var(--space-xl) * 2.3); // ~56px touch target
 
-  ::ng-deep .mdc-button__label {
+  .button-content {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
     width: 100%;
+    gap: var(--space-sm);
   }
 
   .main-icon {

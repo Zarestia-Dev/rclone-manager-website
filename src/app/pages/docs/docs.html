@@ -9,7 +9,8 @@
           <mat-icon>search</mat-icon>
           <input type="text" placeholder="Search docs..." [value]="docService.searchQuery()"
             (input)="onSearch($any($event.target).value)" (focus)="isSearchFocused.set(true)" (blur)="onSearchBlur()"
-            (keydown.escape)="docService.searchQuery.set('')" aria-label="Search documentation">
+            (keydown)="onSearchKeydown($event)" (keydown.escape)="docService.searchQuery.set('')"
+            aria-label="Search documentation">
           @if (isIndexing()) {
           <mat-spinner diameter="14" class="search-spinner"></mat-spinner>
           }
@@ -23,8 +24,9 @@
               }}</span>
           </div>
           <div class="results-list">
-            @for (hit of docService.searchHits(); track hit.item.title) {
-            <div class="search-hit" (click)="selectItem(hit.item, docService.searchQuery())"
+            @for (hit of docService.searchHits(); track hit.item.title; let i = $index) {
+            <div class="search-hit" [class.focused]="searchFocusIndex() === i"
+              (click)="selectItem(hit.item, docService.searchQuery())"
               (keydown.enter)="selectItem(hit.item, docService.searchQuery())" tabindex="0" role="button">
               <div class="hit-meta">
                 <mat-icon>{{ hit.item.icon || 'description' }}</mat-icon>
@@ -34,7 +36,16 @@
               <div class="hit-snippet" [innerHTML]="hit.snippet"></div>
             </div>
             } @empty {
-            <div class="no-results">No matches for "{{ docService.searchQuery() }}"</div>
+            <div class="no-results">
+              @if (isIndexing()) {
+              <div class="indexing-feedback">
+                <mat-spinner diameter="24"></mat-spinner>
+                <p>Updating search index...</p>
+              </div>
+              } @else {
+              No matches for "{{ docService.searchQuery() }}"
+              }
+            </div>
             }
           </div>
         </div>
@@ -49,11 +60,13 @@
             @for (item of section.items; track item.title) {
             <button mat-button class="sidebar-item" [class.active]="selectedItem()?.title === item.title"
               (click)="selectItem(item)" [matTooltip]="item.description || ''" matTooltipPosition="right">
-              <mat-icon class="main-icon">{{ item.icon || 'description' }}</mat-icon>
-              <span class="item-title">{{ item.title }}</span>
-              @if (item.isExternal) {
-              <mat-icon class="external-icon">open_in_new</mat-icon>
-              }
+              <span class="button-content">
+                <mat-icon class="main-icon">{{ item.icon || 'description' }}</mat-icon>
+                <span class="item-title">{{ item.title }}</span>
+                @if (item.isExternal) {
+                <mat-icon class="external-icon">open_in_new</mat-icon>
+                }
+              </span>
             </button>
             }
           </div>

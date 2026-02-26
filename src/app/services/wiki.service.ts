@@ -8,10 +8,7 @@ const REPO = 'Zarestia-Dev/rclone-manager-website';
 const BRANCH = 'main';
 const DOCS_PATH = 'public/docs';
 
-// --- CONFIGURATION ---
-const FORCE_GITHUB = false; // Set to true to test GitHub in dev mode
-const USE_LOCAL = !environment.production && !FORCE_GITHUB;
-// ---------------------
+const USE_LOCAL = !environment.production;
 
 @Injectable({
   providedIn: 'root',

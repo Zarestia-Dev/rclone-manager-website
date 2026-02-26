@@ -1,6 +1,6 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { map, shareReplay } from 'rxjs';
+import { from, map, mergeMap, shareReplay, Subject, takeUntil } from 'rxjs';
+import { DestroyRef, Injectable, inject, signal, computed } from '@angular/core';
 import { WikiService } from './wiki.service';
 
 export interface DocItem {
@@ -10,7 +10,6 @@ export interface DocItem {
   assetPath?: string;
   isExternal?: boolean;
   icon?: string;
-  type?: 'primary' | 'accent' | 'warn' | 'basic';
 }
 
 export interface DocSection {
@@ -32,11 +31,13 @@ export interface SearchHit {
 })
 export class DocService {
   private wikiService = inject(WikiService);
+  private destroyRef = inject(DestroyRef);
   private sanitizer = inject(DomSanitizer);
 
   docSections = signal<DocSection[]>([]);
   quickLinks = signal<DocItem[]>([]);
   searchQuery = signal('');
+  private indexingCancel$ = new Subject<void>();
   searchIndex = new Map<string, string>(); // assetPath -> content
   isIndexing = signal(false);
 
@@ -140,11 +141,20 @@ export class DocService {
     if (!allItems.length || this.isIndexing()) return;
 
     this.isIndexing.set(true);
+    this.indexingCancel$.next(); // Cancel previous run
     let indexed = 0;
 
-    allItems.forEach((item) => {
-      this.wikiService.fetchPage(item.assetPath!).subscribe({
-        next: (content) => {
+    from(allItems)
+      .pipe(
+        mergeMap((item) => {
+          return this.wikiService
+            .fetchPage(item.assetPath!)
+            .pipe(map((content) => ({ item, content })));
+        }, 4),
+        takeUntil(this.indexingCancel$),
+      )
+      .subscribe({
+        next: ({ item, content }) => {
           this.searchIndex.set(item.assetPath!, content.toLowerCase());
           if (++indexed === allItems.length) this.isIndexing.set(false);
         },
@@ -152,7 +162,6 @@ export class DocService {
           if (++indexed === allItems.length) this.isIndexing.set(false);
         },
       });
-    });
   }
 
   private parseSummary(content: string): { sections: DocSection[]; quickLinks: DocItem[] } {
@@ -183,10 +192,13 @@ export class DocService {
           sections.push(currentSection);
         }
       } else if (trimmed.startsWith('- ')) {
-        const [, title, pathOrUrl, metaStr] =
-          trimmed.match(/^- \[(.*?)\]\((.*?)\)(?:\s*\{(.*)\})?$/) || [];
-        if (!title) return;
+        const match = trimmed.match(/^- \[(.*?)\]\((.*?)\)(?:\s*\{(.*)\})?$/);
+        if (!match) {
+          console.warn(`[DocService] Malformed summary line: "${trimmed}"`);
+          return;
+        }
 
+        const [, title, pathOrUrl, metaStr] = match;
         const metadata = this.parseMetadata(metaStr);
         const item: DocItem = {
           title: title.trim(),
@@ -195,7 +207,6 @@ export class DocService {
           isExternal: pathOrUrl.startsWith('http'),
           url: pathOrUrl.startsWith('http') ? pathOrUrl : undefined,
           assetPath: pathOrUrl.startsWith('http') ? undefined : pathOrUrl,
-          type: metadata['type'] as 'primary' | 'accent' | 'warn' | 'basic',
         };
 
         if (inQuickLinks) quickLinks.push(item);

@@ -1,4 +1,19 @@
-import { Component, inject, signal, ElementRef, ViewChild, OnInit, effect } from '@angular/core';
+import {
+  Component,
+  inject,
+  signal,
+  ElementRef,
+  ViewChild,
+  OnInit,
+  effect,
+  DestroyRef,
+  afterNextRender,
+  Injector,
+  ChangeDetectionStrategy,
+} from '@angular/core';
+import { APP_BASE_HREF } from '@angular/common';
+import { fromEvent } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -12,8 +27,10 @@ import {
 } from '@angular/material/bottom-sheet';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 import { DocService, DocItem } from '../../services/doc.service';
 import { ViewportService } from '../../services/viewport.service';
+import { A11yModule } from '@angular/cdk/a11y';
 import { DocsNavSheetComponent, NavSheetData } from './nav-sheet/nav-sheet';
 
 @Component({
@@ -26,26 +43,28 @@ import { DocsNavSheetComponent, NavSheetData } from './nav-sheet/nav-sheet';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatBottomSheetModule,
+    A11yModule,
   ],
   templateUrl: './docs.html',
   styleUrl: './docs.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Docs implements OnInit {
   public docService = inject(DocService);
   private sanitizer = inject(DomSanitizer);
   private bottomSheet = inject(MatBottomSheet);
   public viewport = inject(ViewportService);
+  private injector = inject(Injector);
+  private destroyRef = inject(DestroyRef);
+  private basePath = inject(APP_BASE_HREF, { optional: true })?.replace(/\/$/, '') ?? '';
 
   // Auto-close bottom sheet on resize to desktop
   private bottomSheetRef: MatBottomSheetRef<DocsNavSheetComponent> | null = null;
   public isMobile = this.viewport.isMobile;
   public isWide = this.viewport.isWide;
 
-  /** Reads <base href> baked in by Angular build. Returns '' in dev, '/zarestia/rclone-manager' in prod. */
-  private get basePath(): string {
-    const href = document.querySelector('base')?.getAttribute('href') ?? '/';
-    return href === '/' ? '' : href.replace(/\/$/, '');
-  }
+  // Cleanup for listeners on each content render
+  private renderCleanup?: AbortController;
 
   // Re-expose signals from service for easier template access if needed,
   // though we can also use public docService.
@@ -60,6 +79,7 @@ export class Docs implements OnInit {
   loading = signal(false);
   activeTocId = signal('');
   isSearchFocused = signal(false);
+  searchFocusIndex = signal(-1);
 
   @ViewChild('contentArea') contentArea?: ElementRef;
 
@@ -74,9 +94,7 @@ export class Docs implements OnInit {
         .replace(/\s+/g, '-');
       return `<h${level} id="${id}"><a class="heading-anchor" href="#${id}" aria-label="Link to section">§</a>${text}</h${level}>`;
     };
-    marked.setOptions({ renderer, breaks: true, gfm: true } as Parameters<
-      typeof marked.setOptions
-    >[0]);
+    marked.use({ renderer, breaks: true, gfm: true });
 
     // Auto-close effect
     effect(() => {
@@ -88,14 +106,17 @@ export class Docs implements OnInit {
   }
 
   ngOnInit(): void {
+    // Disable automatic scroll restoration to handle hash anchors manually
+    history.scrollRestoration = 'manual';
+
     this.loadDocs();
     this.initScrollListener();
   }
 
   private initScrollListener(): void {
-    window.addEventListener(
-      'scroll',
-      () => {
+    fromEvent(window, 'scroll', { passive: true })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
         if (!this.contentArea || this.toc().length === 0) return;
 
         const headings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
@@ -111,33 +132,34 @@ export class Docs implements OnInit {
         }
 
         this.activeTocId.set(currentId || (this.toc()[0]?.id ?? ''));
-      },
-      { passive: true },
-    );
+      });
   }
 
   private loadDocs(): void {
     this.loading.set(true);
-    this.docService.loadSummary().subscribe({
-      next: (data) => {
-        this.docService.docSections.set(data.sections);
-        this.docService.quickLinks.set(data.quickLinks);
+    this.docService
+      .loadSummary()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (data) => {
+          this.docService.docSections.set(data.sections);
+          this.docService.quickLinks.set(data.quickLinks);
 
-        const pathParts = window.location.pathname.replace(this.basePath, '').split('/');
-        const pageSlug = pathParts.length >= 3 ? pathParts[2] : '';
-        const restoredItem = pageSlug
-          ? this.docService.findItemBySlug(data.sections, pageSlug)
-          : null;
+          const pathParts = window.location.pathname.replace(this.basePath, '').split('/');
+          const pageSlug = pathParts.length >= 3 ? pathParts[2] : '';
+          const restoredItem = pageSlug
+            ? this.docService.findItemBySlug(data.sections, pageSlug)
+            : null;
 
-        const itemToSelect = restoredItem ?? (data.sections[0]?.items[0] || null);
+          const itemToSelect = restoredItem ?? (data.sections[0]?.items[0] || null);
 
-        if (itemToSelect) this.selectItem(itemToSelect);
+          if (itemToSelect) this.selectItem(itemToSelect);
 
-        this.loading.set(false);
-        this.docService.startIndexing(data.sections);
-      },
-      error: () => this.loading.set(false),
-    });
+          this.loading.set(false);
+          this.docService.startIndexing(data.sections);
+        },
+        error: () => this.loading.set(false),
+      });
   }
 
   selectItem(item: DocItem, searchTerm?: string): void {
@@ -185,6 +207,29 @@ export class Docs implements OnInit {
 
   onSearch(query: string): void {
     this.docService.searchQuery.set(query);
+    this.searchFocusIndex.set(-1);
+  }
+
+  onSearchKeydown(event: KeyboardEvent): void {
+    const hits = this.docService.searchHits();
+    if (hits.length === 0) return;
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.searchFocusIndex.update((i) => (i + 1) % hits.length);
+    } else if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.searchFocusIndex.update((i) => (i - 1 + hits.length) % hits.length);
+    } else if (event.key === 'Enter' && this.searchFocusIndex() >= 0) {
+      event.preventDefault();
+      this.selectItem(hits[this.searchFocusIndex()].item, this.docService.searchQuery());
+    }
+
+    // After updating index, ensure focused hits scroll into view
+    requestAnimationFrame(() => {
+      const focused = document.querySelector('.search-hit.focused');
+      focused?.scrollIntoView({ block: 'nearest' });
+    });
   }
 
   onSearchBlur(): void {
@@ -194,6 +239,9 @@ export class Docs implements OnInit {
   }
 
   private loadContent(path: string, searchTerm?: string): void {
+    this.renderCleanup?.abort();
+    this.renderCleanup = new AbortController();
+
     this.loading.set(true);
     this.docService.fetchPage(path).subscribe({
       next: (markdown) => {
@@ -204,15 +252,24 @@ export class Docs implements OnInit {
           html = this.docService.highlightContent(html, query);
         }
 
+        // Restore custom icons processing (Regression fix)
         html = this.docService.processCustomIcons(html);
-        this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(html));
+
+        // Content is from our own GitHub repo, considered trusted
+        // but we still sanitize it to prevent XSS from PRs
+        const sanitizedHtml = DOMPurify.sanitize(html);
+        this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(sanitizedHtml));
         this.loading.set(false);
         this.extractToc();
-        setTimeout(() => {
-          this.attachLinkListeners();
-          this.attachCopyButtons();
-          this.scrollToMatchOrTop(query);
-        }, 100);
+
+        afterNextRender(
+          () => {
+            this.attachLinkListeners();
+            this.attachCopyButtons();
+            this.scrollToMatchOrTop(query);
+          },
+          { injector: this.injector },
+        );
       },
       error: () => {
         this.renderedContent.set(
@@ -226,22 +283,28 @@ export class Docs implements OnInit {
   }
 
   private extractToc(): void {
-    // We use a small delay to ensure content is in DOM.
-    setTimeout(() => {
-      if (!this.contentArea) return;
-      const headings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
-      const tocItems: { id: string; text: string; level: number }[] = [];
-      headings.forEach((h: HTMLElement) => {
-        if (h.id) {
-          tocItems.push({
-            id: h.id,
-            text: h.innerText.replace('§', '').trim(),
-            level: parseInt(h.tagName.substring(1)),
-          });
-        }
-      });
-      this.toc.set(tocItems);
-    }, 0);
+    // Ensuring content is in DOM using afterNextRender
+    afterNextRender(
+      () => {
+        if (!this.contentArea) return;
+        const headings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
+        const tocItems: { id: string; text: string; level: number }[] = [];
+        headings.forEach((h: HTMLElement) => {
+          if (h.id) {
+            const clone = h.cloneNode(true) as HTMLElement;
+            clone.querySelectorAll('.material-icons, .heading-anchor').forEach((el) => el.remove());
+
+            tocItems.push({
+              id: h.id,
+              text: clone.innerText.trim(),
+              level: parseInt(h.tagName.substring(1)),
+            });
+          }
+        });
+        this.toc.set(tocItems);
+      },
+      { injector: this.injector },
+    );
   }
 
   private scrollToMatchOrTop(searchTerm?: string): void {
@@ -287,21 +350,25 @@ export class Docs implements OnInit {
       btn.title = 'Copy code';
       btn.innerHTML = '<span class="material-icons">content_copy</span>';
 
-      btn.addEventListener('click', async () => {
-        const code = pre.querySelector('code');
-        const text = code?.innerText ?? pre.innerText;
-        try {
-          await navigator.clipboard.writeText(text);
-          btn.innerHTML = '<span class="material-icons">check</span>';
-          btn.classList.add('copied');
-          setTimeout(() => {
-            btn.innerHTML = '<span class="material-icons">content_copy</span>';
-            btn.classList.remove('copied');
-          }, 2000);
-        } catch {
-          // clipboard not available (non-https)
-        }
-      });
+      btn.addEventListener(
+        'click',
+        async () => {
+          const code = pre.querySelector('code');
+          const text = code?.innerText ?? pre.innerText;
+          try {
+            await navigator.clipboard.writeText(text);
+            btn.innerHTML = '<span class="material-icons">check</span>';
+            btn.classList.add('copied');
+            setTimeout(() => {
+              btn.innerHTML = '<span class="material-icons">content_copy</span>';
+              btn.classList.remove('copied');
+            }, 2000);
+          } catch {
+            // clipboard not available (non-https)
+          }
+        },
+        { signal: this.renderCleanup?.signal },
+      );
 
       pre.appendChild(btn);
     });
@@ -314,31 +381,29 @@ export class Docs implements OnInit {
       const href = link.getAttribute('href');
       if (!href) return;
       if (href.startsWith('#')) {
-        link.addEventListener('click', (event) => this.scrollToSection(href.slice(1), event));
-      } else if (!href.startsWith('http') && !href.startsWith('mailto')) {
-        link.addEventListener('click', (event) => {
-          event.preventDefault();
-          this.handleInternalLink(href);
+        link.addEventListener('click', (event) => this.scrollToSection(href.slice(1), event), {
+          signal: this.renderCleanup?.signal,
         });
+      } else if (!href.startsWith('http') && !href.startsWith('mailto')) {
+        link.addEventListener(
+          'click',
+          (event) => {
+            event.preventDefault();
+            this.handleInternalLink(href);
+          },
+          { signal: this.renderCleanup?.signal },
+        );
       }
     });
   }
 
   private handleInternalLink(href: string): void {
-    const decodedHref = decodeURIComponent(href).replace(/-/g, ' ');
-    for (const section of this.docSections()) {
-      const item = section.items.find((i: DocItem) => {
-        if (!i.assetPath) return false;
-        const filename = i.assetPath.split('/').pop()?.replace('.md', '');
-        return (
-          i.title.toLowerCase() === decodedHref.toLowerCase() ||
-          filename?.toLowerCase() === href.toLowerCase()
-        );
-      });
-      if (item) {
-        this.selectItem(item);
-        return;
-      }
+    // Extract slug from href (e.g., "getting-started.md" -> "getting-started")
+    const slug = href.split('/').pop()?.replace(/\.md$/i, '') ?? '';
+    const item = this.docService.findItemBySlug(this.docSections(), slug);
+
+    if (item) {
+      this.selectItem(item);
     }
   }
 

@@ -138,9 +138,13 @@
     transition: background 0.15s;
 
     &:hover,
+    &.focused,
     &:focus-visible {
       background: var(--hover-bg-color);
       outline: none;
+      .hit-title {
+        color: var(--primary-color);
+      }
     }
 
     .hit-meta {
@@ -193,8 +197,21 @@
     padding: var(--space-xl) var(--space-md);
     text-align: center;
     color: var(--dim-color);
-    font-style: italic;
     font-size: var(--font-size-sm);
+
+    .indexing-feedback {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-md);
+
+      p {
+        margin: 0;
+        font-weight: 500;
+        font-size: var(--font-size-md);
+        font-style: normal;
+      }
+    }
   }
 }
 
@@ -225,10 +242,12 @@
 
 .sidebar-item {
   width: 100%;
-  border-radius: var(--radius-xs);
+  margin-bottom: var(--space-xxs);
+  border-radius: var(--radius-sm);
   font-size: var(--font-size-sm);
   color: var(--window-fg-color);
   text-align: left;
+  height: 40px;
   transition: var(--transition-fast);
 
   ::ng-deep .mdc-button__label {
@@ -319,7 +338,7 @@
 
 // ─── Table of Contents ────────────────────────────────────────────────────────
 .docs-toc-container {
-  @include sticky-panel($top: var(--space-2xl), $width: clamp(11.25rem, 18%, 15rem));
+  @include sticky-panel($top: var(--titlebar-height), $width: clamp(11.25rem, 18%, 15rem));
   overflow-y: auto;
   margin-left: var(--space-md);
 
@@ -490,12 +509,5 @@
     transform: scale(1);
     visibility: visible;
     pointer-events: auto;
-  }
-}
-
-// Global Bottom Sheet override for themed background
-::ng-deep .docs-nav-sheet-panel {
-  .mat-bottom-sheet-container {
-    padding: 0 !important;
   }
 }

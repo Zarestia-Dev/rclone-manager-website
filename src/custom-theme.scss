@@ -1547,3 +1547,10 @@ mat-accordion {
   color: var(--text-muted);
   margin: 0 0 var(--space-lg) 0;
 }
+
+// Global Bottom Sheet override for themed background
+.docs-nav-sheet-panel {
+  .mat-bottom-sheet-container {
+    padding: 0 !important;
+  }
+}

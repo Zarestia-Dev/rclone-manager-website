@@ -1,4 +1,4 @@
-import { Component, inject, Signal } from '@angular/core';
+import { Component, inject, Signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,12 +20,14 @@ export interface NavSheetData {
   imports: [CommonModule, MatIconModule, MatButtonModule],
   templateUrl: './nav-sheet.html',
   styleUrl: './nav-sheet.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocsNavSheetComponent {
   private bottomSheetRef = inject(MatBottomSheetRef<DocsNavSheetComponent>);
   public data = inject<NavSheetData>(MAT_BOTTOM_SHEET_DATA);
 
   selectItem(item: DocItem): void {
+    this.data.onSelect(item);
     this.bottomSheetRef.dismiss(item);
   }
 }

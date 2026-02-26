@@ -1,30 +1,41 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal, effect, inject, PLATFORM_ID, DestroyRef } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export type Theme = 'light' | 'dark' | 'system';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ThemeService {
+  private platformId = inject(PLATFORM_ID);
+  private destroyRef = inject(DestroyRef);
+  private isBrowser = isPlatformBrowser(this.platformId);
+
   currentTheme = signal<Theme>(this.getInitialTheme());
 
   constructor() {
-    // Initial apply
-    this.applyTheme(this.currentTheme());
-    
-    // Watch for theme changes and persist/apply
-    effect(() => {
-      const theme = this.currentTheme();
-      localStorage.setItem('theme', theme);
-      this.applyTheme(theme);
-    });
+    if (this.isBrowser) {
+      // Initial apply
+      this.applyTheme(this.currentTheme());
 
-    // Listen for system changes globally once
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      if (this.currentTheme() === 'system') {
-        this.updateRootClass(document.documentElement, e.matches ? 'dark' : 'light');
-      }
-    });
+      // Watch for theme changes and persist/apply
+      effect(() => {
+        const theme = this.currentTheme();
+        localStorage.setItem('theme', theme);
+        this.applyTheme(theme);
+      });
+
+      // Listen for system changes globally once
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const listener = (e: MediaQueryListEvent) => {
+        if (this.currentTheme() === 'system') {
+          this.updateRootClass(document.documentElement, e.matches ? 'dark' : 'light');
+        }
+      };
+
+      mediaQuery.addEventListener('change', listener);
+      this.destroyRef.onDestroy(() => mediaQuery.removeEventListener('change', listener));
+    }
   }
 
   setTheme(theme: Theme) {
@@ -43,7 +54,7 @@ export class ThemeService {
 
   private applyTheme(theme: Theme) {
     if (typeof document === 'undefined') return;
-    
+
     const root = document.documentElement;
 
     if (theme === 'system') {

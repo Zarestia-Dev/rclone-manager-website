@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/core';
 import { GithubService } from '../../services/github.service';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,7 +8,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
-import { firstValueFrom } from 'rxjs';
 import { marked } from 'marked';
 import { ModeService } from '../../services/mode.service';
 import {
@@ -16,6 +15,7 @@ import {
   ChangelogVersion,
   GitHubRelease,
   DownloadOption,
+  GitHubAsset,
 } from '../../models/downloads.model';
 import { ChangelogService } from '../../services/changelog.service';
 import {
@@ -32,6 +32,7 @@ import {
   DOWNLOADS_MESSAGES,
 } from '../../constants/downloads.constants';
 import { createDownloadOption, getDownloadType } from '../../utils/downloads.utils';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-downloads',
@@ -47,18 +48,37 @@ import { createDownloadOption, getDownloadType } from '../../utils/downloads.uti
   ],
   templateUrl: './downloads.html',
   styleUrl: './downloads.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Downloads implements OnInit {
+export class Downloads {
   private github = inject(GithubService);
   private changelogService = inject(ChangelogService);
   private snackBar = inject(MatSnackBar);
   modeService = inject(ModeService);
 
-  // State
-  allReleases = signal<GitHubRelease[]>([]);
-  changelog = signal<ChangelogVersion[]>([]);
-  isLoading = signal(true);
-  error = signal<string | null>(null);
+  // Resources
+  releasesResource = rxResource({
+    stream: () => this.github.get<GitHubRelease[]>(`/repos/${GITHUB_REPO}/releases`),
+  });
+
+  changelogResource = rxResource({
+    stream: () => this.changelogService.fetchFullChangelog(),
+  });
+
+  // Derived signals
+  allReleases = computed(() => this.releasesResource.value() ?? []);
+  changelog = computed(
+    () =>
+      this.changelogResource.value() ?? (this.changelogResource.error() ? FALLBACK_CHANGELOG : []),
+  );
+  isLoading = computed(
+    () => this.releasesResource.isLoading() || this.changelogResource.isLoading(),
+  );
+  error = computed(() =>
+    this.releasesResource.error() || this.changelogResource.error()
+      ? DOWNLOADS_MESSAGES.ERROR_LOADING
+      : null,
+  );
 
   // Computed
   mode = computed(() => this.modeService.currentMode());
@@ -67,9 +87,9 @@ export class Downloads implements OnInit {
     const mode = this.mode();
     const releases = this.allReleases();
     if (mode === 'headless') {
-      return releases.filter((r) => r.tag_name.includes('headless'));
+      return releases.filter((r: GitHubRelease) => r.tag_name.includes('headless'));
     }
-    return releases.filter((r) => !r.tag_name.includes('headless'));
+    return releases.filter((r: GitHubRelease) => !r.tag_name.includes('headless'));
   });
 
   latestRelease = computed(() => {
@@ -90,34 +110,6 @@ export class Downloads implements OnInit {
   });
 
   systemRequirements = SYSTEM_REQUIREMENTS;
-
-  async ngOnInit() {
-    await this.loadData();
-  }
-
-  async loadData(retryCount = 0): Promise<void> {
-    try {
-      this.isLoading.set(true);
-      this.error.set(null);
-
-      const [releases, changelog] = await Promise.all([
-        firstValueFrom(this.github.get<GitHubRelease[]>(`/repos/${GITHUB_REPO}/releases`)),
-        firstValueFrom(this.changelogService.fetchFullChangelog()),
-      ]);
-
-      this.allReleases.set(releases);
-      this.changelog.set(changelog);
-      this.isLoading.set(false);
-    } catch {
-      if (retryCount < DOWNLOADS_CONFIG.MAX_RETRIES) {
-        setTimeout(() => this.loadData(retryCount + 1), DOWNLOADS_CONFIG.RETRY_DELAY_MS);
-        return;
-      }
-      this.error.set(DOWNLOADS_MESSAGES.ERROR_LOADING);
-      this.isLoading.set(false);
-      this.changelog.set(FALLBACK_CHANGELOG);
-    }
-  }
 
   private generatePlatformsFromReleases(releases: GitHubRelease[]): DownloadPlatform[] {
     const mode = this.mode();
@@ -173,8 +165,8 @@ export class Downloads implements OnInit {
   getAssetCount = computed(() => {
     const release = this.latestRelease();
     if (!release?.assets) return 0;
-    return release.assets.filter(
-      (a) =>
+    return (release.assets as GitHubAsset[]).filter(
+      (a: GitHubAsset) =>
         !a.name.toLowerCase().includes('.sig') &&
         !a.name.toLowerCase().includes('source code') &&
         a.name !== 'latest.json',
@@ -189,4 +181,10 @@ export class Downloads implements OnInit {
 
   downloadFile = (url: string) => window.open(url, '_blank');
   openExternalLink = (url: string) => window.open(url, '_blank');
+
+  loadData(): void {
+    // Reload resources
+    this.releasesResource.reload();
+    this.changelogResource.reload();
+  }
 }

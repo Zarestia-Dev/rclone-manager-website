@@ -1,4 +1,5 @@
-import { Injectable, signal, effect, computed } from '@angular/core';
+import { Injectable, signal, effect, computed, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export type AppMode = 'desktop' | 'headless';
 
@@ -6,20 +7,25 @@ export type AppMode = 'desktop' | 'headless';
   providedIn: 'root',
 })
 export class ModeService {
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
+
   currentMode = signal<AppMode>(this.getInitialMode());
 
   modeLabel = computed(() => (this.currentMode() === 'desktop' ? 'Desktop' : 'Headless'));
   modeIcon = computed(() => (this.currentMode() === 'desktop' ? 'monitor' : 'dns'));
 
   constructor() {
-    // Initial apply
-    this.applyModeClass(this.currentMode());
+    if (this.isBrowser) {
+      // Initial apply
+      this.applyModeClass(this.currentMode());
 
-    effect(() => {
-      const mode = this.currentMode();
-      localStorage.setItem('appMode', mode);
-      this.applyModeClass(mode);
-    });
+      effect(() => {
+        const mode = this.currentMode();
+        localStorage.setItem('appMode', mode);
+        this.applyModeClass(mode);
+      });
+    }
   }
 
   private applyModeClass(mode: AppMode) {
@@ -33,6 +39,7 @@ export class ModeService {
   }
 
   private getInitialMode(): AppMode {
+    if (!this.isBrowser) return 'desktop';
     const savedMode = localStorage.getItem('appMode') as AppMode;
     return savedMode === 'desktop' || savedMode === 'headless' ? savedMode : 'desktop';
   }
