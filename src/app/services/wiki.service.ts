@@ -2,13 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, of } from 'rxjs';
 import { GithubService } from './github.service';
-import { environment } from '../../environments/environment';
 
 const REPO = 'Zarestia-Dev/rclone-manager-website';
 const BRANCH = 'main';
 const DOCS_PATH = 'public/docs';
 
-const USE_LOCAL = !environment.production;
+const USE_LOCAL = true; // Favor bundled assets (for Cloudflare Pages performance)
 
 @Injectable({
   providedIn: 'root',

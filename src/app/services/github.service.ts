@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 const GITHUB_API_BASE = 'https://api.github.com';
@@ -33,6 +33,7 @@ export interface Contributor {
 })
 export class GithubService {
   private http = inject(HttpClient);
+  private cache = new Map<string, Observable<unknown>>();
 
   private get proxyUrl(): string {
     return (environment.githubProxyUrl || '').replace(/\/$/, '');
@@ -68,15 +69,29 @@ export class GithubService {
 
   /**
    * Make a REST GET request to the GitHub API.
-   * Automatically injects the Authorization header if a token is configured.
+   * Caches the response in memory. Use forceRefresh to bypass the cache.
    */
-  get<T>(path: string): Observable<T> {
-    if (this.hasProxy) {
-      return this.http.get<T>(`${this.proxyUrl}/api/github${path}`);
+  get<T>(path: string, forceRefresh = false): Observable<T> {
+    if (forceRefresh) {
+      this.cache.delete(path);
     }
-    return this.http.get<T>(`${GITHUB_API_BASE}${path}`, {
-      headers: this.authHeaders,
-    });
+
+    if (!this.cache.has(path)) {
+      let request$: Observable<T>;
+
+      if (this.hasProxy) {
+        request$ = this.http.get<T>(`${this.proxyUrl}/api/github${path}`);
+      } else {
+        request$ = this.http.get<T>(`${GITHUB_API_BASE}${path}`, {
+          headers: this.authHeaders,
+        });
+      }
+
+      const cachedRequest$ = request$.pipe(shareReplay(1));
+      this.cache.set(path, cachedRequest$);
+    }
+
+    return this.cache.get(path)! as Observable<T>;
   }
 
   /**
@@ -109,18 +124,25 @@ export class GithubService {
   /**
    * Fetch open issues from a repository.
    */
-  getIssues(repo: string, labels: string[] = []): Observable<GithubIssue[]> {
+  getIssues(repo: string, labels: string[] = [], forceRefresh = false): Observable<GithubIssue[]> {
     let path = `/repos/${repo}/issues?state=open&sort=updated`;
     if (labels.length > 0) {
       path += `&labels=${labels.join(',')}`;
     }
-    return this.get<GithubIssue[]>(path);
+    return this.get<GithubIssue[]>(path, forceRefresh);
   }
 
   /**
    * Fetch contributors for a repository.
    */
-  getContributors(repo: string): Observable<Contributor[]> {
-    return this.get<Contributor[]>(`/repos/${repo}/contributors`);
+  getContributors(repo: string, forceRefresh = false): Observable<Contributor[]> {
+    return this.get<Contributor[]>(`/repos/${repo}/contributors`, forceRefresh);
+  }
+
+  /**
+   * Clear the in-memory cache of API responses.
+   */
+  clearMemoryCache(): void {
+    this.cache.clear();
   }
 }

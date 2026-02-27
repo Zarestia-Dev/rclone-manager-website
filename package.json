@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --base-href /zarestia/rclone-manager/",
+    "build": "node scripts/build-search-index.js && ng build --base-href /zarestia/rclone-manager/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint"

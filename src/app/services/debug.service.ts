@@ -1,10 +1,14 @@
 import { Injectable, inject, DOCUMENT } from '@angular/core';
+import { GithubService } from './github.service';
+import { DocService } from './doc.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DebugService {
   private readonly document = inject(DOCUMENT);
+  private githubService = inject(GithubService);
+  private docService = inject(DocService);
   private contextMenu: HTMLElement | null = null;
 
   constructor() {
@@ -131,6 +135,10 @@ export class DebugService {
         }
       });
     }
+
+    // 4. Clear RxJS Memory Caches
+    this.githubService.clearMemoryCache();
+    this.docService.clearMemoryCache();
 
     // Update feedback
     setTimeout(() => {

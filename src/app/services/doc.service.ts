@@ -1,7 +1,8 @@
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { from, map, mergeMap, shareReplay, Subject, takeUntil } from 'rxjs';
+import { from, map, mergeMap, Observable, shareReplay, Subject, takeUntil } from 'rxjs';
 import { DestroyRef, Injectable, inject, signal, computed } from '@angular/core';
 import { WikiService } from './wiki.service';
+import { HttpClient } from '@angular/common/http';
 
 export interface DocItem {
   title: string;
@@ -33,6 +34,7 @@ export class DocService {
   private wikiService = inject(WikiService);
   private destroyRef = inject(DestroyRef);
   private sanitizer = inject(DomSanitizer);
+  private http = inject(HttpClient);
 
   docSections = signal<DocSection[]>([]);
   quickLinks = signal<DocItem[]>([]);
@@ -40,6 +42,7 @@ export class DocService {
   private indexingCancel$ = new Subject<void>();
   searchIndex = new Map<string, string>(); // assetPath -> content
   isIndexing = signal(false);
+  private searchIndexCache$?: Observable<Record<string, string>>;
 
   // Computed search hits based on query
   searchHits = computed(() => {
@@ -59,6 +62,15 @@ export class DocService {
 
   fetchPage(path: string) {
     return this.wikiService.fetchPage(path);
+  }
+
+  loadSearchIndex(forceRefresh = false): Observable<Record<string, string>> {
+    if (forceRefresh || !this.searchIndexCache$) {
+      this.searchIndexCache$ = this.http
+        .get<Record<string, string>>('docs/search-index.json')
+        .pipe(shareReplay(1));
+    }
+    return this.searchIndexCache$;
   }
 
   search(query: string): SearchHit[] {
@@ -137,11 +149,35 @@ export class DocService {
   }
 
   startIndexing(sections: DocSection[]) {
-    const allItems = sections.flatMap((s) => s.items).filter((i) => i.assetPath);
-    if (!allItems.length || this.isIndexing()) return;
-
+    if (this.isIndexing()) return;
     this.isIndexing.set(true);
-    this.indexingCancel$.next(); // Cancel previous run
+
+    this.loadSearchIndex().subscribe({
+      next: (index: Record<string, string>) => {
+        Object.keys(index).forEach((key) => {
+          this.searchIndex.set(key, index[key]);
+        });
+        this.isIndexing.set(false);
+        console.log(
+          `[DocService] Successfully loaded search index with ${Object.keys(index).length} items.`,
+        );
+      },
+      error: (err: unknown) => {
+        console.error('[DocService] Failed to load pre-generated search index:', err);
+        // Fallback to manual indexing if pre-generated fails
+        this.manualIndexing(sections);
+      },
+    });
+  }
+
+  private manualIndexing(sections: DocSection[]) {
+    const allItems = sections.flatMap((s) => s.items).filter((i) => i.assetPath);
+    if (!allItems.length) {
+      this.isIndexing.set(false);
+      return;
+    }
+
+    this.indexingCancel$.next();
     let indexed = 0;
 
     from(allItems)
@@ -251,5 +287,13 @@ export class DocService {
       }
     }
     return null;
+  }
+
+  /**
+   * Clear the in-memory cache of the search index.
+   */
+  clearMemoryCache(): void {
+    this.searchIndexCache$ = undefined;
+    this.searchIndex.clear();
   }
 }
