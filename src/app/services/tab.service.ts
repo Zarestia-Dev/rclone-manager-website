@@ -1,5 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
-import { APP_BASE_HREF } from '@angular/common';
+import { Injectable, signal } from '@angular/core';
 
 export type AppTab = 'general' | 'downloads' | 'docs' | 'roadmap' | 'community';
 
@@ -7,10 +6,10 @@ export type AppTab = 'general' | 'downloads' | 'docs' | 'roadmap' | 'community';
   providedIn: 'root',
 })
 export class TabService {
-  private baseHref = inject(APP_BASE_HREF, { optional: true })?.replace(/\/$/, '') ?? '';
-
-  private get basePath(): string {
-    return this.baseHref === '/' ? '' : this.baseHref;
+  /** Reads <base href> baked in by Angular build. Returns '' in dev, '/zarestia/rclone-manager' in prod. */
+  public get basePath(): string {
+    const href = document.querySelector('base')?.getAttribute('href') ?? '/';
+    return href === '/' ? '' : href.replace(/\/$/, '');
   }
 
   currentTab = signal<AppTab>(this.readTabFromPath());

@@ -11,7 +11,6 @@ import {
   Injector,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { APP_BASE_HREF } from '@angular/common';
 import { fromEvent } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
@@ -30,6 +29,7 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import { DocService, DocItem } from '../../services/doc.service';
 import { ViewportService } from '../../services/viewport.service';
+import { TabService } from '../../services/tab.service';
 import { A11yModule } from '@angular/cdk/a11y';
 import { DocsNavSheetComponent, NavSheetData } from './nav-sheet/nav-sheet';
 
@@ -54,9 +54,12 @@ export class Docs implements OnInit {
   private sanitizer = inject(DomSanitizer);
   private bottomSheet = inject(MatBottomSheet);
   public viewport = inject(ViewportService);
+  private tabService = inject(TabService);
   private injector = inject(Injector);
   private destroyRef = inject(DestroyRef);
-  private basePath = inject(APP_BASE_HREF, { optional: true })?.replace(/\/$/, '') ?? '';
+  private get basePath(): string {
+    return this.tabService.basePath;
+  }
 
   // Auto-close bottom sheet on resize to desktop
   private bottomSheetRef: MatBottomSheetRef<DocsNavSheetComponent> | null = null;
