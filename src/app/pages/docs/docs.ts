@@ -90,9 +90,11 @@ export class Docs implements OnInit {
     const renderer = new marked.Renderer();
     renderer.heading = (text: string, level: number): string => {
       const id = text
+        .replace(/\[\[icon:.*?\]\]/gi, '') // Strip [[icon:name.color]]
+        .replace(/icon:[a-z0-9_.-]+/gi, '') // Fallback for partially stripped tags
         .toLowerCase()
-        .replace(/<[^>]+>/g, '')
-        .replace(/[^\w\s-]/g, '')
+        .replace(/<[^>]+>/g, '') // Strip existing HTML
+        .replace(/[^\w\s-]/g, '') // Strip special chars
         .trim()
         .replace(/\s+/g, '-');
       return `<h${level} id="${id}"><a class="heading-anchor" href="#${id}" aria-label="Link to section">§</a>${text}</h${level}>`;
