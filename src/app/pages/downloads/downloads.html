@@ -28,7 +28,7 @@
           <mat-icon class="error-icon">error_outline</mat-icon>
           <h3>Unable to Load Latest Release</h3>
           <p>{{ error() }}</p>
-          <button mat-raised-button color="primary" (click)="loadData()">
+          <button mat-raised-button (click)="loadData()">
             <mat-icon>refresh</mat-icon>
             Try Again
           </button>
@@ -125,7 +125,7 @@
             </div>
           </div>
           <div class="version-actions">
-            <button mat-raised-button color="primary" (click)="openExternalLink(release.html_url)">
+            <button mat-raised-button (click)="openExternalLink(release.html_url)">
               <mat-icon>open_in_new</mat-icon>
               View Release Notes
             </button>
@@ -204,7 +204,7 @@
     </mat-accordion>
 
     <div class="changelog-footer">
-      <button mat-raised-button color="accent"
+      <button mat-raised-button
         (click)="openExternalLink('https://github.com/Zarestia-Dev/rclone-manager/blob/master/CHANGELOG.md')">
         <mat-icon>open_in_new</mat-icon>
         View Full Changelog
