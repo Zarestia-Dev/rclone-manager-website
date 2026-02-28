@@ -1,5 +1,5 @@
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { from, map, mergeMap, Observable, shareReplay, Subject, takeUntil } from 'rxjs';
+import { from, map, concatMap, delay, Observable, shareReplay, Subject, takeUntil } from 'rxjs';
 import { DestroyRef, Injectable, inject, signal, computed } from '@angular/core';
 import { WikiService } from './wiki.service';
 import { HttpClient } from '@angular/common/http';
@@ -182,11 +182,12 @@ export class DocService {
 
     from(allItems)
       .pipe(
-        mergeMap((item) => {
-          return this.wikiService
-            .fetchPage(item.assetPath!)
-            .pipe(map((content) => ({ item, content })));
-        }, 4),
+        concatMap((item) => {
+          return this.wikiService.fetchPage(item.assetPath!).pipe(
+            map((content) => ({ item, content })),
+            delay(100),
+          );
+        }),
         takeUntil(this.indexingCancel$),
       )
       .subscribe({

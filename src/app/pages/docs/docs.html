@@ -1,7 +1,7 @@
 <div class="page-container animate-fade-in">
   <div class="docs-detail-layout">
     <!-- Sidebar Navigation -->
-    <aside class="docs-sidebar animate-fade-in-right" [class.hidden]="isMobile()">
+    <aside class="docs-sidebar animate-fade-in-right" [class.hidden]="viewport.isMobile()">
 
       <!-- Search -->
       <div class="sidebar-search-wrap">
@@ -11,7 +11,7 @@
             (input)="onSearch($any($event.target).value)" (focus)="isSearchFocused.set(true)" (blur)="onSearchBlur()"
             (keydown)="onSearchKeydown($event)" (keydown.escape)="docService.searchQuery.set('')"
             aria-label="Search documentation">
-          @if (isIndexing()) {
+          @if (docService.isIndexing()) {
           <mat-spinner diameter="14" class="search-spinner"></mat-spinner>
           }
         </div>
@@ -25,7 +25,7 @@
           </div>
           <div class="results-list">
             @for (hit of docService.searchHits(); track hit.item.title; let i = $index) {
-            <div class="search-hit" [class.focused]="searchFocusIndex() === i"
+            <div class="search-hit" [class.focused]="searchFocusIndex() === i" (mousedown)="$event.preventDefault()"
               (click)="selectItem(hit.item, docService.searchQuery())"
               (keydown.enter)="selectItem(hit.item, docService.searchQuery())" tabindex="0" role="button">
               <div class="hit-meta">
@@ -37,7 +37,7 @@
             </div>
             } @empty {
             <div class="no-results">
-              @if (isIndexing()) {
+              @if (docService.isIndexing()) {
               <div class="indexing-feedback">
                 <mat-spinner diameter="24"></mat-spinner>
                 <p>Updating search index...</p>
@@ -53,20 +53,18 @@
       </div>
 
       <div class="sidebar-sections">
-        @for (section of docSections(); track section.title) {
+        @for (section of docService.docSections(); track section.title) {
         <div class="sidebar-section">
           <h3 class="sidebar-section-title">{{ section.title }}</h3>
           <div class="sidebar-items">
             @for (item of section.items; track item.title) {
             <button mat-button class="sidebar-item" [class.active]="selectedItem()?.title === item.title"
               (click)="selectItem(item)" [matTooltip]="item.description || ''" matTooltipPosition="right">
-              <span class="button-content">
-                <mat-icon class="main-icon">{{ item.icon || 'description' }}</mat-icon>
-                <span class="item-title">{{ item.title }}</span>
-                @if (item.isExternal) {
-                <mat-icon class="external-icon">open_in_new</mat-icon>
-                }
-              </span>
+              <mat-icon class="main-icon">{{ item.icon || 'description' }}</mat-icon>
+              <span class="item-title">{{ item.title }}</span>
+              @if (item.isExternal) {
+              <mat-icon class="external-icon">open_in_new</mat-icon>
+              }
             </button>
             }
           </div>
@@ -76,7 +74,7 @@
         <div class="sidebar-section">
           <h3 class="sidebar-section-title">Quick Links</h3>
           <div class="sidebar-items">
-            @for (link of quickLinks(); track link.title) {
+            @for (link of docService.quickLinks(); track link.title) {
             <button mat-button class="sidebar-item" (click)="openExternalLink(link.url)">
               <mat-icon class="main-icon">{{ link.icon }}</mat-icon>
               <span class="item-title">{{ link.title }}</span>
@@ -123,7 +121,7 @@
 
       <!-- Right Side Table of Contents -->
       @if (toc().length > 0) {
-      <aside class="docs-toc-container animate-fade-in-left" [class.hidden]="!isWide()">
+      <aside class="docs-toc-container animate-fade-in-left" [class.hidden]="!viewport.isWide()">
         <div class="toc-card">
           <h4 class="toc-title">
             <mat-icon>list</mat-icon>
@@ -143,7 +141,9 @@
     </div>
   </div>
 
+  @if (viewport.isMobile()) {
   <button mat-fab class="docs-mobile-fab" (click)="openNavSheet()" aria-label="Open documentation menu">
     <mat-icon>menu_book</mat-icon>
   </button>
+  }
 </div>

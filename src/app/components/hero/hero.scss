@@ -163,7 +163,6 @@
   width: 100%;
   align-items: center;
   justify-items: center;
-  min-height: calc(var(--space-xl) * 7.5);
 }
 
 .mode-content {
@@ -253,10 +252,11 @@ app-animated-logo {
 
   @media (max-width: 480px) {
     flex-direction: column;
+    align-items: center;
     width: 100%;
 
     button {
-      width: 100%;
+      width: 90%;
     }
   }
 }

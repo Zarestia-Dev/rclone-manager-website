@@ -1,4 +1,8 @@
 @use '../../../styles/mixins' as *;
+:host {
+  scroll-margin-top: var(--titlebar-height);
+  display: block;
+}
 
 .features {
   padding: var(--section-gap) var(--content-padding);

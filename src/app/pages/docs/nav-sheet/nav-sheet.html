@@ -5,11 +5,51 @@
         <div class="sheet-search">
             <mat-icon>search</mat-icon>
             <input type="text" placeholder="Search docs..." [value]="data.searchQuery()"
-                (input)="data.onSearch($any($event.target).value)" aria-label="Search documentation">
+                (input)="data.onSearch($any($event.target).value)" (keydown.escape)="data.onSearch('')"
+                aria-label="Search documentation">
+            @if (data.searchQuery().length >= 2) {
+            <button class="clear-btn" (click)="data.onSearch('')" aria-label="Clear search">
+                <mat-icon>close</mat-icon>
+            </button>
+            } @else if (data.isIndexing()) {
+            <mat-spinner diameter="14" class="search-spinner"></mat-spinner>
+            }
         </div>
     </div>
 
     <div class="sheet-content">
+
+        <!-- Search results mode -->
+        @if (data.searchQuery().length >= 2) {
+        <div class="results-header">
+            <span>{{ data.searchHits().length }} Result{{ data.searchHits().length !== 1 ? 's' : '' }}</span>
+        </div>
+
+        @for (hit of data.searchHits(); track hit.item.title) {
+        <div class="search-hit" (click)="selectItem(hit.item, data.searchQuery())" tabindex="0" role="button">
+            <div class="hit-meta">
+                <mat-icon>{{ hit.item.icon || 'description' }}</mat-icon>
+                <span class="hit-section">{{ hit.sectionTitle }}</span>
+            </div>
+            <div class="hit-title">{{ hit.item.title }}</div>
+            <div class="hit-snippet" [innerHTML]="hit.snippet"></div>
+        </div>
+        } @empty {
+        <div class="no-results">
+            @if (data.isIndexing()) {
+            <div class="indexing-feedback">
+                <mat-spinner diameter="24"></mat-spinner>
+                <p>Updating search index...</p>
+            </div>
+            } @else {
+            <mat-icon>search_off</mat-icon>
+            <p>No matches for "{{ data.searchQuery() }}"</p>
+            }
+        </div>
+        }
+
+        <!-- Normal nav mode -->
+        } @else {
         @for (section of data.sections; track section.title) {
         <div class="sheet-section">
             <h3 class="sheet-section-title">{{ section.title }}</h3>
@@ -17,13 +57,11 @@
                 @for (item of section.items; track item.title) {
                 <button mat-button class="sheet-item" [class.active]="data.selectedItem()?.title === item.title"
                     (click)="selectItem(item)">
-                    <span class="button-content">
-                        <mat-icon class="main-icon">{{ item.icon || 'description' }}</mat-icon>
-                        <span class="item-title">{{ item.title }}</span>
-                        @if (item.isExternal) {
-                        <mat-icon class="external-icon">open_in_new</mat-icon>
-                        }
-                    </span>
+                    <mat-icon class="main-icon">{{ item.icon || 'description' }}</mat-icon>
+                    <span class="item-title">{{ item.title }}</span>
+                    @if (item.isExternal) {
+                    <mat-icon class="external-icon">open_in_new</mat-icon>
+                    }
                 </button>
                 }
             </div>
@@ -34,15 +72,14 @@
             <h3 class="sheet-section-title">Quick Links</h3>
             <div class="sheet-items">
                 @for (link of data.quickLinks; track link.title) {
-                <button mat-button class="sheet-item" (click)="selectItem(link)">
-                    <span class="button-content">
-                        <mat-icon class="main-icon">{{ link.icon }}</mat-icon>
-                        <span class="item-title">{{ link.title }}</span>
-                        <mat-icon class="external-icon">open_in_new</mat-icon>
-                    </span>
+                <button mat-button (click)="selectItem(link)" class="sheet-item">
+                    <mat-icon class="main-icon">{{ link.icon }}</mat-icon>
+                    <span class="item-title">{{ link.title }}</span>
+                    <mat-icon class="external-icon">open_in_new</mat-icon>
                 </button>
                 }
             </div>
         </div>
+        }
     </div>
 </div>

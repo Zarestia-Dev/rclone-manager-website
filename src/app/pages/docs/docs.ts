@@ -11,7 +11,6 @@ import {
   Injector,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { fromEvent } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -61,21 +60,21 @@ export class Docs implements OnInit {
     return this.tabService.basePath;
   }
 
-  // Auto-close bottom sheet on resize to desktop
   private bottomSheetRef: MatBottomSheetRef<DocsNavSheetComponent> | null = null;
+  private pendingScrollTerm: string | undefined;
   public isMobile = this.viewport.isMobile;
   public isWide = this.viewport.isWide;
 
-  // Cleanup for listeners on each content render
   private renderCleanup?: AbortController;
 
-  // Re-expose signals from service for easier template access if needed,
-  // though we can also use public docService.
+  // IntersectionObserver for optimized TOC tracking
+  private tocObserver: IntersectionObserver | null = null;
+  private visibleHeadings = new Map<string, IntersectionObserverEntry>();
+
   docSections = this.docService.docSections;
   quickLinks = this.docService.quickLinks;
   isIndexing = this.docService.isIndexing;
 
-  // Local component state
   selectedItem = signal<DocItem | null>(null);
   toc = signal<{ id: string; text: string; level: number }[]>([]);
   renderedContent = signal<SafeHtml>('');
@@ -90,54 +89,65 @@ export class Docs implements OnInit {
     const renderer = new marked.Renderer();
     renderer.heading = (text: string, level: number): string => {
       const id = text
-        .replace(/\[\[icon:.*?\]\]/gi, '') // Strip [[icon:name.color]]
-        .replace(/icon:[a-z0-9_.-]+/gi, '') // Fallback for partially stripped tags
+        .replace(/\[\[icon:.*?\]\]/gi, '')
+        .replace(/icon:[a-z0-9_.-]+/gi, '')
         .toLowerCase()
-        .replace(/<[^>]+>/g, '') // Strip existing HTML
-        .replace(/[^\w\s-]/g, '') // Strip special chars
+        .replace(/<[^>]+>/g, '')
+        .replace(/[^\w\s-]/g, '')
         .trim()
         .replace(/\s+/g, '-');
       return `<h${level} id="${id}"><a class="heading-anchor" href="#${id}" aria-label="Link to section">§</a>${text}</h${level}>`;
     };
     marked.use({ renderer, breaks: true, gfm: true });
 
-    // Auto-close effect
     effect(() => {
       if (!this.isMobile() && this.bottomSheetRef) {
         this.bottomSheetRef.dismiss();
         this.bottomSheetRef = null;
       }
     });
+
+    // Cleanup Observer when component is destroyed
+    this.destroyRef.onDestroy(() => {
+      if (this.tocObserver) {
+        this.tocObserver.disconnect();
+      }
+    });
   }
 
   ngOnInit(): void {
-    // Disable automatic scroll restoration to handle hash anchors manually
     history.scrollRestoration = 'manual';
-
     this.loadDocs();
-    this.initScrollListener();
+    this.initIntersectionObserver();
   }
 
-  private initScrollListener(): void {
-    fromEvent(window, 'scroll', { passive: true })
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        if (!this.contentArea || this.toc().length === 0) return;
-
-        const headings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
-        let currentId = '';
-
-        for (const h of headings) {
-          const rect = h.getBoundingClientRect();
-          if (rect.top < 150) {
-            currentId = h.id;
+  private initIntersectionObserver(): void {
+    this.tocObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            this.visibleHeadings.set(entry.target.id, entry);
           } else {
-            break;
+            this.visibleHeadings.delete(entry.target.id);
           }
-        }
+        });
 
-        this.activeTocId.set(currentId || (this.toc()[0]?.id ?? ''));
-      });
+        this.updateActiveTocId();
+      },
+      {
+        rootMargin: '-100px 0px -70% 0px',
+        threshold: 0,
+      },
+    );
+  }
+
+  private updateActiveTocId(): void {
+    if (this.visibleHeadings.size === 0) return;
+    const tocIds = this.toc().map((t) => t.id);
+    const activeId = tocIds.find((id) => this.visibleHeadings.has(id));
+    if (activeId) {
+      this.activeTocId.set(activeId);
+    }
   }
 
   private loadDocs(): void {
@@ -196,7 +206,9 @@ export class Docs implements OnInit {
       quickLinks: this.quickLinks(),
       selectedItem: this.selectedItem,
       searchQuery: this.docService.searchQuery,
-      onSelect: (item: DocItem) => this.selectItem(item),
+      searchHits: this.docService.searchHits,
+      isIndexing: this.isIndexing,
+      onSelect: (item: DocItem, searchTerm?: string) => this.selectItem(item, searchTerm),
       onSearch: (query: string) => this.onSearch(query),
     };
 
@@ -207,6 +219,10 @@ export class Docs implements OnInit {
 
     this.bottomSheetRef.afterDismissed().subscribe(() => {
       this.bottomSheetRef = null;
+      if (this.pendingScrollTerm !== undefined) {
+        this.scrollToMatchOrTop(this.pendingScrollTerm);
+        this.pendingScrollTerm = undefined;
+      }
     });
   }
 
@@ -230,7 +246,6 @@ export class Docs implements OnInit {
       this.selectItem(hits[this.searchFocusIndex()].item, this.docService.searchQuery());
     }
 
-    // After updating index, ensure focused hits scroll into view
     requestAnimationFrame(() => {
       const focused = document.querySelector('.search-hit.focused');
       focused?.scrollIntoView({ block: 'nearest' });
@@ -257,11 +272,7 @@ export class Docs implements OnInit {
           html = this.docService.highlightContent(html, query);
         }
 
-        // Restore custom icons processing (Regression fix)
         html = this.docService.processCustomIcons(html);
-
-        // Content is from our own GitHub repo, considered trusted
-        // but we still sanitize it to prevent XSS from PRs
         const sanitizedHtml = DOMPurify.sanitize(html);
         this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(sanitizedHtml));
         this.loading.set(false);
@@ -271,7 +282,20 @@ export class Docs implements OnInit {
           () => {
             this.attachLinkListeners();
             this.attachCopyButtons();
-            this.scrollToMatchOrTop(query);
+
+            // Re-attach IntersectionObserver directly onto the elements
+            if (this.contentArea && this.tocObserver) {
+              this.tocObserver.disconnect();
+              this.visibleHeadings.clear();
+              const domHeadings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
+              domHeadings.forEach((h: Element) => this.tocObserver?.observe(h));
+            }
+
+            if (this.bottomSheetRef) {
+              this.pendingScrollTerm = query;
+            } else {
+              this.scrollToMatchOrTop(query);
+            }
           },
           { injector: this.injector },
         );
@@ -288,7 +312,6 @@ export class Docs implements OnInit {
   }
 
   private extractToc(): void {
-    // Ensuring content is in DOM using afterNextRender
     afterNextRender(
       () => {
         if (!this.contentArea) return;
@@ -345,7 +368,6 @@ export class Docs implements OnInit {
     if (!this.contentArea) return;
     const preBlocks = this.contentArea.nativeElement.querySelectorAll('pre');
     preBlocks.forEach((pre: HTMLElement) => {
-      // Avoid adding twice if content is reloaded
       if (pre.querySelector('.code-copy-btn')) return;
 
       pre.style.position = 'relative';
@@ -403,7 +425,6 @@ export class Docs implements OnInit {
   }
 
   private handleInternalLink(href: string): void {
-    // Extract slug from href (e.g., "getting-started.md" -> "getting-started")
     const slug = href.split('/').pop()?.replace(/\.md$/i, '') ?? '';
     const item = this.docService.findItemBySlug(this.docSections(), slug);
 

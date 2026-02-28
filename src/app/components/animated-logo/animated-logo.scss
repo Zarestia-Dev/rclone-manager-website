@@ -9,6 +9,15 @@ g {
   height: 100%;
   max-width: 128px;
   max-height: 128px;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  &:hover {
+    transform: scale(1.05) translateY(-2px);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
 }
 
 /* --- SVG ANIMATION KEYFRAMES (ENTRANCE) --- */
@@ -48,11 +57,6 @@ g {
 .shape-dark-blue,
 .shape-light-blue,
 .shape-lighter-blue {
-  opacity: 0;
-  animation: none;
-}
-
-.animate-fade-in-up {
   opacity: 0;
   animation: none;
 }

@@ -1,4 +1,4 @@
-import { Injectable, inject, DOCUMENT } from '@angular/core';
+import { Injectable, inject, DOCUMENT, DestroyRef } from '@angular/core';
 import { GithubService } from './github.service';
 import { DocService } from './doc.service';
 
@@ -7,6 +7,7 @@ import { DocService } from './doc.service';
 })
 export class DebugService {
   private readonly document = inject(DOCUMENT);
+  private destroyRef = inject(DestroyRef);
   private githubService = inject(GithubService);
   private docService = inject(DocService);
   private contextMenu: HTMLElement | null = null;
@@ -16,20 +17,40 @@ export class DebugService {
   }
 
   private setupContextMenu(): void {
-    // Handle right-click
-    this.document.addEventListener('contextmenu', (event: MouseEvent) => {
+    const onContextMenu = (event: MouseEvent) => {
+      if (event.clientX === undefined || event.clientY === undefined) return;
       event.preventDefault();
       this.createContextMenu(event.clientX, event.clientY);
-    });
+    };
 
-    // Close menu on click outside
-    this.document.addEventListener('click', () => this.closeMenu());
+    const onClick = (event: MouseEvent) => {
+      if (
+        this.contextMenu &&
+        event.target instanceof Node &&
+        this.contextMenu.contains(event.target)
+      ) {
+        return;
+      }
+      this.closeMenu();
+    };
 
-    // Close menu on escape
-    this.document.addEventListener('keydown', (event: KeyboardEvent) => {
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         this.closeMenu();
       }
+    };
+
+    // Attach listeners
+    this.document.addEventListener('contextmenu', onContextMenu);
+    this.document.addEventListener('click', onClick);
+    this.document.addEventListener('keydown', onKeyDown);
+
+    // Ensure pristine cleanup if the service is ever destroyed (e.g., SSR teardown)
+    this.destroyRef.onDestroy(() => {
+      this.document.removeEventListener('contextmenu', onContextMenu);
+      this.document.removeEventListener('click', onClick);
+      this.document.removeEventListener('keydown', onKeyDown);
+      this.closeMenu();
     });
   }
 
@@ -38,14 +59,12 @@ export class DebugService {
 
     this.contextMenu = this.document.createElement('div');
     this.contextMenu.className = 'material-context-menu';
-    if (this.contextMenu) {
-      this.contextMenu.style.cssText = `
+    this.contextMenu.style.cssText = `
       position: fixed;
       left: ${x}px;
       top: ${y}px;
       z-index: 99999;
     `;
-    }
 
     const menuItems = [
       {
@@ -72,14 +91,12 @@ export class DebugService {
     this.document.body.appendChild(this.contextMenu);
 
     // Adjust position if menu goes off-screen
-    if (this.contextMenu) {
-      const rect = this.contextMenu.getBoundingClientRect();
-      if (rect.right > window.innerWidth) {
-        this.contextMenu.style.left = `${x - rect.width}px`;
-      }
-      if (rect.bottom > window.innerHeight) {
-        this.contextMenu.style.top = `${y - rect.height}px`;
-      }
+    const rect = this.contextMenu.getBoundingClientRect();
+    if (rect.right > window.innerWidth) {
+      this.contextMenu.style.left = `${x - rect.width}px`;
+    }
+    if (rect.bottom > window.innerHeight) {
+      this.contextMenu.style.top = `${y - rect.height}px`;
     }
   }
 
@@ -115,6 +132,8 @@ export class DebugService {
     `;
     this.document.body.appendChild(feedback);
 
+    const feedbackCleanup = this.destroyRef.onDestroy(() => feedback.remove());
+
     // 1. Clear Local/Session Storage
     sessionStorage.clear();
     localStorage.clear();
@@ -145,7 +164,10 @@ export class DebugService {
       feedback.textContent = 'Cache cleared!';
       setTimeout(() => {
         feedback.style.animation = 'fadeOut 0.2s ease-out forwards';
-        setTimeout(() => feedback.remove(), 300);
+        setTimeout(() => {
+          feedback.remove();
+          feedbackCleanup();
+        }, 300);
       }, 1000);
     }, 500);
   }

@@ -1,25 +1,77 @@
-<div class="theme-switch" role="group" aria-label="Theme selection">
-  <div class="switch-indicator"
-       [class.light]="getCurrentTheme() === 'light'"
-       [class.system]="getCurrentTheme() === 'system'"
-       [class.dark]="getCurrentTheme() === 'dark'">
-  </div>
+<div class="theme-switch-wrapper" role="group" aria-label="Theme selection">
+  <div class="theme-switch-track" [ngClass]="getCurrentTheme()">
 
-  <button class="theme-btn" (click)="setTheme('light')" 
-          [class.active]="getCurrentTheme() === 'light'"
-          title="Light Theme" aria-label="Light Theme">
-    <mat-icon>light_mode</mat-icon>
-  </button>
-  
-  <button class="theme-btn" (click)="setTheme('system')" 
-          [class.active]="getCurrentTheme() === 'system'"
-          title="System Theme" aria-label="System Theme">
-    <mat-icon>brightness_auto</mat-icon>
-  </button>
-  
-  <button class="theme-btn" (click)="setTheme('dark')" 
-          [class.active]="getCurrentTheme() === 'dark'"
-          title="Dark Theme" aria-label="Dark Theme">
-    <mat-icon>dark_mode</mat-icon>
-  </button>
+    <!-- Background Placeholders (Hidden by the thumb when active) -->
+    <div class="track-placeholders">
+      <div class="placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="5" />
+          <line x1="12" y1="2" x2="12" y2="4" />
+          <line x1="12" y1="20" x2="12" y2="22" />
+          <line x1="4.93" y1="4.93" x2="6.34" y2="6.34" />
+          <line x1="17.66" y1="17.66" x2="19.07" y2="19.07" />
+          <line x1="2" y1="12" x2="4" y2="12" />
+          <line x1="20" y1="12" x2="22" y2="12" />
+          <line x1="4.93" y1="19.07" x2="6.34" y2="17.66" />
+          <line x1="17.66" y1="6.34" x2="19.07" y2="4.93" />
+        </svg>
+      </div>
+      <div class="placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="6" />
+          <path d="M12 6v12a6 6 0 0 0 0-12z" fill="currentColor" stroke="none" />
+        </svg>
+      </div>
+      <div class="placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- The sliding animated thumb -->
+    <div class="theme-thumb">
+      <!-- Added overflow="hidden" to guarantee no edges peek out during morphing -->
+      <svg class="theme-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" overflow="hidden">
+
+        <!-- Base core shape that morphs -->
+        <circle class="core" cx="12" cy="12" r="6" fill="currentColor" />
+
+        <!-- FAKED MASKS: Avoids browser bugs by drawing background-colored shapes OVER the core -->
+        <!-- Mask for System (slides in to cover right half) -->
+        <rect class="mask-half" x="12" y="-5" width="20" height="34" fill="var(--view-bg-color)" />
+        <!-- Mask for Dark (slides down-left to cut a crescent) -->
+        <circle class="mask-crescent" cx="17" cy="7" r="6.5" fill="var(--view-bg-color)" />
+
+        <!-- Outline specifically for the System contrast icon (drawn ON TOP of the half mask) -->
+        <circle class="system-outline" cx="12" cy="12" r="6" fill="none" stroke="currentColor" stroke-width="2" />
+
+        <!-- Sun Rays -->
+        <g class="sun-rays" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="12" y1="2.5" x2="12" y2="4.5" />
+          <line x1="12" y1="19.5" x2="12" y2="21.5" />
+          <line x1="5.3" y1="5.3" x2="6.7" y2="6.7" />
+          <line x1="17.3" y1="17.3" x2="18.7" y2="18.7" />
+          <line x1="2.5" y1="12" x2="4.5" y2="12" />
+          <line x1="19.5" y1="12" x2="21.5" y2="12" />
+          <line x1="5.3" y1="18.7" x2="6.7" y2="17.3" />
+          <line x1="17.3" y1="6.7" x2="18.7" y2="5.3" />
+        </g>
+
+        <!-- Moon Stars (4-point curved paths) -->
+        <path class="moon-star" d="M 16 2 Q 16 4 18 4 Q 16 4 16 6 Q 16 4 14 4 Q 16 4 16 2" fill="currentColor" />
+        <path class="moon-star-2" d="M 21.5 8 Q 21.5 9 22.5 9 Q 21.5 9 21.5 10 Q 21.5 9 20.5 9 Q 21.5 9 21.5 8"
+          fill="currentColor" />
+      </svg>
+    </div>
+
+    <!-- Invisible click targets for direct interaction -->
+    <div class="click-areas">
+      <button (click)="setTheme('light')" aria-label="Set Light Theme" title="Light"></button>
+      <button (click)="setTheme('system')" aria-label="Set System Theme" title="System Auto"></button>
+      <button (click)="setTheme('dark')" aria-label="Set Dark Theme" title="Dark"></button>
+    </div>
+
+  </div>
 </div>

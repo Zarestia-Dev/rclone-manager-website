@@ -227,7 +227,6 @@
 
 .sidebar-section-title {
   font-size: var(--font-size-xs);
-  text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--dim-color);
   margin: 0 0 var(--space-xs) 0;
@@ -255,6 +254,7 @@
     align-items: center;
     gap: var(--space-sm);
     width: 100%;
+    color: var(--dim-color);
   }
 
   .main-icon {
@@ -283,9 +283,16 @@
   // Highlight pattern
   &.active {
     background: rgba(var(--primary-color-rgb), 0.12);
-    color: var(--primary-color);
-    font-weight: 500;
+
+    .sidebar-item-content {
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+
     .main-icon {
+      color: var(--primary-color);
+    }
+    .item-title {
       color: var(--primary-color);
     }
   }
@@ -481,33 +488,10 @@
   background: var(--primary-color) !important;
   color: white !important;
   box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.4);
-  transition:
-    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity 0.4s ease,
-    visibility 0.4s;
-
-  // Desktop state (hidden)
-  opacity: 0;
-  transform: scale(0.5);
-  visibility: hidden;
-  pointer-events: none;
-
-  &:active {
-    transform: scale(0.95);
-  }
 
   mat-icon {
     font-size: var(--icon-size-md);
     width: var(--icon-size-md);
     height: var(--icon-size-md);
-  }
-}
-
-@media (max-width: 860px) {
-  .docs-mobile-fab {
-    opacity: 1;
-    transform: scale(1);
-    visibility: visible;
-    pointer-events: auto;
   }
 }
