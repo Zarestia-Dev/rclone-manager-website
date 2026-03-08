@@ -22,7 +22,7 @@ export const HERO_CONTENT = {
   headless: {
     title: 'RClone Manager Headless',
     subtitle: 'Run as a web server on Linux servers without a GUI!',
-    techStack: 'Perfect for NAS, VPS, and remote systems. Access from any browser.',
+    techStack: 'Perfect for NAS, VPS, and remote systems. Official Docker support with security profiles.',
   } as HeroModeContent,
   actions: [
     {

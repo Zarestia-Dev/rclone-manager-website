@@ -61,7 +61,7 @@ export const HEADLESS_FEATURES: Feature[] = [
   {
     title: 'Docker Ready',
     icon: 'layers',
-    description: 'Deploy instantly with our official Docker image. Perfect for NAS, home servers, and cloud deployments.',
+    description: 'Deploy instantly with our official Docker image. Supports flexible security profiles including Basic Auth and TLS/HTTPS out of the box.',
   },
   {
     title: 'API Integration',

@@ -63,6 +63,9 @@ docker-compose up -d
 
 ```
 
+> [!TIP]
+> **[→ See Detailed Configuration (Auth, TLS, HTTPS)](../platform/configuration-headless.md)** for secure production setups.
+
 ---
 
 ## 🐧 Method 2: Native Binary
