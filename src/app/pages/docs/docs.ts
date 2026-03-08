@@ -14,7 +14,6 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -24,12 +23,11 @@ import {
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { marked } from 'marked';
+import { marked, Renderer } from 'marked';
 import DOMPurify from 'dompurify';
 import { DocService, DocItem } from '../../services/doc.service';
 import { ViewportService } from '../../services/viewport.service';
 import { TabService } from '../../services/tab.service';
-import { A11yModule } from '@angular/cdk/a11y';
 import { DocsNavSheetComponent, NavSheetData } from './nav-sheet/nav-sheet';
 
 @Component({
@@ -37,12 +35,10 @@ import { DocsNavSheetComponent, NavSheetData } from './nav-sheet/nav-sheet';
   imports: [
     MatIconModule,
     MatButtonModule,
-    MatCardModule,
     MatDividerModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatBottomSheetModule,
-    A11yModule,
   ],
   templateUrl: './docs.html',
   styleUrl: './docs.scss',
@@ -63,7 +59,6 @@ export class Docs implements OnInit {
   private bottomSheetRef: MatBottomSheetRef<DocsNavSheetComponent> | null = null;
   private pendingScrollTerm: string | undefined;
   public isMobile = this.viewport.isMobile;
-  public isWide = this.viewport.isWide;
 
   private renderCleanup?: AbortController;
 
@@ -85,20 +80,79 @@ export class Docs implements OnInit {
 
   @ViewChild('contentArea') contentArea?: ElementRef;
 
-  constructor() {
+  private createRenderer(path: string): Renderer {
     const renderer = new marked.Renderer();
+    const usedIds = new Set<string>();
+    const docDir = path.split('/').slice(0, -1).join('/');
+
     renderer.heading = (text: string, level: number): string => {
-      const id = text
-        .replace(/\[\[icon:.*?\]\]/gi, '')
-        .replace(/icon:[a-z0-9_.-]+/gi, '')
-        .toLowerCase()
-        .replace(/<[^>]+>/g, '')
-        .replace(/[^\w\s-]/g, '')
-        .trim()
-        .replace(/\s+/g, '-');
-      return `<h${level} id="${id}"><a class="heading-anchor" href="#${id}" aria-label="Link to section">§</a>${text}</h${level}>`;
+      // 1. Extract custom ID if present: {#my-id}
+      let id: string | null = null;
+      const idMatch = text.match(/\{#(.*?)\}/);
+      if (idMatch) {
+        id = idMatch[1];
+        text = text.replace(/\{#.*?\}/, '').trim();
+      }
+
+      // 2. Fallback to slugifying the text
+      if (!id) {
+        id = text
+          .replace(/\[\[icon:.*?\]\]/gi, '')
+          .replace(/icon:[a-z0-9_.-]+/gi, '')
+          .toLowerCase()
+          .replace(/<[^>]+>/g, '')
+          .replace(/[^\w\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-');
+      }
+
+      // 3. Ensure uniqueness
+      let uniqueId = id;
+      let counter = 1;
+      while (usedIds.has(uniqueId)) {
+        uniqueId = `${id}-${counter++}`;
+      }
+      usedIds.add(uniqueId);
+
+      return `<h${level} id="${uniqueId}"><a class="heading-anchor" href="#${uniqueId}" aria-label="Link to section">§</a>${text}</h${level}>`;
     };
-    marked.use({ renderer, breaks: true, gfm: true });
+
+    // Fix relative images and links
+    renderer.image = (href: string, title: string | null, text: string): string => {
+      const resolvedHref = this.resolveAssetPath(docDir, href);
+      return `<img src="${resolvedHref}" alt="${text}"${title ? ` title="${title}"` : ''}>`;
+    };
+
+    renderer.link = (href: string, title: string | null, text: string): string => {
+      if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto')) {
+        // Normalize internal links (e.g. ./other.md -> other)
+        const slug = href.split('/').pop()?.replace(/\.md$/i, '') ?? '';
+        href = `${this.basePath}/docs/${slug}`;
+      }
+      return `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
+    };
+
+    return renderer;
+  }
+
+  private resolveAssetPath(docDir: string, href: string): string {
+    if (!href || href.startsWith('http') || href.startsWith('/') || href.startsWith('data:')) {
+      return href;
+    }
+
+    // Resolve relative path based on docDir
+    const parts = ['docs', ...docDir.split('/'), ...href.split('/')].filter((p) => p && p !== '.');
+    const resolved: string[] = [];
+    for (const p of parts) {
+      if (p === '..') resolved.pop();
+      else resolved.push(p);
+    }
+    const path = resolved.join('/');
+    return `${this.basePath}/${path}`;
+  }
+
+  constructor() {
+    marked.use({ breaks: true, gfm: true });
 
     effect(() => {
       if (!this.isMobile() && this.bottomSheetRef) {
@@ -265,7 +319,9 @@ export class Docs implements OnInit {
     this.loading.set(true);
     this.docService.fetchPage(path).subscribe({
       next: (markdown) => {
-        let html = marked.parse(markdown) as string;
+        const docDir = path.split('/').slice(0, -1).join('/');
+        const renderer = this.createRenderer(path);
+        let html = marked.parse(markdown, { renderer }) as string;
         const query = searchTerm || this.docService.searchQuery();
 
         if (query && query.length >= 2) {
@@ -273,6 +329,13 @@ export class Docs implements OnInit {
         }
 
         html = this.docService.processCustomIcons(html);
+
+        const imgRegex = /<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi;
+        html = html.replace(imgRegex, (match, p1, src, p3) => {
+          const resolvedSrc = this.resolveAssetPath(docDir, src);
+          return `<img ${p1}src="${resolvedSrc}"${p3}>`;
+        });
+
         const sanitizedHtml = DOMPurify.sanitize(html);
         this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(sanitizedHtml));
         this.loading.set(false);
@@ -391,7 +454,7 @@ export class Docs implements OnInit {
               btn.classList.remove('copied');
             }, 2000);
           } catch {
-            // clipboard not available (non-https)
+            console.error('Failed to copy code to clipboard');
           }
         },
         { signal: this.renderCleanup?.signal },

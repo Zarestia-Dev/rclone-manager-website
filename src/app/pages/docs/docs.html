@@ -25,8 +25,8 @@
           </div>
           <div class="results-list">
             @for (hit of docService.searchHits(); track hit.item.title; let i = $index) {
-            <div class="search-hit" [class.focused]="searchFocusIndex() === i" (mousedown)="$event.preventDefault()"
-              (click)="selectItem(hit.item, docService.searchQuery())"
+            <div class="search-hit" [class.focused]="searchFocusIndex() === i" (mouseenter)="searchFocusIndex.set(i)"
+              (mousedown)="$event.preventDefault()" (click)="selectItem(hit.item, docService.searchQuery())"
               (keydown.enter)="selectItem(hit.item, docService.searchQuery())" tabindex="0" role="button">
               <div class="hit-meta">
                 <mat-icon>{{ hit.item.icon || 'description' }}</mat-icon>

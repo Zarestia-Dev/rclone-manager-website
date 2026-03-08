@@ -1,6 +1,6 @@
 # [[icon:troubleshoot.primary]] Troubleshooting on Linux
 
-Having trouble? Start here — find your symptom below and jump straight to the fix.
+Having trouble? Start here, find your symptom below and jump straight to the fix.
 
 ---
 
@@ -25,7 +25,7 @@ Having trouble? Start here — find your symptom below and jump straight to the 
 
 ### [[icon:settings.accent]] What's going on (in plain English)
 
-RClone Manager uses your GPU to render its interface. On some Linux setups, this causes a conflict and the app simply refuses to draw anything. The fix is to tell the app to skip that GPU shortcut — it'll run fine without it.
+RClone Manager uses your GPU to render its interface. On some Linux setups, this causes a conflict and the app simply refuses to draw anything. The fix is to tell the app to skip that GPU shortcut, it'll run fine without it.
 
 ---
 
@@ -39,7 +39,7 @@ RClone Manager uses your GPU to render its interface. On some Linux setups, this
 WEBKIT_DISABLE_DMABUF_RENDERER=1 rclone-manager
 ```
 
-If the app opens normally, great — this is your fix. Now follow the steps below to make it permanent so you don't have to do this every time.
+If the app opens normally, great, this is your fix. Now follow the steps below to make it permanent so you don't have to do this every time.
 
 If it still doesn't work, try this alternative instead:
 
@@ -100,23 +100,23 @@ From now on, the fix applies automatically every time you launch the app.
 
 ### [[icon:settings.accent]] What's going on (in plain English)
 
-The Flatpak version of RClone Manager runs in a sandbox — it's intentionally restricted from touching most of your system. Some features (like mounting drives) need you to manually grant extra access. This is a one-time setup.
+The Flatpak version of RClone Manager runs in a sandbox, it's intentionally restricted from touching most of your system. Some features (like mounting drives) need you to manually grant extra access. This is a one-time setup.
 
 ---
 
 ### [[icon:build_circle.success]] Fix it
 
-> **[[icon:info.accent]] Recommended: use Flatseal** — it's a simple visual app that lets you manage these permissions without touching the terminal.
+> **[[icon:info.accent]] Recommended: use Flatseal**, it's a simple visual app that lets you manage these permissions without touching the terminal.
 
-**Step 1 — Install Flatseal:**
+**Step 1: Install Flatseal:**
 
 ```bash
 flatpak install flathub com.github.tchx84.Flatseal
 ```
 
-**Step 2 — Open Flatseal and select "RClone Manager" from the list.**
+**Step 2: Open Flatseal and select "RClone Manager" from the list.**
 
-**Step 3 — Grant the permissions you need:**
+**Step 3: Grant the permissions you need:**
 
 | I want to…                               | What to enable in Flatseal                             |
 | ---------------------------------------- | ------------------------------------------------------ |
@@ -134,9 +134,9 @@ flatpak install flathub com.github.tchx84.Flatseal
 <img src="../assets/troubleshooting/flatseal-talk.png" alt="Flatseal Socket" width="400">
 </p>
 
-**Step 4 — Fully quit RClone Manager.** Right-click the tray icon and choose **Quit**. Just closing the window won't be enough — the app keeps running in the background.
+**Step 4: Fully quit RClone Manager.** Right-click the tray icon and choose **Quit**. Just closing the window won't be enough, the app keeps running in the background.
 
-**Step 5 — Relaunch the app.** The new permissions are now active.
+**Step 5: Relaunch the app.** The new permissions are now active.
 
 ---
 
@@ -199,7 +199,7 @@ user_allow_other
 
 3. Save with `Ctrl+O`, then `Enter`, then exit with `Ctrl+X`.
 
-4. Try mounting again in RClone Manager — no restart needed.
+4. Try mounting again in RClone Manager, no restart needed.
 
 </details>
 
@@ -269,7 +269,7 @@ chmod -w ~/.config/autostart/RClone\ Manager.desktop
 <details>
 <summary>[[icon:inventory_2]] I installed it via Flatpak</summary>
 
-Run this command — it applies the fix globally and survives any autostart file rewrites:
+Run this command, it applies the fix globally and survives any autostart file rewrites:
 
 ```bash
 flatpak override --user --env=WEBKIT_DISABLE_DMABUF_RENDERER=1 io.github.zarestia_dev.rclone-manager
@@ -290,7 +290,7 @@ flatpak override --user \
 
 ## [[icon:menu_book.accent]] Still stuck?
 
-If none of the above worked, you're not alone — Linux environments vary a lot. Open a bug report on **[GitHub Issues](https://github.com/zarestia-dev/rclone-manager/issues)** and include:
+If none of the above worked, you're not alone, Linux environments vary a lot. Open a bug report on **[GitHub Issues](https://github.com/zarestia-dev/rclone-manager/issues)** and include:
 
 - Your Linux distribution (e.g. Ubuntu 24.04, Fedora 41)
 - Your desktop environment (e.g. GNOME, KDE Plasma, Hyprland)
