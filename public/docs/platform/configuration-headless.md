@@ -16,9 +16,20 @@ You can configure the server using **Command Line Arguments** (Systemd/Binary) o
 | **Password**  | `--pass <PASS>`       | `RCLONE_MANAGER_PASS`         | _(None)_  |
 | **TLS Cert**  | `--tls-cert <PATH>`   | `RCLONE_MANAGER_TLS_CERT`     | _(None)_  |
 | **TLS Key**   | `--tls-key <PATH>`    | `RCLONE_MANAGER_TLS_KEY`      | _(None)_  |
+| **Data Dir**  | `--data-dir <PATH>`   | `RCLONE_MANAGER_DATA_DIR`     | _(Default)_|
+| **Cache Dir** | `--cache-dir <PATH>`  | `RCLONE_MANAGER_CACHE_DIR`    | _(Default)_|
 | **User ID**   | _(N/A)_               | `PUID`                        | `1000`    |
 | **Group ID**  | _(N/A)_               | `PGID`                        | `1000`    |
 | **Log Level** | _(N/A)_               | `RUST_LOG`                    | `info`    |
+
+### Path Resolution Hierarchy
+
+RClone Manager Headless follows a strict precedence when resolving directory paths:
+1. **CLI Arguments**: `--data-dir`, `--cache-dir`, or `--logs-dir` (highest)
+2. **Environment Variables**: `RCLONE_MANAGER_DATA_DIR`, `RCLONE_MANAGER_CACHE_DIR`, or `RCLONE_MANAGER_LOG_DIR`
+3. **Application Defaults**: Standard paths (lowest)
+
+In Docker environments, the **environment variables** are the primary way to specify these paths, as seen in the default `docker-compose.yml`.
 
 ---
 

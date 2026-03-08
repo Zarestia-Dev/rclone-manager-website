@@ -19,6 +19,7 @@ The desktop version of RClone Manager runs as a native application on your compu
 ### Cloud Provider Support
 
 Works with all major cloud storage providers:
+
 - Google Drive, OneDrive, Dropbox
 - Amazon S3, Wasabi, Backblaze B2
 - iCloud Drive
@@ -122,6 +123,7 @@ The backup system provides:
 ### File Manager Integration
 
 **Nautilus Component** (v0.1.8+):
+
 - Built-in file browser (Ctrl+B)
 - Image, text, and PDF previews
 - Basic navigation and folder creation
@@ -130,20 +132,69 @@ The backup system provides:
 ### VFS Control Panel
 
 Monitor and manage Virtual File System instances:
+
 - Real-time statistics
 - Cache management
 - Connection monitoring
 - Performance metrics
 
-## Configuration Files
+## [[icon:terminal.primary]] CLI Reference
 
-RClone Manager stores its configuration in platform-specific locations:
+_(v0.2.2+)_
+
+While primarily a GUI application, RClone Manager supports command-line arguments for advanced path overrides and debugging.
+
+| Feature       | Flag                 | Environment Variable       | Description                   |
+| :------------ | :------------------- | :------------------------- | :---------------------------- |
+| **Data Dir**  | `--data-dir <PATH>`  | `RCLONE_MANAGER_DATA_DIR`  | App settings and logs         |
+| **Cache Dir** | `--cache-dir <PATH>` | `RCLONE_MANAGER_CACHE_DIR` | Job cache and temporary files |
+| **Logs Dir**  | `--logs-dir <PATH>`  | `RCLONE_MANAGER_LOG_DIR`   | Application and Rclone logs   |
+
+### Example Usage
+
+```bash
+# Run with a custom data, cache, and logs directory
+rclone-manager --data-dir /path/to/data --cache-dir /path/to/cache --logs-dir /path/to/logs
+```
+
+## [[icon:directory.primary]] Path Resolution & Precedence
+
+RClone Manager follows a strict hierarchy when determining which directories to use for settings and cache. This allows for maximum flexibility, from standard installation to custom "portable" setups.
+
+### 1. Precedence Logic
+
+The application checks for paths in this specific order:
+
+1. **CLI Arguments**: `--data-dir`, `--cache-dir`, or `--logs-dir` (Highest)
+2. **Environment Variables**: `RCLONE_MANAGER_DATA_DIR`, `RCLONE_MANAGER_CACHE_DIR`, or `RCLONE_MANAGER_LOG_DIR`
+3. **System Defaults**: OS-specific standard directories (Lowest)
+
+### 2. Default Directory Locations
+
+| Platform    | Application Data (Config, Remote Configs)       | Cache                      | Logs                       |
+| :---------- | :---------------------------------------------- | :------------------------- | :------------------------- |
+| **Linux**   | `~/.local/share/rclone-manager/`                | `~/.cache/rclone-manager/` | `~/.cache/rclone-manager/logs/` |
+| **macOS**   | `~/Library/Application Support/rclone-manager/` | `~/Library/Caches/rclone-manager/` | `~/Library/Logs/rclone-manager/` |
+| **Windows** | `%APPDATA%\rclone-manager\`                     | `%LOCALAPPDATA%\rclone-manager\` | `%LOCALAPPDATA%\rclone-manager\logs\` |
+
+---
+
+## [[icon:folder.primary]] Configuration Files
+
+RClone Manager stores its internal settings and Rclone's configuration in the following locations by default:
+
+### 1. Application Data (RClone Manager)
+
+This directory contains your application settings and logs.
 
 - **Linux**: `~/.local/share/rclone-manager/`
 - **macOS**: `~/Library/Application Support/rclone-manager/`
 - **Windows**: `%APPDATA%\rclone-manager\`
 
-Rclone configuration is stored separately:
+### 2. Rclone Configuration
+
+This is the standard `rclone.conf` file used by the Rclone backend.
+
 - **Linux/macOS**: `~/.config/rclone/rclone.conf`
 - **Windows**: `%USERPROFILE%\.config\rclone\rclone.conf`
 
