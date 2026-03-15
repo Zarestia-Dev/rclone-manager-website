@@ -8,23 +8,24 @@ This guide covers how to configure authentication, HTTPS/TLS, ports, and data vo
 
 You can configure the server using **Command Line Arguments** (Systemd/Binary) or **Environment Variables** (Docker).
 
-| Feature       | Flag (Binary/Service) | Environment Variable (Docker) | Default   |
-| :------------ | :-------------------- | :---------------------------- | :-------- |
-| **Host IP**   | `--host <IP>`         | `RCLONE_MANAGER_HOST`         | `0.0.0.0` |
-| **Port**      | `--port <PORT>`       | `RCLONE_MANAGER_PORT`         | `8080`    |
-| **Username**  | `--user <NAME>`       | `RCLONE_MANAGER_USER`         | _(None)_  |
-| **Password**  | `--pass <PASS>`       | `RCLONE_MANAGER_PASS`         | _(None)_  |
-| **TLS Cert**  | `--tls-cert <PATH>`   | `RCLONE_MANAGER_TLS_CERT`     | _(None)_  |
-| **TLS Key**   | `--tls-key <PATH>`    | `RCLONE_MANAGER_TLS_KEY`      | _(None)_  |
-| **Data Dir**  | `--data-dir <PATH>`   | `RCLONE_MANAGER_DATA_DIR`     | _(Default)_|
-| **Cache Dir** | `--cache-dir <PATH>`  | `RCLONE_MANAGER_CACHE_DIR`    | _(Default)_|
-| **User ID**   | _(N/A)_               | `PUID`                        | `1000`    |
-| **Group ID**  | _(N/A)_               | `PGID`                        | `1000`    |
-| **Log Level** | _(N/A)_               | `RUST_LOG`                    | `info`    |
+| Feature       | Flag (Binary/Service) | Environment Variable (Docker) | Default     |
+| :------------ | :-------------------- | :---------------------------- | :---------- |
+| **Host IP**   | `--host <IP>`         | `RCLONE_MANAGER_HOST`         | `0.0.0.0`   |
+| **Port**      | `--port <PORT>`       | `RCLONE_MANAGER_PORT`         | `8080`      |
+| **Username**  | `--user <NAME>`       | `RCLONE_MANAGER_USER`         | _(None)_    |
+| **Password**  | `--pass <PASS>`       | `RCLONE_MANAGER_PASS`         | _(None)_    |
+| **TLS Cert**  | `--tls-cert <PATH>`   | `RCLONE_MANAGER_TLS_CERT`     | _(None)_    |
+| **TLS Key**   | `--tls-key <PATH>`    | `RCLONE_MANAGER_TLS_KEY`      | _(None)_    |
+| **Data Dir**  | `--data-dir <PATH>`   | `RCLONE_MANAGER_DATA_DIR`     | _(Default)_ |
+| **Cache Dir** | `--cache-dir <PATH>`  | `RCLONE_MANAGER_CACHE_DIR`    | _(Default)_ |
+| **User ID**   | _(N/A)_               | `PUID`                        | `1000`      |
+| **Group ID**  | _(N/A)_               | `PGID`                        | `1000`      |
+| **Log Level** | _(N/A)_               | `RUST_LOG`                    | `info`      |
 
 ### Path Resolution Hierarchy
 
 RClone Manager Headless follows a strict precedence when resolving directory paths:
+
 1. **CLI Arguments**: `--data-dir`, `--cache-dir`, or `--logs-dir` (highest)
 2. **Environment Variables**: `RCLONE_MANAGER_DATA_DIR`, `RCLONE_MANAGER_CACHE_DIR`, or `RCLONE_MANAGER_LOG_DIR`
 3. **Application Defaults**: Standard paths (lowest)
@@ -135,8 +136,25 @@ sudo systemctl daemon-reload
 sudo systemctl restart rclone-manager-headless
 
 ```
-
 ---
+ 
+ ## [[icon:terminal.primary]] Manual (Windows / PowerShell)
+ 
+ If running the `.exe` directly in PowerShell, use the `$env:` prefix:
+ 
+ **Temporary (Session-wide):**
+ ```powershell
+ $env:RCLONE_MANAGER_PORT="3000"
+ $env:RCLONE_MANAGER_PASS="MySecretPass"
+ .\rclone-manager-headless.exe
+ ```
+ 
+ **One-liner (Command-only scope):**
+ ```powershell
+ & { $env:RCLONE_MANAGER_PORT="3000"; .\rclone-manager-headless.exe }
+ ```
+ 
+ ---
 
 ## [[icon:report_problem.warn]] Important: OAuth Port 53682
 

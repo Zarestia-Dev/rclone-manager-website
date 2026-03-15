@@ -114,7 +114,7 @@ export class Docs implements OnInit {
       }
       usedIds.add(uniqueId);
 
-      return `<h${level} id="${uniqueId}"><a class="heading-anchor" href="#${uniqueId}" aria-label="Link to section">§</a>${text}</h${level}>`;
+      return `<h${level} id="${uniqueId}">${text}<a class="heading-anchor" href="#${uniqueId}" aria-label="Link to section">§</a></h${level}>`;
     };
 
     // Fix relative images and links
@@ -429,22 +429,17 @@ export class Docs implements OnInit {
 
   private attachCopyButtons(): void {
     if (!this.contentArea) return;
-    const preBlocks = this.contentArea.nativeElement.querySelectorAll('pre');
-    preBlocks.forEach((pre: HTMLElement) => {
-      if (pre.querySelector('.code-copy-btn')) return;
-
-      pre.style.position = 'relative';
+    this.contentArea.nativeElement.querySelectorAll('pre').forEach((pre: HTMLElement) => {
+      if (pre.parentElement?.classList.contains('code-block-wrapper')) return;
 
       const btn = document.createElement('button');
       btn.className = 'code-copy-btn';
       btn.title = 'Copy code';
       btn.innerHTML = '<span class="material-icons">content_copy</span>';
-
       btn.addEventListener(
         'click',
         async () => {
-          const code = pre.querySelector('code');
-          const text = code?.innerText ?? pre.innerText;
+          const text = pre.querySelector('code')?.innerText ?? pre.innerText;
           try {
             await navigator.clipboard.writeText(text);
             btn.innerHTML = '<span class="material-icons">check</span>';
@@ -460,7 +455,10 @@ export class Docs implements OnInit {
         { signal: this.renderCleanup?.signal },
       );
 
-      pre.appendChild(btn);
+      const wrapper = document.createElement('div');
+      wrapper.className = 'code-block-wrapper';
+      pre.replaceWith(wrapper);
+      wrapper.append(pre, btn);
     });
   }
 

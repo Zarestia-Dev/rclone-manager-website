@@ -288,6 +288,41 @@ flatpak override --user \
 
 ---
 
+## [[icon:folder.warn]] Issue 5: Accessing System Binaries or Host Paths in Flatpak {#issue-5}
+
+### [[icon:search.accent]] What you might see
+
+- You try to use your system's `rclone` binary (e.g., at `/usr/bin/rclone`) but the app says "Invalid binary".
+- You cannot select or find folders that are outside of your Flatpak sandbox, such as your native home directory or other system locations.
+
+### [[icon:settings.accent]] What's going on (in plain English)
+
+Flatpak runs RClone Manager in an isolated sandbox, meaning it cannot see your computer's regular filesystem directly. However, Flatpak exposes your real computer's root filesystem inside a special folder called `/var/run/host`. 
+
+---
+
+### [[icon:build_circle.success]] Fix it
+
+To use any binary or file path from your actual computer, you must prefix the path with `/var/run/host`.
+
+**1. Using the System's Rclone Binary**
+If you installed `rclone` normally via your distro's package manager (which usually puts it at `/usr/bin/rclone`), go to **Settings → Core** in RClone Manager and set the binary path to:
+```text
+/var/run/host/usr/bin/rclone
+```
+
+**2. Reconfiguring Other Paths (Cache, Logs, Data, etc.)**
+Because the sandbox environment separates your files, if you want your RClone Manager configurations, caches, or logs to be saved natively in your actual host's home folder instead of the sandbox, you need to reconfigure those paths as well!
+
+When selecting or typing paths in the app's settings, you must navigate through `/var/run/host` to reach your real directories. For example, your real home folder is located at:
+```text
+/var/run/host/home/your_username
+```
+
+> **[[icon:info.accent]] Tip:** If you just want standard access to your `~` (home) directory without manually typing prefix paths for everything, you can simply grant the app full home access via Flatseal or the terminal (`flatpak override --user --filesystem=home io.github.zarestia_dev.rclone-manager`) as described in [Issue 2](#issue-2).
+
+---
+
 ## [[icon:menu_book.accent]] Still stuck?
 
 If none of the above worked, you're not alone, Linux environments vary a lot. Open a bug report on **[GitHub Issues](https://github.com/zarestia-dev/rclone-manager/issues)** and include:

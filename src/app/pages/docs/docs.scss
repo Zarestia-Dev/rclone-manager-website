@@ -60,17 +60,15 @@
   border: 1px solid var(--border-color);
   border-radius: var(--radius-sm);
   padding: 0 var(--space-sm);
-  height: var(--icon-size-xl); // Closest to 2.5rem
+  height: var(--icon-size-lg);
   transition: var(--transition-fast);
 
   &:focus-within {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
-    background: var(--sidebar-bg-color);
   }
 
   mat-icon {
-    flex-shrink: 0;
     color: var(--dim-color);
     font-size: var(--icon-size-sm);
     width: var(--icon-size-sm);
