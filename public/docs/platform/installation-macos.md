@@ -1,84 +1,102 @@
 # Installation: macOS
 
-Welcome to the macOS installation guide for **RClone Manager**
-
-RClone Manager supports both **Intel** and **Apple Silicon (M-Series)** Macs natively.
-
-> **Note:** RClone Manager is an open-source community project. Since it is not notarized by Apple, you will likely see security warnings. This is normal for open-source software not distributed via the App Store.
+Welcome to the **RClone Manager** macOS installation guide. We support both **Intel (x86_64)** and **Apple Silicon** architectures.
 
 ---
 
-## 🚀 Method 1: Direct Download (Recommended)
+## [[icon:terminal.primary]] Method 1: Homebrew (Preferred)
 
-### 1. Download
-Visit the **[Latest Releases Page](https://github.com/Zarestia-Dev/rclone-manager/releases)**.
-* **Recommended:** Download the `.dmg` file.
-* **Alternative:** You can also download the `.app.tar.gz` archive.
+Homebrew is the industry-standard package manager for macOS. It ensures your application is correctly placed and allows for easy updates.
 
-### 2. Install
-**If you downloaded the `.dmg`:**
-1.  Open the downloaded file.
-2.  Drag the **RClone Manager** icon into the **Applications** folder.
+### 1. Tap the repository
 
-**If you downloaded the `.app.tar.gz`:**
-1.  Double-click the file to extract it.
-2.  Drag the extracted **RClone Manager.app** into your **Applications** folder.
+Add Zarestia's official tap to your Homebrew installation:
 
-### 3. Open & Bypass Security
-When you open the app for the first time, you might see a message saying **"App is damaged and can't be opened"** or **"Unidentified Developer"**.
-
-**Option A: Right-click (Easiest)**
-1.  Go to your **Applications** folder.
-2.  **Right-click** (or Control+Click) on RClone Manager.
-3.  Select **Open**.
-4.  Click **Open** in the confirmation dialog.
-
-**Option B: Terminal (The "Damaged" Fix)**
-If Option A doesn't work and macOS claims the app is "damaged" (a common Gatekeeper issue), run this command in Terminal to clear the quarantine flag:
-
-```zsh
-xattr -cr /Applications/RClone\ Manager.app
-
+```bash
+brew tap Zarestia-Dev/zarestia
 ```
 
----
+### 2. Install RClone Manager
 
-## 🍺 Method 2: Homebrew (Coming Soon)
+Install the cask directly using:
 
-*We are working on adding RClone Manager to Homebrew. Once approved, you will be able to install it via:*
-
-```sh
+```bash
 brew install --cask rclone-manager
-
 ```
 
-*For now, please use the Direct Download method.*
+> [!TIP]
+> **Why Homebrew?**  
+> Using Homebrew automatically handles the security quarantine flags and makes updating to future versions as simple as running `brew upgrade`.
 
 ---
 
-## 🔌 Enable Mounting (macFUSE)
+## [[icon:archive.primary]] Method 2: Direct Download
 
-To use the **Mount** feature (mounting cloud storage as a local drive/volume), macOS requires **macFUSE**.
+If you prefer not to use a package manager, you can download a standalone installer.
 
-1. **Check:** The app will detect if FUSE is missing during the onboarding or via the repair sheet.
-2. **Install:** Due to Apple's strict security regarding system extensions, you may need to install this manually.
-* Download from: [osxfuse.github.io](https://osxfuse.github.io/)
-* **Important:** After installing, go to **System Settings > Privacy & Security** and allow the system extension if prompted. You may need to restart your Mac.
+### 1. Download the Latest DMG
 
+Visit our **[GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)** and download the `.dmg` file for your architecture:
 
+- **Apple Silicon:** `RClone.Manager_{version}_aarch64.dmg`
+- **Intel:** `RClone.Manager_{version}_x64.dmg`
+
+### 2. Installation steps
+
+1.  **Open** the downloaded `.dmg` file.
+2.  **Drag and drop** the **RClone Manager** icon into your **Applications** folder.
+
+### 3. [[icon:security.warn]] Bypass macOS Security Flags
+
+Because RClone Manager is open-source and not notarized by Apple, you must authorize it manually:
+
+1.  **Right-click** (Control + Click) on the **RClone Manager.app** in your Applications folder.
+2.  Select **Open** from the menu.
+3.  Click **Open** in the confirmation dialog.
+
+If the app still fails to open with a "damaged" error, run this in your terminal:
+
+```bash
+xattr -rd com.apple.quarantine "/Applications/RClone Manager.app"
+```
 
 ---
 
-## 💡 Verification & Source
+## [[icon:settings_suggest.primary]] System Requirements
 
-* **Verify:** SHA256 checksums are available on the release page if you wish to verify your download.
-* **Source:** You can inspect the code or build it yourself from the [GitHub Repository](https://github.com/Zarestia-Dev/rclone-manager).
+To enable advanced features like **Mounting Cloud Storage**, you may need additional drivers:
+
+### **macFUSE**
+
+The "Mount" feature allows you to browse cloud files as if they were local disks. This requires the latest version of macFUSE.
+
+- **Download:** [osxfuse.github.io](https://osxfuse.github.io/)
+- **Configuration:** Go to **System Settings > Privacy & Security** and allow the system extension after installation. A restart may be required.
 
 ---
 
-## 🛠 Troubleshooting
+## [[icon:build.warn]] Troubleshooting
 
-* **"App is damaged":** Use the `xattr -cr` command mentioned in Method 1.
-* **Mounts fail:** Ensure macFUSE is installed and permitted in System Settings.
+If you encounter issues during installation or setup on macOS, please refer to the following guide:
 
-For more help, see the **[Troubleshooting](https://github.com/Zarestia-Dev/rclone-manager/wiki/Troubleshooting-macOS)** guide.
+### **"App is damaged and can't be opened"**
+This is a common macOS Gatekeeper issue for unsigned apps.
+- **Solution:** Run the `xattr -rd com.apple.quarantine "/Applications/RClone Manager.app"` command mentioned above.
+
+### **Permission Denied for Mounts**
+If you cannot mount cloud drives, macFUSE might be blocked.
+- **Solution:** Check **System Settings > Privacy & Security** and ensure the "macFUSE" system extension is allowed. You may need to click the "Allow" button and restart.
+
+### **Rclone command not found**
+RClone Manager bundled its own rclone, but if you have a custom setup, ensure your path is correct.
+- **Solution:** Check the app settings to point to your rclone binary if needed.
+
+> [[icon:open_in_new.accent]] **Detailed Guide:** For more advanced solutions and technical help, please visit our **[macOS Troubleshooting Guide](../support/troubleshooting-macos.md)**.
+
+---
+
+## [[icon:contact_support.primary]] Support & Resources
+
+- [[icon:code.accent]] **Source Code:** [github.com/Zarestia-Dev/rclone-manager](https://github.com/Zarestia-Dev/rclone-manager)
+- [[icon:help.primary]] **Issue Tracker:** [Report a bug](https://github.com/Zarestia-Dev/rclone-manager/issues)
+- [[icon:update.success]] **Stay Updated:** Follow the repository to get notified of new releases.

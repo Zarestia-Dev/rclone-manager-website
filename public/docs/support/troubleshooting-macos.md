@@ -1,91 +1,57 @@
-# Troubleshooting - macOS
+# Troubleshooting - macOS [[icon:build.primary]]
 
-This page covers common issues and solutions specific to macOS users of RClone Manager.
-
-## Common Issues
-
-### "This app is damaged and can't be opened"
-
-**Problem:** When trying to open RClone Manager, macOS displays an error message stating the app is damaged or can't be verified.
-
-**Why This Happens:**
-
-RClone Manager is not notarized or signed with an Apple Developer certificate. As a free and open-source project released under the GPL-3.0 (or later) license, we do not pay Apple's $99/year fee required for notarization. Because of this, macOS Gatekeeper may flag the app as "damaged" or block it from opening.
-
-**Solution:**
-
-Remove the quarantine attribute using Terminal:
-
-```bash
-# Navigate to Applications folder
-cd /Applications
-
-# Remove quarantine flag (replace with actual app name)
-xattr -cr "RClone Manager.app"
-```
-
-Or if installed in a different location:
-
-```bash
-xattr -cr /path/to/RClone\ Manager.app
-```
-
-After running this command, macOS Gatekeeper will no longer block the application.
-
-**Alternative Method:**
-
-If the command above doesn't work, try opening via right-click:
-
-1. Locate RClone Manager in Applications
-2. Right-click (or Control+click) on the app
-3. Select "Open" from the menu
-4. Click "Open" again in the security dialog
-
-This method may need to be repeated on first launch.
-
-## Reporting Issues
-
-When reporting macOS-specific issues, please include:
-
-1. **macOS Version**: Check in About This Mac
-   ```bash
-   sw_vers
-   ```
-
-2. **Architecture**: Intel or Apple Silicon
-   ```bash
-   uname -m
-   ```
-
-3. **RClone Manager Version**: Check in app or:
-   ```bash
-   /Applications/RClone\ Manager.app/Contents/MacOS/rclone-manager --version
-   ```
-
-4. **Installation Method**: Homebrew, DMG, or other
-
-5. **Error Messages**: Screenshots or console output
-
-6. **Crash Logs**: From Console.app if applicable
-
-## Future Plans
-
-- **Notarization**: While we may consider Apple notarization in the future, it is not currently planned due to the associated costs
-- **Open Source Commitment**: RClone Manager will remain completely free and open-source as long as development continues
-- **Alternative Distribution**: Exploring alternative distribution methods that don't require Apple Developer Program membership
-
-## Additional Resources
-
-- [Installation - macOS](Installation-macOS) - Detailed installation guide
-- [Configuration](Configuration) - General configuration guide
-- [Desktop Configuration](Desktop-Configuration) - Desktop-specific features
-- [GitHub Issues](https://github.com/Zarestia-Dev/rclone-manager/issues) - Report new issues
-- [Discussions](https://github.com/Zarestia-Dev/rclone-manager/discussions) - Community support
-
-## Community Solutions
-
-Have you found a solution not listed here? Please share it on our [Discussions page](https://github.com/Zarestia-Dev/rclone-manager/discussions) to help other macOS users!
+This guide provides solutions for common technical challenges encountered by **RClone Manager** users on macOS.
 
 ---
 
-**Note**: macOS security policies change frequently. If you encounter issues not covered here, check the [GitHub Issues](https://github.com/Zarestia-Dev/rclone-manager/issues) for the latest workarounds.
+## [[icon:report_problem.warn]] Common Issues
+
+### "App is damaged and can't be opened"
+This is the most frequent issue on macOS, caused by Apple's Gatekeeper security system flagging unsigned open-source applications.
+
+#### **Why this happens:**
+RClone Manager is a community-driven, open-source project. To maintain its free and open-source status, we do not participate in Apple's paid Developer Program, which is required for official "notarization".
+
+#### **Solution:**
+Remove the quarantine attribute manually using the Terminal. This safely tells macOS that you trust the application.
+
+```bash
+# Clear the quarantine bit for the application
+xattr -rd com.apple.quarantine "/Applications/RClone Manager.app"
+```
+
+---
+
+### macFUSE & Mounting Issues [[icon:settings_suggest.primary]]
+If the **Mount** features are unavailable or fail to activate, it is typically related to system extension permissions.
+
+- **Check Driver:** Ensure you have the latest version of [macFUSE](https://osxfuse.github.io/) installed.
+- **Privacy & Security:** Go to **System Settings > Privacy & Security**. Scroll down to find the "Security" section. If you see a message about "System software from developer 'Benjamin Fleischer' was blocked", click **Allow**.
+- **Kernel Extensions:** On Apple Silicon Macs, you may need to enable "Reduced Security" in Recovery Mode to allow third-party kernel extensions if macFUSE requires it (refer to macFUSE documentation for the latest macOS versions).
+
+---
+
+## [[icon:bug_report.accent]] Reporting Issues
+
+When submitting a bug report to our [GitHub Issues](https://github.com/Zarestia-Dev/rclone-manager/issues), providing technical context helps us resolve it faster.
+
+### Technical Context Checklist:
+1.  **macOS Version:** Run `sw_vers` in terminal.
+2.  **Architecture:** Run `uname -m` (x86_64 for Intel, arm64 for Apple Silicon).
+3.  **Installation Method:** (e.g., Homebrew Cask vs. DMG Download).
+4.  **RClone Version:** The version of the rclone binary you are using.
+
+---
+
+## [[icon:rocket_launch.primary]] Future Roadmap
+
+- **Enhanced Automation:** We are continuously improving the Homebrew tap and automated build processes to reduce installation Friction.
+- **Security Research:** We are exploring community-driven ways to bridge the gap with macOS security requirements without compromising our open-source values.
+
+---
+
+## [[icon:info.primary]] Additional Resources
+
+- [[icon:terminal.primary]] **[Installation Guide](Installation-macOS)** - Detailed setup instructions.
+- [[icon:help.primary]] **[Discussions](https://github.com/Zarestia-Dev/rclone-manager/discussions)** - Community-powered support.
+- [[icon:code.accent]] **[Source Code](https://github.com/Zarestia-Dev/rclone-manager)** - Inspect or build from source.
