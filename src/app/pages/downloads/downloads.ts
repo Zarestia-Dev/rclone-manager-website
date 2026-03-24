@@ -124,8 +124,21 @@ export class Downloads {
       if (!option) return;
 
       if (mode === 'headless') {
-        if (option.type === 'DEB Package' || option.type === 'RPM Package') {
-          platforms[0].downloads.push(option);
+        if (
+          option.type === 'Windows Headless' ||
+          option.type === 'MSI Installer' ||
+          option.type === 'EXE Installer' ||
+          option.type === 'Windows Portable'
+        ) {
+          if (platforms[0]) platforms[0].downloads.push(option);
+        } else if (
+          option.type === 'Linux Headless' ||
+          option.type === 'DEB Package' ||
+          option.type === 'RPM Package' ||
+          option.type === 'Linux Portable' ||
+          option.type === 'AppImage'
+        ) {
+          if (platforms[1]) platforms[1].downloads.push(option);
         }
       } else if (option.platformIndex !== undefined && platforms[option.platformIndex]) {
         platforms[option.platformIndex].downloads.push(option);

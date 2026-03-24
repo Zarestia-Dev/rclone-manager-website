@@ -33,7 +33,13 @@ export const DESKTOP_PLATFORMS_CONFIG: DownloadPlatform[] = [
     icon: 'laptop_mac',
     description: 'For macOS 10.15+ (Intel and Apple Silicon)',
     downloads: [],
-    packageManagers: [],
+    packageManagers: [
+      {
+        name: 'Homebrew',
+        command: 'brew tap Zarestia-Dev/zarestia && brew install rclone-manager',
+        icon: 'terminal',
+      },
+    ],
   },
   {
     name: 'Linux',
@@ -62,6 +68,21 @@ export const DESKTOP_PLATFORMS_CONFIG: DownloadPlatform[] = [
 
 export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
   {
+    name: 'Windows (Headless)',
+    icon: 'dns',
+    description: 'For Windows Servers. Run as a background service without GUI.',
+    downloads: [],
+    packageManagers: [
+      {
+        name: 'Windows Setup Guide',
+        command: 'View Guide',
+        icon: 'description',
+        url: 'https://hakanismail.info/zarestia/rclone-manager/docs/configuration-headless',
+        actionLabel: 'View Guide',
+      },
+    ],
+  },
+  {
     name: 'Linux (Headless)',
     icon: 'dns',
     description: 'For Linux Servers (Systemd Service). Run as a web server without GUI.',
@@ -86,7 +107,7 @@ export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
         name: 'Systemd Setup',
         command: 'View Guide',
         icon: 'description',
-        url: 'https://github.com/Zarestia-Dev/rclone-manager/wiki/Configuration',
+        url: 'https://hakanismail.info/zarestia/rclone-manager/docs/configuration-headless',
         actionLabel: 'View Guide',
       },
     ],
@@ -103,6 +124,8 @@ export const DOWNLOAD_TYPE_ORDER = [
   'Linux Portable',
   'DEB Package',
   'RPM Package',
+  'Windows Headless',
+  'Linux Headless',
 ];
 
 export const CHANGELOG_SECTION_ORDER = ['warning', 'added', 'changed', 'fixed', 'need-fix'];
@@ -123,6 +146,12 @@ export const FALLBACK_PLATFORMS: DownloadPlatform[] = [
     downloads: [
       {
         name: 'Download for Windows',
+        architecture: 'All',
+        size: 'Various',
+        url: 'https://github.com/Zarestia-Dev/rclone-manager/releases/latest',
+      },
+      {
+        name: 'Download Portable (.zip)',
         architecture: 'All',
         size: 'Various',
         url: 'https://github.com/Zarestia-Dev/rclone-manager/releases/latest',
@@ -167,6 +196,12 @@ export const FALLBACK_PLATFORMS: DownloadPlatform[] = [
     downloads: [
       {
         name: 'Download for Linux',
+        architecture: 'All',
+        size: 'Various',
+        url: 'https://github.com/Zarestia-Dev/rclone-manager/releases/latest',
+      },
+      {
+        name: 'Download Portable (.tar.gz)',
         architecture: 'All',
         size: 'Various',
         url: 'https://github.com/Zarestia-Dev/rclone-manager/releases/latest',
@@ -322,10 +357,17 @@ export const FILE_EXTENSION_PATTERNS = [
   },
   {
     pattern: 'headless',
+    secondaryPattern: 'windows',
+    displayName: 'Windows Headless',
+    type: 'Windows Headless',
+    platformIndex: 0, // Windows Headless
+  },
+  {
+    pattern: 'headless',
     secondaryPattern: 'linux',
-    displayName: 'Headless Binary',
-    type: 'Binary',
-    platformIndex: -1, // Special case
+    displayName: 'Linux Headless',
+    type: 'Linux Headless',
+    platformIndex: 1, // Linux Headless
   },
 ];
 
