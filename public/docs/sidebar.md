@@ -36,6 +36,7 @@
 - [Troubleshooting](support/troubleshooting.md) {description="Fix common problems across platforms", icon=bug_report}
 - [Troubleshooting Linux](support/troubleshooting-linux.md) {icon=terminal}
 - [Troubleshooting macOS](support/troubleshooting-macos.md) {icon=apple}
+- [Troubleshooting Windows](support/troubleshooting-windows.md) {icon=window}
 - [External Links](support/external-links.md) {icon=link}
 
 ## Development {icon=code, description="Resources for contributors and developers"}

@@ -329,6 +329,7 @@ export class Docs implements OnInit {
         }
 
         html = this.docService.processCustomIcons(html);
+        html = this.docService.processAlerts(html);
 
         const imgRegex = /<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi;
         html = html.replace(imgRegex, (match, p1, src, p3) => {

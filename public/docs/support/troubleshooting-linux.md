@@ -31,7 +31,9 @@ RClone Manager uses your GPU to render its interface. On some Linux setups, this
 
 ### [[icon:build_circle.success]] Fix it
 
-> **[[icon:info.accent]] Not sure which command to try?** Start with the first one. If it doesn't work, try the second.
+> [!TIP]
+> **Not sure which command to try?**  
+> Start with the first one. If it doesn't work, try the second.
 
 **Open a terminal and run:**
 
@@ -106,7 +108,9 @@ The Flatpak version of RClone Manager runs in a sandbox, it's intentionally rest
 
 ### [[icon:build_circle.success]] Fix it
 
-> **[[icon:info.accent]] Recommended: use Flatseal**, it's a simple visual app that lets you manage these permissions without touching the terminal.
+> [!TIP]
+> **Recommended: use Flatseal**  
+> It's a simple visual app that lets you manage these permissions without touching the terminal.
 
 **Step 1: Install Flatseal:**
 
@@ -128,7 +132,8 @@ flatpak install flathub com.github.tchx84.Flatseal
 <img src="../assets/troubleshooting/flatseal-socket.png" alt="Flatseal Socket" width="800">
 </p>
 
-> **[[icon:report_problem.warn]] If mounting still fails** after enabling D-Bus session bus, go to **Session Bus → Talk** and add `org.freedesktop.Flatpak`.
+> [!IMPORTANT]
+> **If mounting still fails** after enabling D-Bus session bus, go to **Session Bus → Talk** and add `org.freedesktop.Flatpak`.
 
 <p align="center">
 <img src="../assets/troubleshooting/flatseal-talk.png" alt="Flatseal Socket" width="400">
@@ -262,7 +267,8 @@ Exec=env WEBKIT_DISABLE_DMABUF_RENDERER=1 rclone-manager --tray
 chmod -w ~/.config/autostart/RClone\ Manager.desktop
 ```
 
-> **[[icon:info.accent]] Note:** To disable autostart in the future, you'll need to delete this file manually or run `chmod +w` on it first.
+> [!NOTE]
+> To disable autostart in the future, you'll need to delete this file manually or run `chmod +w` on it first.
 
 </details>
 
@@ -319,7 +325,8 @@ When selecting or typing paths in the app's settings, you must navigate through 
 /var/run/host/home/your_username
 ```
 
-> **[[icon:info.accent]] Tip:** If you just want standard access to your `~` (home) directory without manually typing prefix paths for everything, you can simply grant the app full home access via Flatseal or the terminal (`flatpak override --user --filesystem=home io.github.zarestia_dev.rclone-manager`) as described in [Issue 2](#issue-2).
+> [!TIP]
+> If you just want standard access to your `~` (home) directory without manually typing prefix paths for everything, you can simply grant the app full home access via Flatseal or the terminal (`flatpak override --user --filesystem=home io.github.zarestia_dev.rclone-manager`) as described in [Issue 2](#issue-2).
 
 ---
 

@@ -1,4 +1,4 @@
-# Installation: macOS
+# [[icon:desktop_mac.primary]] Installation: macOS
 
 Welcome to the **RClone Manager** macOS installation guide. We support both **Intel (x86_64)** and **Apple Silicon** architectures.
 

@@ -1,48 +1,42 @@
-# RClone Manager Documentation
+# [[icon:home.primary]] RClone Manager Documentation
 
-**RClone Manager** is a cross-platform GUI for managing Rclone remotes, jobs, mounts, and transfers.
-
----
-
-## 🚀 Getting Started
-
-* **[Installation](Installation)** – Windows, macOS, and Linux desktop guides.
-* **[Installation - Headless](Installation-Headless)** – Docker, NAS, and Server setup.
-* **[Configuration](Configuration)** – Initial setup and connecting remotes.
+**RClone Manager** is a modern, cross-platform GUI for managing Rclone remotes, jobs, mounts, and transfers with enterprise-grade precision and ease.
 
 ---
 
-## ✨ Core Features
+## [[icon:rocket_launch.primary]] Getting Started
 
-* **[Remote Management](Remote-Management)** – Add, edit, encryption, and OAuth setup.
-* **[Sync & Transfer](Sync-and-Transfer)** – Sync, Copy, Move, and Bi-directional sync.
-* **[Mounting Drives](Mounting)** – Mount cloud storage as local disks (WinFsp/FUSE).
-* **[Scheduler](Scheduler)** – Automate tasks with CRON scheduling.
+Explore our comprehensive guides to get your environment up and running quickly.
 
----
-
-## 📦 Deployment Modes
-
-### 🖥️ Desktop App
-The native client for **Windows**, **macOS**, and **Linux**. Includes system tray support and global shortcuts.
-
-### 🌐 Headless Server
-Run RClone Manager on **Docker**, **VPS**, or **NAS** (Unraid/Synology) and access the UI via your web browser.
-* *See [Installation - Headless](Installation-Headless) for setup.*
+- [[icon:get_app.accent]] **[Installation](Installation)** – Step-by-step desktop guides for Windows, macOS, and Linux.
+- [[icon:dns.accent]] **[Installation - Headless](Installation-Headless)** – Optimized setup for Docker, NAS, and remote servers.
+- [[icon:settings.accent]] **[Configuration](Configuration)** – Learn how to link your first rclone remotes and configure global settings.
 
 ---
 
-## 🤝 Help & Support
+## [[icon:auto_awesome.primary]] Core Features
 
-* **[FAQ](FAQ)** – Frequently Asked Questions.
-* **[Troubleshooting](Troubleshooting)** – Fixes for "App Damaged", FUSE errors, and permissions.
-* **[Advanced Flags](Advanced-Flags)** – Custom Rclone flags and environment variables.
+Master the powerful capabilities of RClone Manager.
 
-### Community
-* 🐛 [Report Bugs](https://github.com/Zarestia-Dev/rclone-manager/issues)
-* 💬 [Discussions](https://github.com/Zarestia-Dev/rclone-manager/discussions)
-* 📦 [Source Code](https://github.com/Zarestia-Dev/rclone-manager)
+- [[icon:folder_shared.accent]] **[Remote Management](Remote-Management)** – Comprehensive setup for encryption, OAuth, and advanced remote types.
+- [[icon:sync_alt.accent]] **[Sync & Transfer](Sync-and-Transfer)** – Advanced sync, copy, and move operations with bi-directional support.
+- [[icon:data_usage.accent]] **[Mounting Drives](Mounting)** – Seamlessly mount cloud storage as local disks using WinFsp or FUSE.
+- [[icon:schedule.accent]] **[Scheduler](Scheduler)** – Professional task automation with built-in CRON scheduling.
 
 ---
 
-<small>Documentation for v0.1.8 and later.</small>
+## [[icon:layers.primary]] Deployment Modes
+
+### [[icon:computer.accent]] Desktop Client
+The native experience for **Windows**, **macOS**, and **Linux**. Features deep system integration, tray support, and global shortcuts.
+
+### [[icon:storage.accent]] Headless Server
+Run RClone Manager on **Docker**, **VPS**, or **NAS** (Unraid/Synology). Access the full management suite from any web browser on your network.
+
+---
+
+## [[icon:contact_support.primary]] Support & Resources
+
+- [[icon:code.accent]] **Source Code:** [github.com/Zarestia-Dev/rclone-manager](https://github.com/Zarestia-Dev/rclone-manager)
+- [[icon:help.primary]] **Issue Tracker:** [Report a bug](https://github.com/Zarestia-Dev/rclone-manager/issues)
+- [[icon:update.success]] **Stay Updated:** Follow the repository to get notified of new releases.

@@ -493,3 +493,63 @@
     height: var(--icon-size-md);
   }
 }
+
+// ─── Markdown Alerts (GitHub Style) ──────────────────────────────────────────
+::ng-deep .markdown-alert {
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+  border-left: 0.25em solid var(--border-color);
+  background: var(--hover-bg-color);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  .markdown-alert-title {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-xs);
+    font-weight: 600;
+    font-size: var(--font-size-md);
+    text-transform: capitalize;
+
+    .material-icons {
+      font-size: var(--icon-size-sm);
+      width: var(--icon-size-sm);
+      height: var(--icon-size-sm);
+    }
+  }
+
+  // Variants
+  &.markdown-alert-note {
+    border-left-color: var(--gnome-blue-3);
+    background: rgba(var(--accent-color-rgb), 0.05);
+    .markdown-alert-title { color: var(--gnome-blue-3); }
+  }
+
+  &.markdown-alert-tip {
+    border-left-color: var(--gnome-green-4);
+    background: rgba(var(--primary-color-rgb), 0.05);
+    .markdown-alert-title { color: var(--gnome-green-4); }
+  }
+
+  &.markdown-alert-important {
+    border-left-color: var(--gnome-purple-3);
+    background: rgba(var(--purple-rgb), 0.05);
+    .markdown-alert-title { color: var(--gnome-purple-3); }
+  }
+
+  &.markdown-alert-warning {
+    border-left-color: var(--gnome-orange-4);
+    background: rgba(var(--orange-rgb), 0.05);
+    .markdown-alert-title { color: var(--gnome-orange-4); }
+  }
+
+  &.markdown-alert-caution {
+    border-left-color: var(--gnome-red-3);
+    background: rgba(var(--red-rgb), 0.05);
+    .markdown-alert-title { color: var(--gnome-red-3); }
+  }
+}

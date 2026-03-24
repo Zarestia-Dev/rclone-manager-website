@@ -1,52 +1,51 @@
-# Getting Started
+# [[icon:rocket_launch.primary]] Getting Started
 
-Welcome to **RClone Manager**!  
-This guide will help you install and launch RClone Manager for the first time.
-
----
-
-## 🚀 What is RClone Manager?
-
-RClone Manager is a cross-platform, open-source application that provides a graphical user interface for [rclone](https://rclone.org/). It helps you manage cloud storage remotes, transfers, and jobs with ease.
+Welcome to **RClone Manager**! This guide provides a high-level overview to help you install, launch, and configure the application for the first time.
 
 ---
 
-## 📥 Installation
+## [[icon:help_outline.primary]] What is RClone Manager?
 
-Choose your operating system to get started:
-
-- [Install on macOS](Installation-macOS)
-- [Install on Windows](Installation-Windows)
-- [Install on Linux](Installation-Linux)
-
-> See the [Installation](Installation) section for detailed instructions and troubleshooting tips.
+**RClone Manager** is a sophisticated, open-source GUI designed to simplify the management of [Rclone](https://rclone.org/) remotes. It offers a seamless interface for handling complex cloud storage operations, including encrypted transfers, automated synchronization, and cloud drive mounting.
 
 ---
 
-## 🏁 First Launch
+## [[icon:get_app.primary]] Installation
 
-After installing:
+To begin, please select the installation guide for your specific operating system:
 
-1. Open **RClone Manager** from your Applications menu (or Start menu on Windows).
-2. On first launch, you may see security warnings – see [Troubleshooting](Troubleshooting) if needed.
-3. The main window will open, prompting you to configure your first rclone remote.
+- [[icon:desktop_mac.accent]] **[Install on macOS](Installation-macOS)**
+- [[icon:window.accent]] **[Install on Windows](Installation-Windows)**
+- [[icon:terminal.accent]] **[Install on Linux](Installation-Linux)**
 
----
-
-## 📚 Next Steps
-
-- [Configuration](Configuration): Set up rclone remotes and preferences.
-- [Usage Guide](Usage): Learn how to add remotes, transfer files, and more.
-- [Troubleshooting](Troubleshooting): Find solutions for common issues.
+> [!TIP]
+> **New to Rclone?**  
+> If you don't have Rclone installed yet, don't worry! RClone Manager features a built-in setup wizard that can automatically download and configure the core Rclone binary for you on the first run.
 
 ---
 
-## 💬 Need Help?
+## [[icon:flag.primary]] First Launch
 
-- Visit our [FAQ](FAQ)
-- [Open an Issue](https://github.com/RClone-Manager/rclone-manager/issues) if you get stuck
-- Want to contribute? Check the [Contributing](Contributing) guide!
+Once the installation is complete, follow these steps to initialize your environment:
+
+1.  **Launch the App**: Open **RClone Manager** from your system's application menu.
+2.  **Security Authorization**: On some systems, you may need to authorize the application manually. Please refer to our **[Troubleshooting](Troubleshooting)** guide for platform-specific security bypass instructions.
+3.  **Initial Setup**: The application will guide you through the process of linking your first cloud storage provider or importing an existing `rclone.conf` file.
 
 ---
 
-Happy syncing!
+## [[icon:menu_book.primary]] Next Steps
+
+Continue your journey with our detailed feature guides:
+
+- [[icon:settings.accent]] **[Configuration](Configuration)** – Master remote setup and global application preferences.
+- [[icon:auto_stories.accent]] **[Usage Guide](Usage)** – Learn the fundamentals of file transfers, sync operations, and mounting.
+- [[icon:build.accent]] **[Troubleshooting](Troubleshooting)** – Find professional solutions for common setup and runtime issues.
+
+---
+
+## [[icon:contact_support.primary]] Support & Resources
+
+- [[icon:code.accent]] **Source Code:** [github.com/Zarestia-Dev/rclone-manager](https://github.com/Zarestia-Dev/rclone-manager)
+- [[icon:help.primary]] **Issue Tracker:** [Report a bug](https://github.com/Zarestia-Dev/rclone-manager/issues)
+- [[icon:update.success]] **Stay Updated:** Follow the repository to get notified of new releases.

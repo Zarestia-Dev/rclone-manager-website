@@ -10,12 +10,12 @@ Select your preferred method below.
 Designed for personal use on **Windows**, **Linux**, and **macOS**.
 
 ### Platform Guides
-* **[Installation Windows](Installation-Windows)**
-* **[Installation Linux](Installation-Linux)**
+* **[Installation Windows](Installation-Windows)** (Includes Portable `.zip`)
+* **[Installation Linux](Installation-Linux)** (Includes Portable `.tar.gz`)
 * **[Installation macOS](Installation-macOS)**
 
 ### Fast Download
-You can always find the latest binaries for all platforms on our **[GitHub Releases Page](https://github.com/Zarestia-Dev/rclone-manager/releases)**.
+You can always find the latest binaries, installers, and **portable versions** (Windows/Linux) for all platforms on our **[GitHub Releases Page](https://github.com/Zarestia-Dev/rclone-manager/releases)**.
 
 ---
 

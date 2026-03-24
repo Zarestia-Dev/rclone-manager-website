@@ -126,6 +126,33 @@ export class DocService {
     });
   }
 
+  processAlerts(html: string): string {
+    const alertTypes: Record<string, { icon: string; title: string }> = {
+      NOTE: { icon: 'info', title: 'Note' },
+      TIP: { icon: 'lightbulb', title: 'Tip' },
+      IMPORTANT: { icon: 'report_problem', title: 'Important' },
+      WARNING: { icon: 'warning', title: 'Warning' },
+      CAUTION: { icon: 'dangerous', title: 'Caution' },
+    };
+
+    return html.replace(
+      /<blockquote>\s*<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]([\s\S]*?)<\/blockquote>/gi,
+      (_, type, content) => {
+        const upperType = type.toUpperCase();
+        const config = alertTypes[upperType];
+        return `
+          <div class="markdown-alert markdown-alert-${upperType.toLowerCase()}">
+            <p class="markdown-alert-title">
+              <span class="material-icons">${config.icon}</span>
+              ${config.title}
+            </p>
+            ${content}
+          </div>
+        `;
+      },
+    );
+  }
+
   highlightContent(html: string, term: string): string {
     if (!term || term.length < 2) return html;
     const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

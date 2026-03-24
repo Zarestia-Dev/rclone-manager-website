@@ -1,96 +1,158 @@
-# Installation: Linux
+# [[icon:terminal.primary]] Installation: Linux
 
-Welcome to the Linux installation guide for **RClone Manager**!
-
-RClone Manager supports almost all modern Linux distributions (Ubuntu, Fedora, Arch, etc.) and architectures including **x64 (AMD/Intel)** and **ARM64** (Raspberry Pi, etc.).
-
-Choose your preferred installation method below.
+Welcome to the **RClone Manager** Linux installation guide. Our application supports all major distributions, including Ubuntu, Fedora, Arch, and Debian, across both **x64 (AMD/Intel)** and **ARM64** architectures.
 
 ---
 
-## 🚀 Method 1: AppImage (Recommended)
-The **AppImage** is a universal package that works on almost any Linux distribution without needing to install dependencies manually.
+## [[icon:auto_awesome.primary]] Method 1: AppImage (Recommended)
 
-### 1. Download
-Visit the **[Latest Releases Page](https://github.com/Zarestia-Dev/rclone-manager/releases)** and download the `.AppImage` file.
+The AppImage is a universal, standalone package that works on almost any Linux distribution without needing to install dependencies.
 
-### 2. Run
-1.  Open your terminal in the download folder.
-2.  Make the file executable and run it:
-    ```bash
-    chmod +x RClone.Manager-*.AppImage
-    ./RClone.Manager-*.AppImage
-    ```
+### 1. Download the AppImage
 
-* **Tip:** You can use [Gear Lever](https://github.com/mijorus/gearlever) to easily integrate the AppImage into your system menu.
+Visit our **[GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)** and download the latest `.AppImage` file for your architecture.
+
+### 2. Make it executable
+
+Open your terminal in the directory where you downloaded the file and run:
+
+```bash
+chmod +x RClone.Manager-*.AppImage
+```
+
+### 3. Launch
+
+You can now run the application directly:
+
+```bash
+./RClone.Manager-*.AppImage
+```
+
+> [!TIP]
+> **Desktop Integration**  
+> We recommend using [Gear Lever](https://github.com/mijorus/gearlever) or [AppImageLauncher](https://github.com/TheAlexBaden/AppImageLauncher) to automatically integrate the AppImage into your system's application menu.
 
 ---
 
-## 📦 Method 2: Native Packages (.deb, .rpm, AUR)
+## [[icon:inventory_2.primary]] Method 2: Native Packages
 
-If you prefer installing via your system package manager for automatic updates and system integration.
+If you prefer using your system's built-in package manager for better integration and automatic updates.
 
 ### Debian / Ubuntu / Mint (`.deb`)
-1.  Download the `.deb` file from **[Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)**.
-2.  Install via terminal:
-    ```bash
-    sudo dpkg -i RClone.Manager-*.deb
-    sudo apt-get install -f  # Fixes any missing dependencies
-    ```
+
+1. Download the `.deb` file from **[Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)**.
+2. Install via terminal:
+
+```bash
+sudo dpkg -i RClone.Manager-*.deb
+sudo apt-get install -f  # Fixes any missing dependencies
+```
 
 ### Fedora / RHEL / openSUSE (`.rpm`)
-1.  Download the `.rpm` file from **[Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)**.
-2.  Install via terminal:
-    ```bash
-    # Fedora/RHEL
-    sudo dnf install ./RClone.Manager-*.rpm
 
-    # openSUSE
-    sudo zypper install ./RClone.Manager-*.rpm
-    ```
+1. Download the `.rpm` file from **[Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)**.
+2. Install via terminal:
+
+```bash
+# Fedora/RHEL
+sudo dnf install ./RClone.Manager-*.rpm
+
+# openSUSE
+sudo zypper install ./RClone.Manager-*.rpm
+```
 
 ### Arch Linux (AUR)
-Install easily via an AUR helper like `yay`:
+
+Install using an AUR helper like `yay`:
+
 ```bash
 # Stable Version
 yay -S rclone-manager
 
 # Git Version (Bleeding Edge)
 yay -S rclone-manager-git
-
 ```
 
 ---
 
-## 🧊 Method 3: Flatpak (Sandboxed)
+## [[icon:layers.primary]] Method 3: Flatpak
 
-Ideal for immutable systems like Fedora Silverblue, SteamOS, or VanillaOS.
+Ideal for immutable systems like Fedora Silverblue, SteamOS, or users who prefer sandboxed applications.
 
 ```bash
 flatpak install flathub io.github.zarestia_dev.rclone-manager
-
 ```
 
-> **Note:** Flatpak apps are isolated. You might need [Flatseal](https://flathub.org/apps/com.github.tchx84.Flatseal) to manage permissions if you want to mount remotes or access the some certain folders. For more info check the **[Troubleshooting](https://github.com/Zarestia-Dev/rclone-manager/wiki/Troubleshooting-Linux)** guide.
+> [!NOTE]
+> **Sandboxing & Permissions**  
+> Flatpak apps are isolated from the system. If you need to mount cloud storage or access specific local folders, you may need to use [Flatseal](https://flathub.org/apps/com.github.tchx84.Flatseal) to manage permissions.
 
 ---
 
-## 🔌 Enable Mounting (FUSE 3)
+## [[icon:archive.primary]] Method 4: Portable (.tar.gz)
 
-To use the **Mount** feature (mounting cloud storage as a local folder), Linux requires **FUSE 3**.
+For users who prefer a standalone binary without AppImage or system-wide installation.
 
-### 1. Install FUSE
+### 1. Download
 
-Most distros have this, but if missing:
+Visit our **[GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)** and download the `.tar.gz` archive for your architecture:
 
-* **Debian/Ubuntu:** `sudo apt install fuse3`
-* **Fedora:** `sudo dnf install fuse3`
-* **Arch:** `sudo pacman -S fuse3`
+- **x86_64:** `RClone.Manager_{version}_x86_64_linux_portable.tar.gz`
+- **ARM64:** `RClone.Manager_{version}_aarch64_linux_portable.tar.gz`
+
+### 2. Extract and Run
+
+Open your terminal in the download folder and run:
+
+```bash
+tar -xzf RClone.Manager_*.tar.gz
+cd RClone.Manager_*
+./RCloneManager
+```
 
 ---
 
-## 🛠 Troubleshooting
+## [[icon:settings_suggest.primary]] System Requirements
 
-* **App won't launch?** Try running it from the terminal to see error logs.
+To enable core features like **Mounting Cloud Storage**, your system requires the following:
 
-For more issues, see the **[Troubleshooting](https://github.com/Zarestia-Dev/rclone-manager/wiki/Troubleshooting-Linux)** guide.
+### **FUSE 3**
+
+The "Mount" feature allows you to browse cloud files as if they were local disks. This requires `fuse3` to be installed on your system.
+
+- **Ubuntu/Debian:** `sudo apt install fuse3`
+- **Fedora:** `sudo dnf install fuse3`
+- **Arch:** `sudo pacman -S fuse3`
+
+> [!IMPORTANT]
+> **Mount Permissions**  
+> On some distributions, you may need to add your user to the `fuse` group and restart:  
+> `sudo usermod -aG fuse $USER`
+
+---
+
+## [[icon:build.warn]] Troubleshooting
+
+If you encounter issues during installation or setup on Linux:
+
+### **Application fails to start**
+
+Try running the AppImage or binary from the terminal to see the debug logs. Common issues include missing `libfuse2` on newer Ubuntu versions (you should use FUSE 3).
+
+### **Mounting permissions denied**
+
+Ensure `fuse3` is installed and the `user_allow_other` option is allowed in `/etc/fuse.conf` if you need multi-user access.
+
+### **Wayland vs X11**
+
+RClone Manager supports both, but if you experience graphical glitches, try forcing a backend via environment variables.
+
+> [[icon:open_in_new.accent]] **Detailed Guide:** For more advanced solutions and technical help, please visit our **[Linux Troubleshooting Guide](../support/troubleshooting-linux.md)**.
+
+---
+
+## [[icon:contact_support.primary]] Support & Resources
+
+- [[icon:code.accent]] **Source Code:** [github.com/Zarestia-Dev/rclone-manager](https://github.com/Zarestia-Dev/rclone-manager)
+- [[icon:help.primary]] **Issue Tracker:** [Report a bug](https://github.com/Zarestia-Dev/rclone-manager/issues)
+- [[icon:update.success]] **Stay Updated:** Follow the repository to get notified of new releases.
