@@ -1,37 +1,39 @@
 # Installation: Headless Server
 
 **Run RClone Manager as a web server on any Linux machine.**
-*Perfect for servers, NAS devices, and remote systems.*
+_Perfect for servers, NAS devices, and remote systems._
 
 ---
 
 ## 🧐 What is Headless Mode?
+
 RClone Manager Headless is a web server version that runs on Linux servers without a graphical desktop environment. It serves the full interface to your web browser.
 
 > **⚠️ Important Technical Note:** RClone Manager Headless is built using **Tauri**. To make it work on servers without a display, it uses a **virtual display (Xvfb)** in the background.
-> * **Requirement:** It requires GTK/WebKit libraries and Xvfb.
-> * **Docker:** The official image handles all of this automatically.
-> * **Manual:** You may need to install these dependencies manually.
+>
+> - **Requirement:** It requires GTK/WebKit libraries and Xvfb.
+> - **Docker:** The official image handles all of this automatically.
+> - **Manual:** You may need to install these dependencies manually.
 
 ---
 
 ## 🐳 Method 1: Docker (Recommended)
+
 Pre-built multi-architecture images (`amd64`, `arm64`) are available.
 
 ### Quick Start (No Auth)
+
 ```bash
 docker run -d \
   --name rclone-manager \
   -p 8080:8080 \
-  -p 53682:53682 \
-  -v rclone-config:/home/rclone-manager/.config/rclone \
-  -v rclone-manager-config:/home/rclone-manager/.local/share/com.rclone.manager.headless \
+  -v rclone-config:/config \
+  -v rclone-data:/data \
   ghcr.io/zarestia-dev/rclone-manager:latest
 
 ```
 
-* **Port 8080:** Web Interface.
-* **Port 53682:** Rclone OAuth Redirect (Required for connecting Google Drive, OneDrive, etc.).
+- **Port 8080:** Web Interface.
 
 ### Docker Compose
 
@@ -44,16 +46,15 @@ services:
     container_name: rclone-manager-headless
     restart: unless-stopped
     ports:
-      - "8080:8080"
-      - "53682:53682"
+      - '8080:8080'
     volumes:
-      - rclone-config:/home/rclone-manager/.config/rclone
-      - rclone-manager-config:/home/rclone-manager/.local/share/com.rclone.manager.headless
+      - rclone-config:/config
+      - rclone-data:/data
     profiles:
-      - "" # Default profile
+      - '' # Default profile
+
 
   # See Configuration page for Auth/TLS profiles
-
 ```
 
 Start it:
@@ -75,7 +76,7 @@ Download and install directly on your Linux system.
 ### Downloads
 
 Visit the **[Releases Page](https://github.com/Zarestia-Dev/rclone-manager/releases)** to get the latest `headless` tag.
-*(Note: Headless builds often share version numbers with the Desktop release. Check the assets list for `headless` tagged packages.)*
+_(Note: Headless builds often share version numbers with the Desktop release. Check the assets list for `headless` tagged packages.)_
 
 ### Debian / Ubuntu
 
@@ -101,6 +102,17 @@ sudo rpm -i rclone-manager-headless-0.1.8-1.x86_64.rpm
 yay -S rclone-manager-headless
 
 ```
+
+### Configuration (Binary)
+
+When running the binary directly, you can use CLI flags for quick configuration:
+
+```bash
+rclone-manager-headless --port 3000 --user admin --pass mypassword
+```
+
+> [!TIP]
+> Run `rclone-manager-headless --help` to see all available flags, including `--data-dir`, `--cache-dir`, and `--logs-dir`.
 
 ---
 
@@ -134,7 +146,6 @@ sudo systemctl enable --now rclone-manager-headless
 
 ```
 
-
 ---
 
 ## 🔄 Updating
@@ -152,4 +163,3 @@ Download the new `.deb`/`.rpm`/`.AppImage` and install it over the old one.
 
 **Systemd:**
 Restart the service after updating: `sudo systemctl restart rclone-manager-headless`
-

@@ -12,6 +12,7 @@ Having trouble? Start here, find your symptom below and jump straight to the fix
 | Flatpak version can't mount drives or shows permission errors | [Issue 2 →](#issue-2) |
 | Mounting fails with an error about `allow_other`              | [Issue 3 →](#issue-3) |
 | App crashes when I click "Show App" after startup             | [Issue 4 →](#issue-4) |
+| Files dropped into the app are ignored or show errors (Flatpak)| [Issue 6 →](#issue-6) |
 
 ---
 
@@ -327,6 +328,36 @@ When selecting or typing paths in the app's settings, you must navigate through 
 
 > [!TIP]
 > If you just want standard access to your `~` (home) directory without manually typing prefix paths for everything, you can simply grant the app full home access via Flatseal or the terminal (`flatpak override --user --filesystem=home io.github.zarestia_dev.rclone-manager`) as described in [Issue 2](#issue-2).
+
+---
+
+## [[icon:upload_file.warn]] Issue 6: Files dropped into the app are ignored or show errors (Flatpak) {#issue-6}
+
+### [[icon:search.accent]] What you might see
+
+- You drag a file from your file manager into RClone Manager, but nothing happens.
+- Dropping a file shows an "Access Denied" or "File not found" error in the logs.
+
+### [[icon:settings.accent]] What's going on (in plain English)
+
+RClone Manager runs in a sandbox. When you drag a file from your computer into the app, the app "sees" the path, but it doesn't have permission to actually read the file contents to upload them. 
+
+---
+
+### [[icon:build_circle.success]] Fix it
+
+You need to grant the app permission to read the files in your home folder.
+
+**Option 1: Using Flatseal (Visual)**
+1. Open **Flatseal** and select **RClone Manager**.
+2. Scroll to the **Filesystem** section.
+3. Turn on the **All user files** (home) toggle.
+
+**Option 2: Using the Terminal**
+Run this command:
+```bash
+flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=home
+```
 
 ---
 

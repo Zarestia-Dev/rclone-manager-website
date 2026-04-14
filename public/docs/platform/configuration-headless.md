@@ -18,9 +18,13 @@ You can configure the server using **Command Line Arguments** (Systemd/Binary) o
 | **TLS Key**     | `--tls-key <PATH>`    | `RCLONE_MANAGER_TLS_KEY`      | _(None)_    |
 | **Data Dir**    | `--data-dir <PATH>`   | `RCLONE_MANAGER_DATA_DIR`     | _(Default)_ |
 | **Cache Dir**   | `--cache-dir <PATH>`  | `RCLONE_MANAGER_CACHE_DIR`    | _(Default)_ |
+| **Log Dir**     | `--logs-dir <PATH>`   | `RCLONE_MANAGER_LOG_DIR`      | _(Default)_ |
+| **Tray**        | `--tray`              | _(N/A)_                       | `false`     |
+| **Master Secret**| _(N/A)_              | `RCLONE_MANAGER_SECRET`       | _(None)_    |
+| **Secret Path** | _(N/A)_               | `RCLONE_MANAGER_SECRET_PATH`  | _(None)_    |
+| **Secret File** | _(N/A)_               | `RCLONE_MANAGER_SECRET_FILE`  | _(None)_    |
 | **User ID**     | _(N/A)_               | `PUID`                        | `1000`      |
 | **Group ID**    | _(N/A)_               | `PGID`                        | `1000`      |
-| **FUSE Compat** | _(N/A)_               | `RCLONE_MANAGER_FUSE_COMPAT`  | `false`     |
 | **Log Level**   | _(N/A)_               | `RUST_LOG`                    | `info`      |
 
 ### Path Resolution Hierarchy
@@ -32,7 +36,34 @@ RClone Manager Headless follows a strict precedence when resolving directory pat
 3. **Legacy Fallback**: Automatic detection of v0.2.0 paths (`/home/rclone-manager/.config` and `.local/share`) if new volumes are empty.
 4. **Application Defaults**: Standard paths (lowest)
 
-In Docker environments, the **environment variables** are the primary way to specify these paths, as seen in the default `docker-compose.yml`.
+---
+
+## [[icon:help_outline.primary]] Parameter Details
+
+### Network & Authentication
+- **Host IP**: The network interface the server binds to.
+    - `0.0.0.0`: Listens on all interfaces (public/remote access).
+    - `127.0.0.1`: Restricts access to the local machine only.
+- **Port**: The TCP port for the web interface.
+- **Username & Password**: Enables Basic Authentication. Both must be set to secure the interface.
+
+### Security (HTTPS/TLS)
+- **TLS Cert & Key**: Paths to your `.pem` certificate and private key files. Enables encrypted HTTPS access.
+
+### Persistence (Paths)
+- **Data Dir**: Stores the internal database, settings, and the downloaded `rclone` binary.
+- **Cache Dir**: Stores temporary session data and file browser cache.
+- **Log Dir**: Stores application runtime logs.
+
+### [[icon:lock.primary]] Secret Management (Advanced)
+RClone Manager uses the `rcman` library to securely store credentials (like remote passwords).
+- **Master Secret**: A master encryption key used to protect your stored credentials. 
+- **Secret Path**: Custom storage location for the encrypted credential store.
+- **Secret File**: Path to a file containing the Master Secret (useful for Docker Secrets).
+
+### Docker-Specific
+- **User ID (PUID)** & **Group ID (PGID)**: Maps the internal container user to your host user. This is essential for preventing permission issues on mounted volumes.
+- **Log Level (RUST_LOG)**: Standard Rust environment variable to control the logging verbosity of the backend and internal libraries. Supported values: `error`, `warn`, `info`, `debug`, `trace`.
 
 ---
 
@@ -48,15 +79,39 @@ The official [`docker-compose.yml`](https://raw.githubusercontent.com/Zarestia-D
 | **rclone-config** | `/config`      | Rclone configuration (`rclone.conf`)                     |
 | **Certs**         | `/app/certs`   | _(Optional)_ Read-only mount point for TLS certificates  |
 
-### [[icon:person.accent]] User & Permission Mapping (PUID / PGID)
+### [[icon:link.primary]] Remote Authentication (OAuth)
 
-The container supports `PUID` and `PGID` environment variables to map the internal user to your host user. This prevents permission issues when mounting host directories.
+When setting up cloud providers that require a web browser (e.g., Google Drive, OneDrive), Rclone normally launches a temporary web server on `127.0.0.1:53682`. **This flow is fundamentally incompatible with standard Docker bridge networking.**
+
+#### Recommended Workarounds
+
+1. **Host Network Mode**: 
+   Set `network_mode: host` in your `docker-compose.yml`. This allows the container's loopback to share the host's loopback, making the browser redirect work natively.
+   
+   ```yaml
+   services:
+     rclone-manager:
+       network_mode: host
+   ```
+
+2. **Headless (Manual) Method**:
+   Use `rclone authorize` on a machine with a browser (like your laptop) to generate a token, then paste that token into RClone Manager's manual configuration fields.
+
+> [!WARNING]
+> Mapping port `53682` to the container **does not work** because Rclone binds to `127.0.0.1` inside the container, which refuses connections coming through the Docker gateway.
+
+### [[icon:person.accent]] User Mapping (PUID / PGID)
+
+The container supports `PUID` and `PGID` environment variables to map the internal user to your host user.
 
 ```yaml
 environment:
   - PUID=1000
   - PGID=1000
 ```
+
+> [!NOTE]
+> **PUID & PGID** ensure that files created by the application (like downloads or logs) have the same ownership as your host user, preventing permission errors when mounting host directories.
 
 ### [[icon:downloading.accent]] Rclone Binary
 
@@ -220,19 +275,5 @@ id
 PUID=1000
 PGID=1000
 ```
-
-</details>
-
-<details>
-<summary><b>Sync Failing on Unraid (Operation Not Permitted)?</b></summary>
-
-If you see `chtimes: operation not permitted` in your logs while syncing to an Unraid User Share, enable FUSE compatibility mode:
-
-```yaml
-environment:
-  - RCLONE_MANAGER_FUSE_COMPAT=true
-```
-
-This suppresses modification time updates which are restricted by the FUSE-based `shfs` filesystem on Unraid.
 
 </details>

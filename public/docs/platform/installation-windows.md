@@ -57,6 +57,13 @@ Visit our **[GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/rel
 
 To enable core features like **Mounting Cloud Storage** (viewing files as a local `Z:` drive), your system requires the following:
 
+### **WebView2 Runtime**
+
+RClone Manager requires the **Microsoft Edge WebView2 Runtime** to display the user interface.
+
+- **Pre-installed:** This is typically included by default in Windows 10 and Windows 11.
+- **Missing?** If it has been removed or is missing, you can download it from the [Official Microsoft Website](https://developer.microsoft.com/en-us/microsoft-edge/webview2/).
+
 ### **WinFsp**
 
 The "Mount" feature requires the **WinFsp** filesystem driver. RClone Manager is designed to handle this seamlessly:

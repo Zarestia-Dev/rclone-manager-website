@@ -100,7 +100,14 @@ Visit our **[GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/rel
 - **x86_64:** `RClone.Manager_{version}_x86_64_linux_portable.tar.gz`
 - **ARM64:** `RClone.Manager_{version}_aarch64_linux_portable.tar.gz`
 
-### 2. Extract and Run
+### 2. Dependencies
+
+Unlike AppImage or Flatpak, the portable binary relies on system libraries. Ensure you have the following installed:
+
+- **WebKit2GTK**: Required for the user interface (`libwebkit2gtk-4.1`).
+- **AppIndicator**: Required for the system tray icon (`libayatana-appindicator3` or `libappindicator3`).
+
+### 3. Extract and Run
 
 Open your terminal in the download folder and run:
 
@@ -114,7 +121,14 @@ cd RClone.Manager_*
 
 ## [[icon:settings_suggest.primary]] System Requirements
 
-To enable core features like **Mounting Cloud Storage**, your system requires the following:
+To ensure the application runs correctly, your system must meet the following requirements:
+
+### **GUI Dependencies**
+
+RClone Manager requires the following libraries to display the user interface and the system tray icon:
+
+- **WebKit2GTK**: `libwebkit2gtk-4.1` (Required for the UI)
+- **AppIndicator**: `libayatana-appindicator3` or `libappindicator3` (Required for the Tray)
 
 ### **FUSE 3**
 
