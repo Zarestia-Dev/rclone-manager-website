@@ -9,7 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { DatePipe } from '@angular/common';
 import { marked } from 'marked';
-import { ModeService } from '../../services/mode.service';
+import DOMPurify from 'dompurify';
 import {
   DownloadPlatform,
   ChangelogVersion,
@@ -18,6 +18,7 @@ import {
   GitHubAsset,
 } from '../../models/downloads.model';
 import { ChangelogService } from '../../services/changelog.service';
+import { ModeService } from '../../services/mode.service';
 import {
   GITHUB_REPO,
   DESKTOP_PLATFORMS_CONFIG,
@@ -53,10 +54,9 @@ import { rxResource } from '@angular/core/rxjs-interop';
 export class Downloads {
   private github = inject(GithubService);
   private changelogService = inject(ChangelogService);
+  private modeService = inject(ModeService);
   private snackBar = inject(MatSnackBar);
-  modeService = inject(ModeService);
 
-  // Resources
   releasesResource = rxResource({
     stream: () => this.github.get<GitHubRelease[]>(`/repos/${GITHUB_REPO}/releases`),
   });
@@ -65,55 +65,36 @@ export class Downloads {
     stream: () => this.changelogService.fetchFullChangelog(),
   });
 
-  // Derived signals
+  // Releases and changelog load independently — keep their states separate.
+  releasesLoading = computed(() => this.releasesResource.isLoading());
+  changelogLoading = computed(() => this.changelogResource.isLoading());
+
+  // The main loading card is only for the releases fetch (platform grid depends on it).
+  isLoading = computed(() => this.releasesLoading());
+
+  // Error only when releases fail — changelog falling back is handled silently via FALLBACK_CHANGELOG.
+  error = computed(() => (this.releasesResource.error() ? DOWNLOADS_MESSAGES.ERROR_LOADING : null));
+
+  private mode = computed(() => this.modeService.currentMode());
+
   allReleases = computed(() => this.releasesResource.value() ?? []);
+
   changelog = computed(
     () =>
       this.changelogResource.value() ?? (this.changelogResource.error() ? FALLBACK_CHANGELOG : []),
   );
-  isLoading = computed(
-    () => this.releasesResource.isLoading() || this.changelogResource.isLoading(),
-  );
-  error = computed(() =>
-    this.releasesResource.error() || this.changelogResource.error()
-      ? DOWNLOADS_MESSAGES.ERROR_LOADING
-      : null,
-  );
-
-  // Computed
-  mode = computed(() => this.modeService.currentMode());
-
-  private isHeadlessRelease(release: GitHubRelease): boolean {
-    const tagName = release.tag_name?.toLowerCase() ?? '';
-    const releaseName = release.name?.toLowerCase() ?? '';
-    if (tagName.includes('headless') || releaseName.includes('headless')) {
-      return true;
-    }
-
-    return !!release.assets?.some((asset) => asset.name.toLowerCase().includes('headless'));
-  }
-
-  private isDesktopRelease(release: GitHubRelease): boolean {
-    const tagName = release.tag_name?.toLowerCase() ?? '';
-    const releaseName = release.name?.toLowerCase() ?? '';
-    return !tagName.includes('headless') && !releaseName.includes('headless');
-  }
-
-  private sortReleasesByDate(releases: GitHubRelease[]): GitHubRelease[] {
-    return [...releases].sort(
-      (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
-    );
-  }
 
   filteredReleases = computed(() => {
     const mode = this.mode();
     const releases = this.allReleases();
     const filtered =
       mode === 'headless'
-        ? releases.filter((r: GitHubRelease) => this.isHeadlessRelease(r))
-        : releases.filter((r: GitHubRelease) => this.isDesktopRelease(r));
+        ? releases.filter((r) => this.isHeadlessRelease(r))
+        : releases.filter((r) => this.isDesktopRelease(r));
 
-    return this.sortReleasesByDate(filtered);
+    return [...filtered].sort(
+      (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
+    );
   });
 
   latestRelease = computed(() => {
@@ -122,67 +103,44 @@ export class Downloads {
   });
 
   latestReleaseBodyHtml = computed(() => {
-    const release = this.latestRelease();
     if (this.error()) return FALLBACK_RELEASE_BODY_HTML;
+    const release = this.latestRelease();
     if (!release) return '';
-    return marked.parse(release.body || '') as string;
+    // Sanitize before binding to innerHTML — marked output comes from the GitHub API.
+    return DOMPurify.sanitize(marked.parse(release.body || '') as string);
   });
 
+  // platforms only falls back when *releases* fail, not if changelog fails.
   platforms = computed(() => {
-    if (this.error()) return FALLBACK_PLATFORMS;
+    if (this.releasesResource.error()) return FALLBACK_PLATFORMS;
     return this.generatePlatformsFromReleases(this.filteredReleases());
   });
 
   systemRequirements = SYSTEM_REQUIREMENTS;
 
-  private generatePlatformsFromReleases(releases: GitHubRelease[]): DownloadPlatform[] {
-    const mode = this.mode();
-    const config = mode === 'headless' ? HEADLESS_PLATFORMS_CONFIG : DESKTOP_PLATFORMS_CONFIG;
-    const platforms: DownloadPlatform[] = JSON.parse(JSON.stringify(config));
+  getAssetCount = computed(() => {
+    const assets = this.latestRelease()?.assets as GitHubAsset[] | undefined;
+    if (!assets) return 0;
+    return assets.filter(
+      (a) =>
+        !a.name.toLowerCase().includes('.sig') &&
+        !a.name.toLowerCase().includes('source code') &&
+        a.name !== 'latest.json',
+    ).length;
+  });
 
-    if (releases.length === 0) return platforms;
+  // Delegated changelog helpers
+  getSections = (v: ChangelogVersion) => this.changelogService.getSections(v);
+  getSectionIcon = (s: string) => this.changelogService.getSectionIcon(s);
+  getSectionTitle = (s: string) => this.changelogService.getSectionTitle(s);
+  getRelativeTime = (d: string) => this.changelogService.getRelativeTime(d);
 
-    const assets = releases[0].assets || [];
-    assets.forEach((asset) => {
-      const option = createDownloadOption(asset);
-      if (!option) return;
+  downloadFile = (url: string) => window.open(url, '_blank');
+  openExternalLink = (url: string) => window.open(url, '_blank');
 
-      if (mode === 'headless') {
-        if (
-          option.type === 'Windows Headless' ||
-          option.type === 'MSI Installer' ||
-          option.type === 'EXE Installer' ||
-          option.type === 'Windows Portable'
-        ) {
-          if (platforms[0]) platforms[0].downloads.push(option);
-        } else if (
-          option.type === 'Linux Headless' ||
-          option.type === 'DEB Package' ||
-          option.type === 'RPM Package' ||
-          option.type === 'Linux Portable' ||
-          option.type === 'AppImage'
-        ) {
-          if (platforms[1]) platforms[1].downloads.push(option);
-        }
-      } else if (option.platformIndex !== undefined && platforms[option.platformIndex]) {
-        platforms[option.platformIndex].downloads.push(option);
-      }
-    });
-
-    platforms.forEach((p) => p.downloads.sort(this.sortDownloads));
-    return platforms.filter((p) => p.downloads.length > 0 || (p.packageManagers?.length ?? 0) > 0);
-  }
-
-  private sortDownloads(a: DownloadOption, b: DownloadOption): number {
-    const aType = getDownloadType(a.displayName || a.name);
-    const bType = getDownloadType(b.displayName || b.name);
-    const aIndex = DOWNLOAD_TYPE_ORDER.indexOf(aType);
-    const bIndex = DOWNLOAD_TYPE_ORDER.indexOf(bType);
-
-    if (aIndex !== bIndex) return aIndex - bIndex;
-    if (a.architecture === 'x64' && b.architecture === 'ARM64') return -1;
-    if (a.architecture === 'ARM64' && b.architecture === 'x64') return 1;
-    return 0;
+  loadData(): void {
+    this.releasesResource.reload();
+    this.changelogResource.reload();
   }
 
   copyCommand(command: string): void {
@@ -199,29 +157,68 @@ export class Downloads {
     });
   }
 
-  getAssetCount = computed(() => {
-    const release = this.latestRelease();
-    if (!release?.assets) return 0;
-    return (release.assets as GitHubAsset[]).filter(
-      (a: GitHubAsset) =>
-        !a.name.toLowerCase().includes('.sig') &&
-        !a.name.toLowerCase().includes('source code') &&
-        a.name !== 'latest.json',
-    ).length;
-  });
+  private isHeadlessRelease(release: GitHubRelease): boolean {
+    const tag = release.tag_name?.toLowerCase() ?? '';
+    const name = release.name?.toLowerCase() ?? '';
+    return (
+      tag.includes('headless') ||
+      name.includes('headless') ||
+      !!release.assets?.some((a) => a.name.toLowerCase().includes('headless'))
+    );
+  }
 
-  // Delegated changelog methods
-  getSections = (v: ChangelogVersion) => this.changelogService.getSections(v);
-  getSectionIcon = (s: string) => this.changelogService.getSectionIcon(s);
-  getSectionTitle = (s: string) => this.changelogService.getSectionTitle(s);
-  getRelativeTime = (d: string) => this.changelogService.getRelativeTime(d);
+  private isDesktopRelease(release: GitHubRelease): boolean {
+    const tag = release.tag_name?.toLowerCase() ?? '';
+    const name = release.name?.toLowerCase() ?? '';
+    return !tag.includes('headless') && !name.includes('headless');
+  }
 
-  downloadFile = (url: string) => window.open(url, '_blank');
-  openExternalLink = (url: string) => window.open(url, '_blank');
+  private generatePlatformsFromReleases(releases: GitHubRelease[]): DownloadPlatform[] {
+    const mode = this.mode();
+    const config = mode === 'headless' ? HEADLESS_PLATFORMS_CONFIG : DESKTOP_PLATFORMS_CONFIG;
+    const platforms: DownloadPlatform[] = structuredClone(config);
 
-  loadData(): void {
-    // Reload resources
-    this.releasesResource.reload();
-    this.changelogResource.reload();
+    if (releases.length === 0) return platforms;
+
+    for (const asset of releases[0].assets ?? []) {
+      const option = createDownloadOption(asset);
+      if (!option) continue;
+
+      if (mode === 'headless') {
+        if (
+          option.type === 'Windows Headless' ||
+          option.type === 'MSI Installer' ||
+          option.type === 'EXE Installer' ||
+          option.type === 'Windows Portable'
+        ) {
+          platforms[0]?.downloads.push(option);
+        } else if (
+          option.type === 'Linux Headless' ||
+          option.type === 'DEB Package' ||
+          option.type === 'RPM Package' ||
+          option.type === 'Linux Portable' ||
+          option.type === 'AppImage'
+        ) {
+          platforms[1]?.downloads.push(option);
+        }
+      } else if (option.platformIndex !== undefined) {
+        platforms[option.platformIndex]?.downloads.push(option);
+      }
+    }
+
+    platforms.forEach((p) => p.downloads.sort(this.sortDownloads));
+    return platforms.filter((p) => p.downloads.length > 0 || (p.packageManagers?.length ?? 0) > 0);
+  }
+
+  private sortDownloads(a: DownloadOption, b: DownloadOption): number {
+    const aType = getDownloadType(a.displayName || a.name);
+    const bType = getDownloadType(b.displayName || b.name);
+    const aIndex = DOWNLOAD_TYPE_ORDER.indexOf(aType);
+    const bIndex = DOWNLOAD_TYPE_ORDER.indexOf(bType);
+
+    if (aIndex !== bIndex) return aIndex - bIndex;
+    if (a.architecture === 'x64' && b.architecture === 'ARM64') return -1;
+    if (a.architecture === 'ARM64' && b.architecture === 'x64') return 1;
+    return 0;
   }
 }

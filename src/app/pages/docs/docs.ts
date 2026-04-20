@@ -52,6 +52,7 @@ export class Docs implements OnInit {
   private tabService = inject(TabService);
   private injector = inject(Injector);
   private destroyRef = inject(DestroyRef);
+
   private get basePath(): string {
     return this.tabService.basePath;
   }
@@ -61,8 +62,6 @@ export class Docs implements OnInit {
   public isMobile = this.viewport.isMobile;
 
   private renderCleanup?: AbortController;
-
-  // IntersectionObserver for optimized TOC tracking
   private tocObserver: IntersectionObserver | null = null;
   private visibleHeadings = new Map<string, IntersectionObserverEntry>();
 
@@ -80,77 +79,6 @@ export class Docs implements OnInit {
 
   @ViewChild('contentArea') contentArea?: ElementRef;
 
-  private createRenderer(path: string): Renderer {
-    const renderer = new marked.Renderer();
-    const usedIds = new Set<string>();
-    const docDir = path.split('/').slice(0, -1).join('/');
-
-    renderer.heading = (text: string, level: number): string => {
-      // 1. Extract custom ID if present: {#my-id}
-      let id: string | null = null;
-      const idMatch = text.match(/\{#(.*?)\}/);
-      if (idMatch) {
-        id = idMatch[1];
-        text = text.replace(/\{#.*?\}/, '').trim();
-      }
-
-      // 2. Fallback to slugifying the text
-      if (!id) {
-        id = text
-          .replace(/\[\[icon:.*?\]\]/gi, '')
-          .replace(/icon:[a-z0-9_.-]+/gi, '')
-          .toLowerCase()
-          .replace(/<[^>]+>/g, '')
-          .replace(/[^\w\s-]/g, '')
-          .trim()
-          .replace(/\s+/g, '-');
-      }
-
-      // 3. Ensure uniqueness
-      let uniqueId = id;
-      let counter = 1;
-      while (usedIds.has(uniqueId)) {
-        uniqueId = `${id}-${counter++}`;
-      }
-      usedIds.add(uniqueId);
-
-      return `<h${level} id="${uniqueId}">${text}<a class="heading-anchor" href="#${uniqueId}" aria-label="Link to section">§</a></h${level}>`;
-    };
-
-    // Fix relative images and links
-    renderer.image = (href: string, title: string | null, text: string): string => {
-      const resolvedHref = this.resolveAssetPath(docDir, href);
-      return `<img src="${resolvedHref}" alt="${text}"${title ? ` title="${title}"` : ''}>`;
-    };
-
-    renderer.link = (href: string, title: string | null, text: string): string => {
-      if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto')) {
-        // Normalize internal links (e.g. ./other.md -> other)
-        const slug = href.split('/').pop()?.replace(/\.md$/i, '').toLowerCase() ?? '';
-        href = `${this.basePath}/docs/${slug}`;
-      }
-      return `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
-    };
-
-    return renderer;
-  }
-
-  private resolveAssetPath(docDir: string, href: string): string {
-    if (!href || href.startsWith('http') || href.startsWith('/') || href.startsWith('data:')) {
-      return href;
-    }
-
-    // Resolve relative path based on docDir
-    const parts = ['docs', ...docDir.split('/'), ...href.split('/')].filter((p) => p && p !== '.');
-    const resolved: string[] = [];
-    for (const p of parts) {
-      if (p === '..') resolved.pop();
-      else resolved.push(p);
-    }
-    const path = resolved.join('/');
-    return `${this.basePath}/${path}`;
-  }
-
   constructor() {
     marked.use({ breaks: true, gfm: true });
 
@@ -161,18 +89,15 @@ export class Docs implements OnInit {
       }
     });
 
-    // Cleanup Observer when component is destroyed
     this.destroyRef.onDestroy(() => {
-      if (this.tocObserver) {
-        this.tocObserver.disconnect();
-      }
+      this.tocObserver?.disconnect();
     });
   }
 
   ngOnInit(): void {
     history.scrollRestoration = 'manual';
-    this.loadDocs();
     this.initIntersectionObserver();
+    this.loadDocs();
   }
 
   private initIntersectionObserver(): void {
@@ -185,23 +110,16 @@ export class Docs implements OnInit {
             this.visibleHeadings.delete(entry.target.id);
           }
         });
-
         this.updateActiveTocId();
       },
-      {
-        rootMargin: '-100px 0px -70% 0px',
-        threshold: 0,
-      },
+      { rootMargin: '-100px 0px -70% 0px', threshold: 0 },
     );
   }
 
   private updateActiveTocId(): void {
     if (this.visibleHeadings.size === 0) return;
-    const tocIds = this.toc().map((t) => t.id);
-    const activeId = tocIds.find((id) => this.visibleHeadings.has(id));
-    if (activeId) {
-      this.activeTocId.set(activeId);
-    }
+    const activeId = this.toc().map((t) => t.id).find((id) => this.visibleHeadings.has(id));
+    if (activeId) this.activeTocId.set(activeId);
   }
 
   private loadDocs(): void {
@@ -223,11 +141,16 @@ export class Docs implements OnInit {
             ? this.docService.findItemBySlug(data.sections, pageSlug)
             : null;
 
-          const itemToSelect = restoredItem ?? (data.sections[0]?.items[0] || null);
+          const itemToSelect = restoredItem ?? data.sections[0]?.items[0] ?? null;
 
-          if (itemToSelect) this.selectItem(itemToSelect);
+          if (itemToSelect) {
+            // loadContent will take ownership of the loading state — don't call
+            // loading.set(false) here, or the template briefly shows empty content.
+            this.selectItem(itemToSelect);
+          } else {
+            this.loading.set(false);
+          }
 
-          this.loading.set(false);
           this.docService.startIndexing(data.sections);
         },
         error: () => this.loading.set(false),
@@ -253,7 +176,6 @@ export class Docs implements OnInit {
     const pathParts = window.location.pathname.replace(this.basePath, '').split('/');
     const currentSlug = pathParts.length >= 3 ? pathParts[2] : '';
     const hash = slug === currentSlug ? window.location.hash : '';
-
     history.pushState(null, '', `${this.basePath}/docs/${slug}${hash}`);
   }
 
@@ -304,15 +226,12 @@ export class Docs implements OnInit {
     }
 
     requestAnimationFrame(() => {
-      const focused = document.querySelector('.search-hit.focused');
-      focused?.scrollIntoView({ block: 'nearest' });
+      document.querySelector('.search-hit.focused')?.scrollIntoView({ block: 'nearest' });
     });
   }
 
   onSearchBlur(): void {
-    setTimeout(() => {
-      this.isSearchFocused.set(false);
-    }, 200);
+    setTimeout(() => this.isSearchFocused.set(false), 200);
   }
 
   private loadContent(path: string, searchTerm?: string): void {
@@ -325,8 +244,8 @@ export class Docs implements OnInit {
         const docDir = path.split('/').slice(0, -1).join('/');
         const renderer = this.createRenderer(path);
         let html = marked.parse(markdown, { renderer }) as string;
-        const query = searchTerm || this.docService.searchQuery();
 
+        const query = searchTerm || this.docService.searchQuery();
         if (query && query.length >= 2) {
           html = this.docService.highlightContent(html, query);
         }
@@ -334,28 +253,29 @@ export class Docs implements OnInit {
         html = this.docService.processCustomIcons(html);
         html = this.docService.processAlerts(html);
 
-        const imgRegex = /<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi;
-        html = html.replace(imgRegex, (match, p1, src, p3) => {
-          const resolvedSrc = this.resolveAssetPath(docDir, src);
-          return `<img ${p1}src="${resolvedSrc}"${p3}>`;
-        });
+        // Resolve image src paths
+        html = html.replace(
+          /<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi,
+          (_, p1, src, p3) => `<img ${p1}src="${this.resolveAssetPath(docDir, src)}"${p3}>`,
+        );
 
         const sanitizedHtml = DOMPurify.sanitize(html);
         this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(sanitizedHtml));
         this.loading.set(false);
-        this.extractToc();
 
+        // Single afterNextRender: DOM is ready, do everything that needs it.
         afterNextRender(
           () => {
             this.attachLinkListeners();
             this.attachCopyButtons();
+            this.extractAndSetToc();
 
-            // Re-attach IntersectionObserver directly onto the elements
             if (this.contentArea && this.tocObserver) {
               this.tocObserver.disconnect();
               this.visibleHeadings.clear();
-              const domHeadings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
-              domHeadings.forEach((h: Element) => this.tocObserver?.observe(h));
+              this.contentArea.nativeElement
+                .querySelectorAll('h1, h2, h3')
+                .forEach((h: Element) => this.tocObserver!.observe(h));
             }
 
             if (this.bottomSheetRef) {
@@ -369,65 +289,50 @@ export class Docs implements OnInit {
       },
       error: () => {
         this.renderedContent.set(
-          this.sanitizer.bypassSecurityTrustHtml(
-            '<p class="error-text">Error loading content.</p>',
-          ),
+          this.sanitizer.bypassSecurityTrustHtml('<p class="error-text">Error loading content.</p>'),
         );
         this.loading.set(false);
       },
     });
   }
 
-  private extractToc(): void {
-    afterNextRender(
-      () => {
-        if (!this.contentArea) return;
-        const headings = this.contentArea.nativeElement.querySelectorAll('h1, h2, h3');
-        const tocItems: { id: string; text: string; level: number }[] = [];
-        headings.forEach((h: HTMLElement) => {
-          if (h.id) {
-            const clone = h.cloneNode(true) as HTMLElement;
-            clone.querySelectorAll('.material-icons, .heading-anchor').forEach((el) => el.remove());
-
-            tocItems.push({
-              id: h.id,
-              text: clone.innerText.trim(),
-              level: parseInt(h.tagName.substring(1)),
-            });
-          }
-        });
-        this.toc.set(tocItems);
-      },
-      { injector: this.injector },
-    );
+  /** Read headings from the rendered DOM and update the TOC signal. */
+  private extractAndSetToc(): void {
+    if (!this.contentArea) return;
+    const tocItems: { id: string; text: string; level: number }[] = [];
+    this.contentArea.nativeElement.querySelectorAll('h1, h2, h3').forEach((h: HTMLElement) => {
+      if (!h.id) return;
+      const clone = h.cloneNode(true) as HTMLElement;
+      clone.querySelectorAll('.material-icons, .heading-anchor').forEach((el) => el.remove());
+      tocItems.push({ id: h.id, text: clone.innerText.trim(), level: parseInt(h.tagName[1]) });
+    });
+    this.toc.set(tocItems);
   }
 
   private scrollToMatchOrTop(searchTerm?: string): void {
-    let found = false;
     if (searchTerm && this.contentArea) {
-      const highlights = this.contentArea.nativeElement.querySelectorAll('.content-highlight');
-      if (highlights.length > 0) {
-        highlights[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-        found = true;
+      const highlight = this.contentArea.nativeElement.querySelector('.content-highlight');
+      if (highlight) {
+        highlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
       }
     }
-    if (!found && window.location.hash && this.contentArea) {
+    if (window.location.hash && this.contentArea) {
       const target = this.contentArea.nativeElement.querySelector(window.location.hash);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        found = true;
+        return;
       }
     }
-    if (!found) window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   scrollToSection(id: string, event?: Event): void {
-    if (event) event.preventDefault();
+    event?.preventDefault();
     const target = this.contentArea?.nativeElement.querySelector(`#${CSS.escape(id)}`);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      const pathWithoutHash = window.location.pathname;
-      history.pushState(null, '', `${pathWithoutHash}#${id}`);
+      history.pushState(null, '', `${window.location.pathname}#${id}`);
     }
   }
 
@@ -468,19 +373,18 @@ export class Docs implements OnInit {
 
   private attachLinkListeners(): void {
     if (!this.contentArea) return;
-    const links = this.contentArea.nativeElement.querySelectorAll('a');
-    links.forEach((link: HTMLAnchorElement) => {
+    this.contentArea.nativeElement.querySelectorAll('a').forEach((link: HTMLAnchorElement) => {
       const href = link.getAttribute('href');
       if (!href) return;
       if (href.startsWith('#')) {
-        link.addEventListener('click', (event) => this.scrollToSection(href.slice(1), event), {
+        link.addEventListener('click', (e) => this.scrollToSection(href.slice(1), e), {
           signal: this.renderCleanup?.signal,
         });
       } else if (!href.startsWith('http') && !href.startsWith('mailto')) {
         link.addEventListener(
           'click',
-          (event) => {
-            event.preventDefault();
+          (e) => {
+            e.preventDefault();
             this.handleInternalLink(href);
           },
           { signal: this.renderCleanup?.signal },
@@ -492,13 +396,70 @@ export class Docs implements OnInit {
   private handleInternalLink(href: string): void {
     const slug = href.split('/').pop()?.replace(/\.md$/i, '') ?? '';
     const item = this.docService.findItemBySlug(this.docSections(), slug);
-
-    if (item) {
-      this.selectItem(item);
-    }
+    if (item) this.selectItem(item);
   }
 
   openExternalLink(url: string | undefined): void {
     if (url) window.open(url, '_blank');
+  }
+
+  private createRenderer(path: string): Renderer {
+    const renderer = new marked.Renderer();
+    const usedIds = new Set<string>();
+    const docDir = path.split('/').slice(0, -1).join('/');
+
+    renderer.heading = ({ tokens, depth: level }: { tokens: any[]; depth: number }): string => {
+      let text = marked.Parser.parseInline(tokens);
+      let id: string | null = null;
+      const idMatch = text.match(/\{#(.*?)\}/);
+      if (idMatch) {
+        id = idMatch[1];
+        text = text.replace(/\{#.*?\}/, '').trim();
+      }
+      if (!id) {
+        id = text
+          .replace(/\[\[icon:.*?\]\]/gi, '')
+          .replace(/icon:[a-z0-9_.-]+/gi, '')
+          .toLowerCase()
+          .replace(/<[^>]+>/g, '')
+          .replace(/[^\w\s-]/g, '')
+          .trim()
+          .replace(/\s+/g, '-');
+      }
+      let uniqueId = id;
+      let counter = 1;
+      while (usedIds.has(uniqueId)) uniqueId = `${id}-${counter++}`;
+      usedIds.add(uniqueId);
+      return `<h${level} id="${uniqueId}">${text}<a class="heading-anchor" href="#${uniqueId}" aria-label="Link to section">§</a></h${level}>`;
+    };
+
+    renderer.image = ({ href, title, text }: { href: string; title: string | null; text: string }): string => {
+      const resolvedHref = this.resolveAssetPath(docDir, href);
+      return `<img src="${resolvedHref}" alt="${text}"${title ? ` title="${title}"` : ''}>`;
+    };
+
+    renderer.link = ({ href, title, tokens }: { href: string; title?: string | null; tokens: any[] }): string => {
+      let text = marked.Parser.parseInline(tokens);
+      if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto')) {
+        const slug = href.split('/').pop()?.replace(/\.md$/i, '').toLowerCase() ?? '';
+        href = `${this.basePath}/docs/${slug}`;
+      }
+      return `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
+    };
+
+    return renderer;
+  }
+
+  private resolveAssetPath(docDir: string, href: string): string {
+    if (!href || href.startsWith('http') || href.startsWith('/') || href.startsWith('data:')) {
+      return href;
+    }
+    const parts = ['docs', ...docDir.split('/'), ...href.split('/')].filter((p) => p && p !== '.');
+    const resolved: string[] = [];
+    for (const p of parts) {
+      if (p === '..') resolved.pop();
+      else resolved.push(p);
+    }
+    return `${this.basePath}/${resolved.join('/')}`;
   }
 }

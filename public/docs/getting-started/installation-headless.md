@@ -82,9 +82,8 @@ _(Note: Headless builds often share version numbers with the Desktop release. Ch
 
 ```bash
 # Example for the latest headless release
-HEADLESS_VERSION={{HEADLESS_LATEST_VERSION}}
-wget https://github.com/Zarestia-Dev/rclone-manager/releases/download/headless-v${HEADLESS_VERSION}/rclone-manager-headless_${HEADLESS_VERSION}_amd64.deb
-sudo dpkg -i rclone-manager-headless_${HEADLESS_VERSION}_amd64.deb
+wget https://github.com/Zarestia-Dev/rclone-manager/releases/download/headless-v{{HEADLESS_LATEST_VERSION}}/rclone-manager-headless_{{HEADLESS_LATEST_VERSION}}_amd64.deb
+sudo dpkg -i rclone-manager-headless_{{HEADLESS_LATEST_VERSION}}_amd64.deb
 sudo apt-get install -f # Install dependencies (xvfb, gtk3, etc.)
 
 ```
@@ -92,8 +91,8 @@ sudo apt-get install -f # Install dependencies (xvfb, gtk3, etc.)
 ### Fedora / RHEL
 
 ```bash
-wget https://github.com/Zarestia-Dev/rclone-manager/releases/download/headless-v{{HEADLESS_LATEST_VERSION}}/rclone-manager-headless-{{HEADLESS_LATEST_VERSION}}-1.x86_64.rpm
-sudo rpm -i rclone-manager-headless-{{HEADLESS_LATEST_VERSION}}-1.x86_64.rpm
+wget https://github.com/Zarestia-Dev/rclone-manager/releases/download/headless-v{{HEADLESS_LATEST_VERSION}}/rclone-manager-headless-{{HEADLESS_LATEST_VERSION}}_x86_64.rpm
+sudo rpm -i rclone-manager-headless-{{HEADLESS_LATEST_VERSION}}_x86_64.rpm
 
 ```
 

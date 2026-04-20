@@ -285,25 +285,12 @@ export const ARCHITECTURE_NAMES = {
   Unknown: 'Unknown',
 };
 
-export const RELATIVE_TIME_MESSAGES = {
-  justNow: 'Just now',
-  minutesAgo: (min: number) => `${min} minutes ago`,
-  oneHourAgo: '1 hour ago',
-  hoursAgo: (hours: number) => `${hours} hours ago`,
-  yesterday: 'Yesterday',
-  daysAgo: (days: number) => `${days} days ago`,
-  oneWeekAgo: '1 week ago',
-  weeksAgo: (weeks: number) => `${weeks} weeks ago`,
-  oneMonthAgo: '1 month ago',
-  monthsAgo: (months: number) => `${months} months ago`,
-};
-
 export const FILE_EXTENSION_PATTERNS = [
   {
     pattern: '.msi',
     displayName: 'Windows MSI',
     type: 'MSI Installer',
-    platformIndex: 0, // Windows
+    platformIndex: 0,
   },
   {
     pattern: '-setup.exe',
@@ -322,7 +309,7 @@ export const FILE_EXTENSION_PATTERNS = [
     pattern: '.dmg',
     displayName: 'macOS DMG',
     type: 'DMG Installer',
-    platformIndex: 1, // macOS
+    platformIndex: 1,
   },
   {
     pattern: '.app.tar.gz',
@@ -334,7 +321,7 @@ export const FILE_EXTENSION_PATTERNS = [
     pattern: '.appimage',
     displayName: 'Linux AppImage',
     type: 'AppImage',
-    platformIndex: 2, // Linux
+    platformIndex: 2,
   },
   {
     pattern: '.deb',
@@ -360,14 +347,14 @@ export const FILE_EXTENSION_PATTERNS = [
     secondaryPattern: 'windows',
     displayName: 'Windows Headless',
     type: 'Windows Headless',
-    platformIndex: 0, // Windows Headless
+    platformIndex: 0,
   },
   {
     pattern: 'headless',
     secondaryPattern: 'linux',
     displayName: 'Linux Headless',
     type: 'Linux Headless',
-    platformIndex: 1, // Linux Headless
+    platformIndex: 1,
   },
 ];
 

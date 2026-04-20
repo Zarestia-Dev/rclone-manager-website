@@ -4,7 +4,7 @@
     <p>Get RClone Manager for your platform</p>
   </div>
 
-  <!-- Loading State -->
+  <!-- Loading State (releases only) -->
   @if (isLoading()) {
   <div class="loading-section animate-fade-in-up animate-delay-1">
     <mat-card class="loading-card">
@@ -37,7 +37,8 @@
     </mat-card>
   </div>
   }
-  <!-- Platform Downloads -->
+
+  <!-- Platform Downloads — shows as soon as releases load, independent of changelog -->
   @if (!isLoading() && platforms().length > 0) {
   <div class="platforms-section animate-fade-in-up animate-delay-2">
     <h2 class="section-title">
@@ -136,7 +137,6 @@
   </div>
   }
 
-
   <!-- System Requirements -->
   <div class="requirements-section animate-fade-in-up animate-delay-3">
     <h2 class="section-title">
@@ -159,8 +159,19 @@
     </div>
   </div>
 
-  <!-- Changelog Section -->
-  @if (!isLoading() && changelog().length > 0) {
+  <!-- Changelog — loads independently from releases -->
+  @if (changelogLoading()) {
+  <div class="loading-section animate-fade-in-up">
+    <mat-card class="loading-card">
+      <mat-card-content>
+        <div class="loading-content">
+          <mat-spinner diameter="32"></mat-spinner>
+          <h3>Loading changelog...</h3>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+  } @else if (changelog().length > 0) {
   <div class="changelog-section animate-fade-in-up animate-delay-4">
     <h2 class="section-title">
       <mat-icon>history</mat-icon>

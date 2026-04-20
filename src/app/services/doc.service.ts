@@ -1,6 +1,17 @@
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { from, map, concatMap, delay, Observable, of, shareReplay, Subject, switchMap, takeUntil } from 'rxjs';
-import { DestroyRef, Injectable, inject, signal, computed } from '@angular/core';
+import {
+  from,
+  map,
+  concatMap,
+  delay,
+  Observable,
+  of,
+  shareReplay,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
+import { Injectable, inject, signal, computed } from '@angular/core';
 import { WikiService } from './wiki.service';
 import { HttpClient } from '@angular/common/http';
 import { GithubService } from './github.service';
@@ -34,27 +45,22 @@ export interface SearchHit {
 })
 export class DocService {
   private wikiService = inject(WikiService);
-  private destroyRef = inject(DestroyRef);
   private sanitizer = inject(DomSanitizer);
   private http = inject(HttpClient);
+  private github = inject(GithubService);
 
   docSections = signal<DocSection[]>([]);
   quickLinks = signal<DocItem[]>([]);
   searchQuery = signal('');
-  private indexingCancel$ = new Subject<void>();
-  searchIndex = new Map<string, string>(); // assetPath -> content
+  searchIndex = new Map<string, string>();
   isIndexing = signal(false);
+
+  private indexingCancel$ = new Subject<void>();
   private searchIndexCache$?: Observable<Record<string, string>>;
   private latestHeadlessRelease$?: Observable<GitHubRelease | undefined>;
-  private github = inject(GithubService);
 
-  // Computed search hits based on query
-  searchHits = computed(() => {
-    const query = this.searchQuery();
-    return this.search(query);
-  });
+  searchHits = computed(() => this.search(this.searchQuery()));
 
-  // Cache summary to avoid redundant fetches
   private summary$ = this.wikiService.fetchSidebar().pipe(
     map((content) => this.parseSummary(content)),
     shareReplay(1),
@@ -65,17 +71,15 @@ export class DocService {
   }
 
   fetchPage(path: string) {
-    return this.wikiService.fetchPage(path).pipe(
-      switchMap((markdown) => this.replaceDocPlaceholders(markdown)),
-    );
+    return this.wikiService
+      .fetchPage(path)
+      .pipe(switchMap((markdown) => this.replaceDocPlaceholders(markdown)));
   }
 
   private replaceDocPlaceholders(markdown: string): Observable<string> {
-    const hasHeadlessPlaceholder = markdown.includes('{{HEADLESS_LATEST_VERSION}}');
-    if (!hasHeadlessPlaceholder) {
+    if (!markdown.includes('{{HEADLESS_LATEST_VERSION}}')) {
       return of(markdown);
     }
-
     return this.getLatestHeadlessRelease().pipe(
       map((release) => {
         const version = release?.tag_name.replace(/^headless-v/i, '') ?? 'latest';
@@ -89,13 +93,13 @@ export class DocService {
       this.latestHeadlessRelease$ = this.github
         .get<GitHubRelease[]>('/repos/Zarestia-Dev/rclone-manager/releases')
         .pipe(
-          map((releases) =>
-            releases
-              .filter((release) => this.isHeadlessRelease(release))
-              .sort(
-                (a, b) =>
-                  new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
-              )[0],
+          map(
+            (releases) =>
+              releases
+                .filter((r) => this.isHeadlessRelease(r))
+                .sort(
+                  (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
+                )[0],
           ),
           shareReplay(1),
         );
@@ -104,12 +108,13 @@ export class DocService {
   }
 
   private isHeadlessRelease(release: GitHubRelease): boolean {
-    const tagName = release.tag_name?.toLowerCase() ?? '';
-    const releaseName = release.name?.toLowerCase() ?? '';
-    if (tagName.includes('headless') || releaseName.includes('headless')) {
-      return true;
-    }
-    return !!release.assets?.some((asset) => asset.name.toLowerCase().includes('headless'));
+    const tag = release.tag_name?.toLowerCase() ?? '';
+    const name = release.name?.toLowerCase() ?? '';
+    return (
+      tag.includes('headless') ||
+      name.includes('headless') ||
+      !!release.assets?.some((a) => a.name.toLowerCase().includes('headless'))
+    );
   }
 
   loadSearchIndex(forceRefresh = false): Observable<Record<string, string>> {
@@ -138,7 +143,7 @@ export class DocService {
             item,
             sectionTitle: section.title,
             snippet: this.highlightMatch(
-              contentMatch ? this.extractSnippet(content!, q) : item.description || '',
+              contentMatch ? this.extractSnippet(content!, q) : (item.description ?? ''),
               query,
             ),
             matchType: titleMatch ? 'title' : descMatch ? 'description' : 'content',
@@ -163,10 +168,6 @@ export class DocService {
     );
   }
 
-  /**
-   * Replaces custom icon syntax [[icon:name]] or [[icon:name.color]]
-   * with Material Icon HTML spans.
-   */
   processCustomIcons(html: string): string {
     return html.replace(/\[\[icon:([a-z0-9_]+)(?:\.([a-z]+))?\]\]/g, (_, name, color) => {
       const cls = color ? ` ${color}` : '';
@@ -229,17 +230,12 @@ export class DocService {
 
     this.loadSearchIndex().subscribe({
       next: (index: Record<string, string>) => {
-        Object.keys(index).forEach((key) => {
-          this.searchIndex.set(key, index[key]);
-        });
+        Object.keys(index).forEach((key) => this.searchIndex.set(key, index[key]));
         this.isIndexing.set(false);
-        console.log(
-          `[DocService] Successfully loaded search index with ${Object.keys(index).length} items.`,
-        );
+        console.log(`[DocService] Loaded search index: ${Object.keys(index).length} items.`);
       },
       error: (err: unknown) => {
         console.error('[DocService] Failed to load pre-generated search index:', err);
-        // Fallback to manual indexing if pre-generated fails
         this.manualIndexing(sections);
       },
     });
@@ -257,12 +253,12 @@ export class DocService {
 
     from(allItems)
       .pipe(
-        concatMap((item) => {
-          return this.wikiService.fetchPage(item.assetPath!).pipe(
+        concatMap((item) =>
+          this.wikiService.fetchPage(item.assetPath!).pipe(
             map((content) => ({ item, content })),
             delay(100),
-          );
-        }),
+          ),
+        ),
         takeUntil(this.indexingCancel$),
       )
       .subscribe({
@@ -309,7 +305,6 @@ export class DocService {
           console.warn(`[DocService] Malformed summary line: "${trimmed}"`);
           return;
         }
-
         const [, title, pathOrUrl, metaStr] = match;
         const metadata = this.parseMetadata(metaStr);
         const item: DocItem = {
@@ -332,12 +327,9 @@ export class DocService {
   private parseMetadata(metaStr?: string): Record<string, string> {
     const meta: Record<string, string> = {};
     if (!metaStr) return meta;
-
     metaStr.split(',').forEach((pair) => {
       const [key, value] = pair.split('=').map((s) => s.trim());
-      if (key && value) {
-        meta[key] = value.replace(/^["'](.*)["']$/, '$1');
-      }
+      if (key && value) meta[key] = value.replace(/^["'](.*)["']$/, '$1');
     });
     return meta;
   }
@@ -365,9 +357,6 @@ export class DocService {
     return null;
   }
 
-  /**
-   * Clear the in-memory cache of the search index.
-   */
   clearMemoryCache(): void {
     this.searchIndexCache$ = undefined;
     this.searchIndex.clear();
