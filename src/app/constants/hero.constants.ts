@@ -17,7 +17,7 @@ export const HERO_CONTENT = {
   desktop: {
     title: 'RClone Manager',
     subtitle: 'A powerful, cross-platform GUI for managing Rclone remotes with style and ease.',
-    techStack: 'Built with Angular 20 + Tauri · Linux • Windows • macOS • ARM Support',
+    techStack: 'Built with Angular 21 + Tauri · Linux • Windows • macOS • ARM Support',
   } as HeroModeContent,
   headless: {
     title: 'RClone Manager Headless',

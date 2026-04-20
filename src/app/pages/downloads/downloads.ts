@@ -83,13 +83,37 @@ export class Downloads {
   // Computed
   mode = computed(() => this.modeService.currentMode());
 
+  private isHeadlessRelease(release: GitHubRelease): boolean {
+    const tagName = release.tag_name?.toLowerCase() ?? '';
+    const releaseName = release.name?.toLowerCase() ?? '';
+    if (tagName.includes('headless') || releaseName.includes('headless')) {
+      return true;
+    }
+
+    return !!release.assets?.some((asset) => asset.name.toLowerCase().includes('headless'));
+  }
+
+  private isDesktopRelease(release: GitHubRelease): boolean {
+    const tagName = release.tag_name?.toLowerCase() ?? '';
+    const releaseName = release.name?.toLowerCase() ?? '';
+    return !tagName.includes('headless') && !releaseName.includes('headless');
+  }
+
+  private sortReleasesByDate(releases: GitHubRelease[]): GitHubRelease[] {
+    return [...releases].sort(
+      (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
+    );
+  }
+
   filteredReleases = computed(() => {
     const mode = this.mode();
     const releases = this.allReleases();
-    if (mode === 'headless') {
-      return releases.filter((r: GitHubRelease) => r.tag_name.includes('headless'));
-    }
-    return releases.filter((r: GitHubRelease) => !r.tag_name.includes('headless'));
+    const filtered =
+      mode === 'headless'
+        ? releases.filter((r: GitHubRelease) => this.isHeadlessRelease(r))
+        : releases.filter((r: GitHubRelease) => this.isDesktopRelease(r));
+
+    return this.sortReleasesByDate(filtered);
   });
 
   latestRelease = computed(() => {

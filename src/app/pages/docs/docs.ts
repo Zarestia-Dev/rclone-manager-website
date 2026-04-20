@@ -126,7 +126,7 @@ export class Docs implements OnInit {
     renderer.link = (href: string, title: string | null, text: string): string => {
       if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto')) {
         // Normalize internal links (e.g. ./other.md -> other)
-        const slug = href.split('/').pop()?.replace(/\.md$/i, '') ?? '';
+        const slug = href.split('/').pop()?.replace(/\.md$/i, '').toLowerCase() ?? '';
         href = `${this.basePath}/docs/${slug}`;
       }
       return `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
@@ -214,8 +214,11 @@ export class Docs implements OnInit {
           this.docService.docSections.set(data.sections);
           this.docService.quickLinks.set(data.quickLinks);
 
-          const pathParts = window.location.pathname.replace(this.basePath, '').split('/');
-          const pageSlug = pathParts.length >= 3 ? pathParts[2] : '';
+          const pathParts = window.location.pathname
+            .replace(this.basePath, '')
+            .split('/')
+            .filter(Boolean);
+          const pageSlug = (pathParts.length >= 2 ? pathParts[pathParts.length - 1] : '').toLowerCase();
           const restoredItem = pageSlug
             ? this.docService.findItemBySlug(data.sections, pageSlug)
             : null;

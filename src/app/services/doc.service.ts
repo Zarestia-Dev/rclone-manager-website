@@ -1,8 +1,10 @@
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { from, map, concatMap, delay, Observable, shareReplay, Subject, takeUntil } from 'rxjs';
+import { from, map, concatMap, delay, Observable, of, shareReplay, Subject, switchMap, takeUntil } from 'rxjs';
 import { DestroyRef, Injectable, inject, signal, computed } from '@angular/core';
 import { WikiService } from './wiki.service';
 import { HttpClient } from '@angular/common/http';
+import { GithubService } from './github.service';
+import { GitHubRelease } from '../models/downloads.model';
 
 export interface DocItem {
   title: string;
@@ -43,6 +45,8 @@ export class DocService {
   searchIndex = new Map<string, string>(); // assetPath -> content
   isIndexing = signal(false);
   private searchIndexCache$?: Observable<Record<string, string>>;
+  private latestHeadlessRelease$?: Observable<GitHubRelease | undefined>;
+  private github = inject(GithubService);
 
   // Computed search hits based on query
   searchHits = computed(() => {
@@ -61,7 +65,51 @@ export class DocService {
   }
 
   fetchPage(path: string) {
-    return this.wikiService.fetchPage(path);
+    return this.wikiService.fetchPage(path).pipe(
+      switchMap((markdown) => this.replaceDocPlaceholders(markdown)),
+    );
+  }
+
+  private replaceDocPlaceholders(markdown: string): Observable<string> {
+    const hasHeadlessPlaceholder = markdown.includes('{{HEADLESS_LATEST_VERSION}}');
+    if (!hasHeadlessPlaceholder) {
+      return of(markdown);
+    }
+
+    return this.getLatestHeadlessRelease().pipe(
+      map((release) => {
+        const version = release?.tag_name.replace(/^headless-v/i, '') ?? 'latest';
+        return markdown.replace(/{{HEADLESS_LATEST_VERSION}}/g, version);
+      }),
+    );
+  }
+
+  private getLatestHeadlessRelease(): Observable<GitHubRelease | undefined> {
+    if (!this.latestHeadlessRelease$) {
+      this.latestHeadlessRelease$ = this.github
+        .get<GitHubRelease[]>('/repos/Zarestia-Dev/rclone-manager/releases')
+        .pipe(
+          map((releases) =>
+            releases
+              .filter((release) => this.isHeadlessRelease(release))
+              .sort(
+                (a, b) =>
+                  new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
+              )[0],
+          ),
+          shareReplay(1),
+        );
+    }
+    return this.latestHeadlessRelease$;
+  }
+
+  private isHeadlessRelease(release: GitHubRelease): boolean {
+    const tagName = release.tag_name?.toLowerCase() ?? '';
+    const releaseName = release.name?.toLowerCase() ?? '';
+    if (tagName.includes('headless') || releaseName.includes('headless')) {
+      return true;
+    }
+    return !!release.assets?.some((asset) => asset.name.toLowerCase().includes('headless'));
   }
 
   loadSearchIndex(forceRefresh = false): Observable<Record<string, string>> {
