@@ -18,6 +18,7 @@
 ## User Guide {icon=menu_book, description="Learn how to use RClone Manager effectively"}
 
 - [Remote Management](user-guide/remote-management.md) {description="Learn how to manage remotes, run sync/copy jobs, and more", icon=folder_shared}
+- [Dynamic Paths & Macros](user-guide/dynamic-paths.md) {description="Use macros to create time-stamped and system-aware paths", icon=schedule}
 - [Mounting Drives](user-guide/mounting.md) {description="Mount cloud storage as local disks", icon=data_usage}
 - [Integrations](user-guide/integrations.md) {description="How to integrate with other tools and services", icon=extension}
 - [FAQ](user-guide/faq.md) {description="Frequently asked questions", icon=quiz}
