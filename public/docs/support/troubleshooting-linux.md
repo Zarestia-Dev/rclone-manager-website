@@ -6,13 +6,13 @@ Having trouble? Start here, find your symptom below and jump straight to the fix
 
 ## [[icon:search.accent]] What's happening?
 
-| I'm seeing this…                                              | Go to                 |
-| ------------------------------------------------------------- | --------------------- |
-| App won't open, shows a blank window, or freezes              | [Issue 1 →](#issue-1) |
-| Flatpak version can't mount drives or shows permission errors | [Issue 2 →](#issue-2) |
-| Mounting fails with an error about `allow_other`              | [Issue 3 →](#issue-3) |
-| App crashes when I click "Show App" after startup             | [Issue 4 →](#issue-4) |
-| Files dropped into the app are ignored or show errors (Flatpak)| [Issue 6 →](#issue-6) |
+| I'm seeing this…                                                | Go to                 |
+| --------------------------------------------------------------- | --------------------- |
+| App won't open, shows a blank window, or freezes                | [Issue 1 →](#issue-1) |
+| Flatpak version can't mount drives or shows permission errors   | [Issue 2 →](#issue-2) |
+| Mounting fails with an error about `allow_other`                | [Issue 3 →](#issue-3) |
+| App crashes when I click "Show App" after startup               | [Issue 4 →](#issue-4) |
+| Files dropped into the app are ignored or show errors (Flatpak) | [Issue 6 →](#issue-6) |
 
 ---
 
@@ -123,11 +123,10 @@ flatpak install flathub com.github.tchx84.Flatseal
 
 **Step 3: Grant the permissions you need:**
 
-| I want to…                               | What to enable in Flatseal                             |
-| ---------------------------------------- | ------------------------------------------------------ |
-| Mount drives                             | Under **Socket**, turn on **D-Bus session bus**        |
-| Start the app automatically on login     | Under **Filesystem**, add `~/.config/autostart:create` |
-| Mount folders anywhere in my home folder | Under **Filesystem**, add `home`                       |
+| I want to…                               | What to enable in Flatseal                      |
+| ---------------------------------------- | ----------------------------------------------- |
+| Mount drives                             | Under **Socket**, turn on **D-Bus session bus** |
+| Mount folders anywhere in my home folder | Under **Filesystem**, add `home`                |
 
 <p align="center">
 <img src="../assets/troubleshooting/flatseal-socket.png" alt="Flatseal Socket" width="800">
@@ -154,9 +153,6 @@ Run the commands for the permissions you need:
 ```bash
 # For mounting drives
 flatpak override --user io.github.zarestia_dev.rclone-manager --socket=session-bus
-
-# For "Start on Login"
-flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=~/.config/autostart:create
 
 # For full home folder access (only if needed)
 flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=home
@@ -304,7 +300,7 @@ flatpak override --user \
 
 ### [[icon:settings.accent]] What's going on (in plain English)
 
-Flatpak runs RClone Manager in an isolated sandbox, meaning it cannot see your computer's regular filesystem directly. However, Flatpak exposes your real computer's root filesystem inside a special folder called `/var/run/host`. 
+Flatpak runs RClone Manager in an isolated sandbox, meaning it cannot see your computer's regular filesystem directly. However, Flatpak exposes your real computer's root filesystem inside a special folder called `/var/run/host`.
 
 ---
 
@@ -314,6 +310,7 @@ To use any binary or file path from your actual computer, you must prefix the pa
 
 **1. Using the System's Rclone Binary**
 If you installed `rclone` normally via your distro's package manager (which usually puts it at `/usr/bin/rclone`), go to **Settings → Core** in RClone Manager and set the binary path to:
+
 ```text
 /var/run/host/usr/bin/rclone
 ```
@@ -322,6 +319,7 @@ If you installed `rclone` normally via your distro's package manager (which usua
 Because the sandbox environment separates your files, if you want your RClone Manager configurations, caches, or logs to be saved natively in your actual host's home folder instead of the sandbox, you need to reconfigure those paths as well!
 
 When selecting or typing paths in the app's settings, you must navigate through `/var/run/host` to reach your real directories. For example, your real home folder is located at:
+
 ```text
 /var/run/host/home/your_username
 ```
@@ -340,7 +338,7 @@ When selecting or typing paths in the app's settings, you must navigate through 
 
 ### [[icon:settings.accent]] What's going on (in plain English)
 
-RClone Manager runs in a sandbox. When you drag a file from your computer into the app, the app "sees" the path, but it doesn't have permission to actually read the file contents to upload them. 
+RClone Manager runs in a sandbox. When you drag a file from your computer into the app, the app "sees" the path, but it doesn't have permission to actually read the file contents to upload them.
 
 ---
 
@@ -349,12 +347,14 @@ RClone Manager runs in a sandbox. When you drag a file from your computer into t
 You need to grant the app permission to read the files in your home folder.
 
 **Option 1: Using Flatseal (Visual)**
+
 1. Open **Flatseal** and select **RClone Manager**.
 2. Scroll to the **Filesystem** section.
 3. Turn on the **All user files** (home) toggle.
 
 **Option 2: Using the Terminal**
 Run this command:
+
 ```bash
 flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=home
 ```

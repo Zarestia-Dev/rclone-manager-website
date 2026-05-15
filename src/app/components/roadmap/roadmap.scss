@@ -70,7 +70,7 @@
   padding: var(--space-lg);
   background: rgba(var(--view-bg-color-rgb), 0.3);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
   min-height: 25rem; // ~400px
 
   .column-header {
@@ -127,7 +127,7 @@
   background: var(--card-bg-color);
   border-radius: var(--radius-md);
   padding: var(--space-md);
-  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
   box-shadow: var(--shadow-gnome);
   transition: all 0.3s ease;
 

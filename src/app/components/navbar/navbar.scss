@@ -152,7 +152,7 @@
     padding: var(--space-xxs) var(--space-xs);
     background: var(--bg-elevated);
     border-radius: var(--radius-lg);
-    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow);
     cursor: pointer;
     transition: var(--transition-standard);
 
