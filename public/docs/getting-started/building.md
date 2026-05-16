@@ -106,6 +106,17 @@ Builds with specific adjustments for the Flatpak sandboxed environment.
   npm run build:flatpak
   ```
 
+### [[icon:shopping_bag.primary]] Snap Version (Linux)
+
+Builds and packages the application as a Snap with classic confinement.
+
+- **Scripts**:
+
+  ```bash
+  # Production Build
+  npm run build:snap
+  ```
+
 ---
 
 ## [[icon:bug_report.primary]] Troubleshooting Build Errors

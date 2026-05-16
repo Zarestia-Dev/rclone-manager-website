@@ -62,7 +62,16 @@ Packaging for Flathub requires a specific manifest and the `flatpak` feature fla
 1. **Build Binary:** `npm run tauri build -- --features flatpak`
 2. **Builder:** Use `flatpak-builder` with the manifest located in the root (or `src-tauri/linux`).
 
+### Snap
 
+To build the Snap package, you need to have `snapcraft` installed along with a build provider (Multipass or LXD).
+
+```bash
+npm run build:snap
+```
+
+* **Process:** Builds the `.deb` bundle and then packages it into a Snap with classic confinement.
+* **Output:** `rclone-manager_{version}_{arch}.snap`
 
 ### Portable Standalone
 

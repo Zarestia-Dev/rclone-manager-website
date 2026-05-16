@@ -89,7 +89,21 @@ flatpak install flathub io.github.zarestia_dev.rclone-manager
 
 ---
 
-## [[icon:archive.primary]] Method 4: Portable (.tar.gz)
+## [[icon:shopping_bag.primary]] Method 4: Snap Store
+
+The Snap package is a self-contained application that works across many Linux distributions. It is easy to install and stays updated automatically.
+
+```bash
+sudo snap install rclone-manager
+```
+
+> [!IMPORTANT]
+> **Classic Confinement**  
+> This snap uses classic confinement to allow Rclone to access your files and configuration. This is necessary for the app to function correctly as a file manager and mount tool.
+
+---
+
+## [[icon:archive.primary]] Method 5: Portable (.tar.gz)
 
 For users who prefer a standalone binary without AppImage or system-wide installation.
 
