@@ -1,3 +1,17 @@
+@mixin blob-base {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  transition: all 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 0;
+}
+
+@mixin gradient-text {
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  background-clip: text;
+  color: transparent;
+}
+
 .hero {
   position: relative;
   min-height: calc(100vh - var(--titlebar-height));
@@ -6,46 +20,39 @@
   justify-content: center;
   overflow: hidden;
 
-  // Headless Mode - Blob Positions & Colors
   &.headless-mode {
     .blob-1 {
       top: 40%;
       left: 60%;
-      background: var(--gnome-orange-3);
+      background: var(--primary-color);
       width: 70vw;
       height: 70vw;
       opacity: 0.4;
-      filter: blur(100px);
       animation: float 10s infinite ease-in-out;
     }
 
     .blob-2 {
       top: -10%;
       left: -10%;
-      background: var(--gnome-yellow-4);
+      background: var(--accent-color);
       width: 60vw;
       height: 60vw;
       opacity: 0.35;
-      filter: blur(120px);
       animation: float-reverse 14s infinite ease-in-out;
     }
 
     .blob-3 {
       top: 50%;
       left: 10%;
-      background: var(--gnome-red-3);
+      background: var(--primary-color);
       width: 50vw;
       height: 50vw;
       opacity: 0.3;
-      filter: blur(90px);
       animation: float 14s infinite ease-in-out 1s;
     }
 
     .hero-title.headless {
-      background: linear-gradient(135deg, var(--gnome-orange-3), var(--gnome-yellow-4));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
+      @include gradient-text;
     }
   }
 }
@@ -61,12 +68,8 @@
   background: var(--window-bg-color);
 
   .blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(100px);
-    transition: all 1.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    @include blob-base;
     opacity: 0.4;
-    z-index: 0;
   }
 
   // Desktop Mode (Default) Positions & Colors
@@ -194,10 +197,7 @@ app-animated-logo {
   font-size: var(--font-size-5xl);
   font-weight: 700;
   margin: 0;
-  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  @include gradient-text;
 
   @media (max-width: 768px) {
     font-size: var(--font-size-4xl);

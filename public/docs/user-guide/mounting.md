@@ -4,7 +4,7 @@ Mounting is the art of tricking your operating system into believing that your r
 
 This guide will instruct you on how to attach, configure, and safely detach your remotes using RClone Manager.
 
-## 🗂️ Quick Navigation
+## [[icon:inventory_2.primary]] Quick Navigation
 
 * [Prerequisites (Read this first)](#%EF%B8%8F-prerequisites-the-reality-of-operating-systems)
 * [Configuring a Mount (Quick Method)](#1-configuring-a-mount-during-setup-quick-remote-modal)
@@ -174,5 +174,5 @@ As you can see, this is the exact same interface as the Detailed Remote Add moda
 Now that your drive is mounted, you might want to automate some actual file transfers or configure caching.
 
 * [Rclone Mount](https://rclone.org/commands/rclone_mount)
-* [Sync and Transfer](https://github.com/Zarestia-Dev/rclone-manager/wiki/Sync-and-Transfer)
-* [Troubleshooting](https://github.com/Zarestia-Dev/rclone-manager/wiki/Troubleshooting)
+* [Sync and Transfer](remote-management.md#5-quick-actions)
+* [Troubleshooting](../support/troubleshooting.md)

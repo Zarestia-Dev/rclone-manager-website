@@ -2,7 +2,7 @@
 
 If you are running into issues with RClone Manager, please select the category below that best matches your problem or operating system.
 
-## 📂 Categories
+## [[icon:folder.primary]] Categories
 
 * **[General Issues](Troubleshooting-General)** * *Currently there is no issue reported*
 * **[Windows Specific](Troubleshooting-Windows)** * *Currently there is no issue reported*

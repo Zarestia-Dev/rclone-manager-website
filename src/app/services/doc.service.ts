@@ -49,19 +49,19 @@ export class DocService {
   private http = inject(HttpClient);
   private github = inject(GithubService);
 
-  docSections = signal<DocSection[]>([]);
-  quickLinks = signal<DocItem[]>([]);
-  searchQuery = signal('');
-  searchIndex = new Map<string, string>();
-  isIndexing = signal(false);
+  readonly docSections = signal<DocSection[]>([]);
+  readonly quickLinks = signal<DocItem[]>([]);
+  readonly searchQuery = signal('');
+  readonly isIndexing = signal(false);
 
+  private searchIndex = new Map<string, string>();
   private indexingCancel$ = new Subject<void>();
   private searchIndexCache$?: Observable<Record<string, string>>;
   private latestHeadlessRelease$?: Observable<GitHubRelease | undefined>;
 
-  searchHits = computed(() => this.search(this.searchQuery()));
+  readonly searchHits = computed(() => this.search(this.searchQuery()));
 
-  private summary$ = this.wikiService.fetchSidebar().pipe(
+  private readonly summary$ = this.wikiService.fetchSidebar().pipe(
     map((content) => this.parseSummary(content)),
     shareReplay(1),
   );
@@ -89,21 +89,17 @@ export class DocService {
   }
 
   private getLatestHeadlessRelease(): Observable<GitHubRelease | undefined> {
-    if (!this.latestHeadlessRelease$) {
-      this.latestHeadlessRelease$ = this.github
-        .get<GitHubRelease[]>('/repos/Zarestia-Dev/rclone-manager/releases')
-        .pipe(
-          map(
-            (releases) =>
-              releases
-                .filter((r) => this.isHeadlessRelease(r))
-                .sort(
-                  (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
-                )[0],
-          ),
-          shareReplay(1),
-        );
-    }
+    this.latestHeadlessRelease$ ??= this.github
+      .get<GitHubRelease[]>('/repos/Zarestia-Dev/rclone-manager/releases')
+      .pipe(
+        map(
+          (releases) =>
+            releases
+              .filter((r) => this.isHeadlessRelease(r))
+              .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())[0],
+        ),
+        shareReplay(1),
+      );
     return this.latestHeadlessRelease$;
   }
 
@@ -118,11 +114,10 @@ export class DocService {
   }
 
   loadSearchIndex(forceRefresh = false): Observable<Record<string, string>> {
-    if (forceRefresh || !this.searchIndexCache$) {
-      this.searchIndexCache$ = this.http
-        .get<Record<string, string>>('docs/search-index.json')
-        .pipe(shareReplay(1));
-    }
+    if (forceRefresh) this.searchIndexCache$ = undefined;
+    this.searchIndexCache$ ??= this.http
+      .get<Record<string, string>>('docs/search-index.json')
+      .pipe(shareReplay(1));
     return this.searchIndexCache$;
   }
 
@@ -131,8 +126,8 @@ export class DocService {
     if (q.length < 2) return [];
 
     const hits: SearchHit[] = [];
-    this.docSections().forEach((section) => {
-      section.items.forEach((item) => {
+    for (const section of this.docSections()) {
+      for (const item of section.items) {
         const content = item.assetPath ? this.searchIndex.get(item.assetPath) : '';
         const titleMatch = item.title.toLowerCase().includes(q);
         const descMatch = item.description?.toLowerCase().includes(q);
@@ -149,8 +144,8 @@ export class DocService {
             matchType: titleMatch ? 'title' : descMatch ? 'description' : 'content',
           });
         }
-      });
-    });
+      }
+    }
     return hits;
   }
 
@@ -218,19 +213,22 @@ export class DocService {
 
   private highlightMatch(text: string, query: string): SafeHtml {
     if (!query) return text;
-    const regex = new RegExp(`(${query})`, 'gi');
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
     return this.sanitizer.bypassSecurityTrustHtml(
       text.replace(regex, '<mark class="search-highlight">$1</mark>'),
     );
   }
 
-  startIndexing(sections: DocSection[]) {
+  startIndexing(sections: DocSection[]): void {
     if (this.isIndexing()) return;
     this.isIndexing.set(true);
 
     this.loadSearchIndex().subscribe({
-      next: (index: Record<string, string>) => {
-        Object.keys(index).forEach((key) => this.searchIndex.set(key, index[key]));
+      next: (index) => {
+        for (const [key, value] of Object.entries(index)) {
+          this.searchIndex.set(key, value);
+        }
         this.isIndexing.set(false);
         console.log(`[DocService] Loaded search index: ${Object.keys(index).length} items.`);
       },
@@ -241,7 +239,7 @@ export class DocService {
     });
   }
 
-  private manualIndexing(sections: DocSection[]) {
+  private manualIndexing(sections: DocSection[]): void {
     const allItems = sections.flatMap((s) => s.items).filter((i) => i.assetPath);
     if (!allItems.length) {
       this.isIndexing.set(false);
@@ -278,13 +276,13 @@ export class DocService {
     let currentSection: DocSection | null = null;
     let inQuickLinks = false;
 
-    content.split('\n').forEach((line) => {
+    for (const line of content.split('\n')) {
       const trimmed = line.trim();
-      if (!trimmed || trimmed.startsWith('# ')) return;
+      if (!trimmed || trimmed.startsWith('# ')) continue;
 
       if (trimmed.startsWith('## ')) {
         const [, title, metaStr] = trimmed.match(/^## (.*?)(?:\s*\{(.*)\})?$/) || [];
-        if (!title) return;
+        if (!title) continue;
 
         if (title.trim() === 'Quick Links') {
           inQuickLinks = true;
@@ -303,7 +301,7 @@ export class DocService {
         const match = trimmed.match(/^- \[(.*?)\]\((.*?)\)(?:\s*\{(.*)\})?$/);
         if (!match) {
           console.warn(`[DocService] Malformed summary line: "${trimmed}"`);
-          return;
+          continue;
         }
         const [, title, pathOrUrl, metaStr] = match;
         const metadata = this.parseMetadata(metaStr);
@@ -317,9 +315,9 @@ export class DocService {
         };
 
         if (inQuickLinks) quickLinks.push(item);
-        else if (currentSection) currentSection.items.push(item);
+        else currentSection?.items.push(item);
       }
-    });
+    }
 
     return { sections, quickLinks };
   }
@@ -327,10 +325,10 @@ export class DocService {
   private parseMetadata(metaStr?: string): Record<string, string> {
     const meta: Record<string, string> = {};
     if (!metaStr) return meta;
-    metaStr.split(',').forEach((pair) => {
+    for (const pair of metaStr.split(',')) {
       const [key, value] = pair.split('=').map((s) => s.trim());
       if (key && value) meta[key] = value.replace(/^["'](.*)["']$/, '$1');
-    });
+    }
     return meta;
   }
 

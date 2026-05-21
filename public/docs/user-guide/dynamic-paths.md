@@ -6,7 +6,7 @@ RClone Manager supports **Macro Interpolation**, allowing you to inject dynamic 
 
 ---
 
-## 🗂️ Supported Syntax
+## [[icon:inventory_2.primary]] Supported Syntax
 
 You have two ways to tell RClone Manager that a string is a macro and not just a very strangely named folder:
 
@@ -17,7 +17,7 @@ For example, `Backups/$(date)` and `` Backups/`date` `` will both result in the 
 
 ---
 
-## 🛠️ Available Macros
+## [[icon:build.primary]] Available Macros
 
 RClone Manager has curated a selection of safe macros that provide the most utility without the messy risks of arbitrary shell execution.
 
@@ -41,7 +41,7 @@ Useful if you are running the same configuration across multiple machines or use
 
 ---
 
-## 📋 Full List of Supported Macros
+## [[icon:list.primary]] Full List of Supported Macros
 
 | Macro             | Description                        | Example Output |
 | :---------------- | :--------------------------------- | :------------- |
@@ -53,7 +53,7 @@ Useful if you are running the same configuration across multiple machines or use
 
 ---
 
-## 🚀 Practical Examples
+## [[icon:rocket_launch.primary]] Practical Examples
 
 ### The "Daily Snapshot"
 
@@ -84,7 +84,7 @@ Organize your files by year and month automatically:
 
 ---
 
-## 💡 Missing a Macro?
+## [[icon:lightbulb.primary]] Missing a Macro?
 
 If you have a specific use case that requires a new macro, feel free to **[open a GitHub Issue](https://github.com/Zarestia-Dev/rclone-manager/issues)**. I am always looking for ways to make RClone Manager even more flexible for your power-user workflows.
 
@@ -94,4 +94,4 @@ If you have a specific use case that requires a new macro, feel free to **[open 
 
 - [Remote Management](remote-management.md)
 - [Mounting Drives](mounting.md)
-- [Sync and Transfer](https://github.com/Zarestia-Dev/rclone-manager/wiki/Sync-and-Transfer)
+- [Sync and Transfer](remote-management.md#5-quick-actions)

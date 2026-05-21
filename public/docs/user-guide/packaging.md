@@ -12,7 +12,7 @@ This guide covers how to generate installers, packages, and Docker images for **
 
 ---
 
-## 🪟 Windows Packaging
+## [[icon:window.primary]] Windows Packaging
 
 ### Standard Installer (NSIS & MSI)
 Generates a standard setup wizard and a Microsoft Installer.
@@ -38,7 +38,7 @@ npm run tauri build -- --features portable --no-bundle
 
 ---
 
-## 🐧 Linux Packaging
+## [[icon:terminal.primary]] Linux Packaging
 
 The Linux bundler uses the assets located in `src-tauri/linux/` (desktop files, icons) to generate distribution packages.
 
@@ -85,7 +85,7 @@ npm run tauri build -- --features portable --no-bundle
 * **Output:** `src-tauri/target/release/rclone-manager`
 ---
 
-## 🍎 macOS Packaging
+## [[icon:apple.primary]] macOS Packaging
 
 ### DMG & App Bundle
 
@@ -108,7 +108,7 @@ To avoid "App Damaged" or "Unidentified Developer" warnings, you must sign the a
 
 ---
 
-## 🌐 Headless & Docker Packaging
+## [[icon:dns.primary]] Headless & Docker Packaging
 
 The headless version is packaged differently since it serves a web UI instead of opening a window.
 
@@ -135,7 +135,7 @@ docker build -t rclone-manager:latest -f headless/Dockerfile .
 
 ---
 
-## 🤖 CI/CD Automation
+## [[icon:smart_toy.primary]] CI/CD Automation
 
 We utilize **GitHub Actions** to automate packaging for all platforms.
 

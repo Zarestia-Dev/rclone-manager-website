@@ -4,7 +4,7 @@ Welcome to the RClone Manager FAQ! Find answers to common questions about instal
 
 ---
 
-## 📦 Installation
+## [[icon:inventory_2.primary]] Installation
 
 ### What is RClone Manager?
 **Category:** features  
@@ -46,7 +46,7 @@ RClone Manager requires a minimum of 4GB RAM and 100MB disk space. For Windows: 
 
 ---
 
-## ⚙️ Configuration
+## [[icon:settings.primary]] Configuration
 
 ### How do I set up my first cloud remote?
 **Category:** configuration  
@@ -74,7 +74,7 @@ Yes, you can configure multiple remotes for the same cloud provider using differ
 
 ---
 
-## 🚀 Usage
+## [[icon:rocket_launch.primary]] Usage
 
 ### What's the difference between Sync and Copy?
 **Category:** usage  
@@ -90,7 +90,7 @@ Select your configured remote and click "Mount". Choose a mount point (drive let
 
 ---
 
-## ✨ Features
+## [[icon:auto_awesome.primary]] Features
 
 ### Which cloud storage providers are supported?
 **Category:** features  
@@ -118,7 +118,7 @@ Yes, RClone Manager is completely open source. You can view the source code, con
 
 ---
 
-## 🔧 Troubleshooting
+## [[icon:build.primary]] Troubleshooting
 
 ### I'm having connection issues with my remote
 **Category:** troubleshooting  
@@ -134,11 +134,11 @@ Try adjusting the number of transfer threads in settings, check your bandwidth l
 
 ---
 
-## 🆘 Getting Help
+## [[icon:help.primary]] Getting Help
 
 If you can't find the answer to your question here, try these resources:
 
-- **[GitHub Discussions](https://github.com/RClone-Manager/rclone-manager/discussions)** - Ask questions and get community help
-- **[Report Issues](https://github.com/RClone-Manager/rclone-manager/issues)** - Found a bug? Report it here
-- **[Documentation](https://github.com/RClone-Manager/rclone-manager/wiki)** - Comprehensive guides and tutorials
+- **[GitHub Discussions](https://github.com/Zarestia-Dev/rclone-manager/discussions)** - Ask questions and get community help
+- **[Report Issues](https://github.com/Zarestia-Dev/rclone-manager/issues)** - Found a bug? Report it here
+- **[Documentation](../getting-started/home.md)** - Comprehensive guides and tutorials
 - **[rclone Documentation](https://rclone.org/docs/)** - Official rclone documentation for advanced features

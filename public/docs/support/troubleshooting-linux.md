@@ -363,7 +363,7 @@ flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=home
 
 ## [[icon:menu_book.accent]] Still stuck?
 
-If none of the above worked, you're not alone, Linux environments vary a lot. Open a bug report on **[GitHub Issues](https://github.com/zarestia-dev/rclone-manager/issues)** and include:
+If none of the above worked, you're not alone, Linux environments vary a lot. Open a bug report on **[GitHub Issues](https://github.com/Zarestia-Dev/rclone-manager/issues)** and include:
 
 - Your Linux distribution (e.g. Ubuntu 24.04, Fedora 41)
 - Your desktop environment (e.g. GNOME, KDE Plasma, Hyprland)

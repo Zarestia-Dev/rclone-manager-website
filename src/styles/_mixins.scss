@@ -54,7 +54,10 @@
   flex-shrink: 0;
   position: sticky;
   top: $top;
-  max-height: calc(100dvh - #{$top} - var(--space-xl));
+  align-self: flex-start;
+  max-height: calc(100dvh - #{$top} - var(--space-2xl));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   display: flex;
   flex-direction: column;
 }

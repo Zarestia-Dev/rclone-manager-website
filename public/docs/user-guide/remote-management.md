@@ -4,14 +4,14 @@ Welcome to the command center. This page covers the entire lifecycle of your rem
 
 If you are in a panic and just need to find out how to delete a remote, or if you simply lack the attention span for my meticulously crafted guide, use the directory below.
 
-## 🗂️ The "I'm in a Hurry" Directory
+## [[icon:inventory_2.primary]] The "I'm in a Hurry" Directory
 
-* **[I want to Add a simple remote (Drive, Dropbox) ➔](https://github.com/Zarestia-Dev/rclone-manager/wiki/Remote-Management/#2-the-quick-remote-modal)**
-* **[I want to Add an advanced remote (S3, Mega, etc.) ➔](https://github.com/Zarestia-Dev/rclone-manager/wiki/Remote-Management/#3-the-detailed-remote-add-modal)**
-* **[I need to use Interactive Setup (OneDrive, etc.) ➔](https://github.com/Zarestia-Dev/rclone-manager/wiki/Remote-Management/#5-using-the-interactive-configuration)**
-* **[I want to Edit my remote's config ➔](https://github.com/Zarestia-Dev/rclone-manager/wiki/Remote-Management/#4-editing-a-remote)**
-* **[I want to Delete a remote ➔](https://github.com/Zarestia-Dev/rclone-manager/wiki/Remote-Management/#6-other-remote-actions)**
-* **[I want to Encrypt my passwords ➔](https://github.com/Zarestia-Dev/rclone-manager/wiki/Remote-Management/#7-securing-your-configuration-encryption)**
+* **[I want to Add a simple remote (Drive, Dropbox) ➔](#2-the-quick-remote-modal)**
+* **[I want to Add an advanced remote (S3, Mega, etc.) ➔](#3-the-detailed-remote-add-modal)**
+* **[I need to use Interactive Setup (OneDrive, etc.) ➔](#35-using-the-interactive-configuration)**
+* **[I want to Edit my remote's config ➔](#4-editing-a-remote)**
+* **[I want to Delete a remote ➔](#6-other-remote-actions)**
+* **[I want to Encrypt my passwords ➔](#7-securing-your-configuration-encryption)**
 
 ---
 
@@ -264,7 +264,7 @@ Your configuration is now encrypted. You may proceed with your digital life, sec
 
 Now that your remote is securely established, you may want to learn how to actually use it.
 
-* [Sync and Transfer](https://github.com/Zarestia-Dev/rclone-manager/wiki/Sync-and-Transfer)
-* [Mounting](https://github.com/Zarestia-Dev/rclone-manager/wiki/Mounting)
-* [Scheduler](https://github.com/Zarestia-Dev/rclone-manager/wiki/Scheduler)
-* [Troubleshooting](https://github.com/Zarestia-Dev/rclone-manager/wiki/Troubleshooting)
+* [Sync and Transfer](#5-quick-actions)
+* [Mounting](mounting.md)
+* [Scheduler](../platform/configuration-desktop.md)
+* [Troubleshooting](../support/troubleshooting.md)

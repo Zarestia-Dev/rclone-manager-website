@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { TabService, AppTab } from '../../services/tab.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,26 +11,19 @@ import { AnimatedLogoComponent } from '../animated-logo/animated-logo';
   imports: [MatButtonModule, MatIconModule, AnimatedLogoComponent],
   templateUrl: './hero.html',
   styleUrl: './hero.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Hero {
-  tabService = inject(TabService);
-  modeService = inject(ModeService);
-  heroContent = HERO_CONTENT;
-  modes = ['desktop', 'headless'] as const;
+  private tabService = inject(TabService);
+  protected modeService = inject(ModeService);
+  protected readonly heroContent = HERO_CONTENT;
+  protected readonly modes = ['desktop', 'headless'] as const;
 
-  activeContent = computed(() => {
-    const mode = this.modeService.currentMode();
-    return this.heroContent[mode];
-  });
-
-  scrollToFeatures() {
-    const featuresSection = document.querySelector('app-features');
-    if (featuresSection) {
-      featuresSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+  protected scrollToFeatures(): void {
+    document.querySelector('app-features')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  setTab(tab: string) {
+  protected setTab(tab: string): void {
     this.tabService.setTab(tab as AppTab);
   }
 }

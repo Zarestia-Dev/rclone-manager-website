@@ -6,7 +6,7 @@ Select your preferred method below.
 
 ---
 
-## 🖥️ Desktop Client
+## [[icon:desktop_windows.primary]] Desktop Client
 Designed for personal use on **Windows**, **Linux**, and **macOS**.
 
 ### Platform Guides
@@ -19,7 +19,7 @@ You can always find the latest binaries, installers, and **portable versions** (
 
 ---
 
-## 🌐 Headless & Docker
+## [[icon:dns.primary]] Headless & Docker
 Designed for servers, NAS, or running as a web service. Access the full UI via any web browser.
 
 ### 🐳 Docker (Recommended)
@@ -35,7 +35,7 @@ Run directly on Linux/Node.js environments without Docker.
 
 ---
 
-## 📋 System Requirements
+## [[icon:list.primary]] System Requirements
 
 ### 1. Rclone Binary (Core)
 The application acts as a GUI for **[Rclone](https://rclone.org/)**.

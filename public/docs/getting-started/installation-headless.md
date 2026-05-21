@@ -5,7 +5,7 @@ _Perfect for servers, NAS devices, and remote systems._
 
 ---
 
-## 🧐 What is Headless Mode?
+## [[icon:help_outline.primary]] What is Headless Mode?
 
 RClone Manager Headless is a web server version that runs on Linux servers without a graphical desktop environment. It serves the full interface to your web browser.
 
@@ -17,7 +17,7 @@ RClone Manager Headless is a web server version that runs on Linux servers witho
 
 ---
 
-## 🐳 Method 1: Docker (Recommended)
+## [[icon:dns.primary]] Method 1: Docker (Recommended)
 
 Pre-built multi-architecture images (`amd64`, `arm64`) are available.
 
@@ -69,7 +69,7 @@ docker-compose up -d
 
 ---
 
-## 🐧 Method 2: Native Binary
+## [[icon:terminal.primary]] Method 2: Native Binary
 
 Download and install directly on your Linux system.
 
@@ -148,7 +148,7 @@ sudo systemctl enable --now rclone-manager-headless
 
 ---
 
-## 🔄 Updating
+## [[icon:sync.primary]] Updating
 
 **Docker:**
 
