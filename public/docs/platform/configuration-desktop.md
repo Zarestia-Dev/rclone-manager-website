@@ -24,11 +24,13 @@ The desktop version of RClone Manager runs as a native application on your compu
 - **Sync/Copy/Move**: Powerful file operations with real-time feedback.
 - **Bisync**: Two-way synchronization with conflict detection.
 
-### Scheduling
+### Scheduling & Automation
 - **Cron-like Syntax**: Advanced scheduling with full cron expression support.
 - **Flexible Operations**: Schedule any file operation.
+- **Filesystem Watchers**: Local filesystem watchers for sync, copy, move, and bisync automations. Sync, copy, and move require at least one local source path; bisync watches local paths from both sides.
 - > [!TIP]
   > **Example:** `15,45 8-18/2 * 1,11 1-5` runs every 2 hours at minutes 15 and 45, between 08:00–18:00, on Mondays & Fridays, in January and November.
+
 
 ---
 
@@ -45,6 +47,12 @@ Access comprehensive settings to tailor your experience:
 - **Theme**: Automatic switching between light and dark modes.
 - **Backend Options**: Configure global mount settings and VFS flags.
 - **Memory Optimization**: Experimental options for low-resource environments.
+
+### System Tray & Window Management
+RClone Manager is designed to run seamlessly in the background:
+- **Minimize to Tray**: Closing the main window hides the interface to the system tray by default, keeping your mounts, file operations, schedules and file watchers running smoothly in the background.
+- **Memory Optimization Option**: When you enable 'Destroy Window on Close' in the settings (Default enabled after V0.2.0), closing the main window will natively destroy the view to free up RAM. The core app process remains safely running in the background.
+- **Secondary Windows**: Dialogs, file pickers, and other secondary modals are strictly managed by your OS. They are natively destroyed when closed to ensure optimal memory efficiency without impacting background tasks.
 
 ---
 

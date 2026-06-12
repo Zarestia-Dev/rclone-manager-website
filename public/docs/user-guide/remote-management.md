@@ -6,12 +6,12 @@ If you are in a panic and just need to find out how to delete a remote, or if yo
 
 ## [[icon:inventory_2.primary]] The "I'm in a Hurry" Directory
 
-* **[I want to Add a simple remote (Drive, Dropbox) ➔](#2-the-quick-remote-modal)**
-* **[I want to Add an advanced remote (S3, Mega, etc.) ➔](#3-the-detailed-remote-add-modal)**
-* **[I need to use Interactive Setup (OneDrive, etc.) ➔](#35-using-the-interactive-configuration)**
-* **[I want to Edit my remote's config ➔](#4-editing-a-remote)**
-* **[I want to Delete a remote ➔](#6-other-remote-actions)**
-* **[I want to Encrypt my passwords ➔](#7-securing-your-configuration-encryption)**
+- **[I want to Add a simple remote (Drive, Dropbox) ➔](#2-the-quick-remote-modal)**
+- **[I want to Add an advanced remote (S3, Mega, etc.) ➔](#3-the-detailed-remote-add-modal)**
+- **[I need to use Interactive Setup (OneDrive, etc.) ➔](#35-using-the-interactive-configuration)**
+- **[I want to Edit my remote's config ➔](#4-editing-a-remote)**
+- **[I want to Delete a remote ➔](#6-other-remote-actions)**
+- **[I want to Encrypt my passwords ➔](#7-securing-your-configuration-encryption)**
 
 ---
 
@@ -21,13 +21,13 @@ If you are in a panic and just need to find out how to delete a remote, or if yo
 <img height="500" alt="New Remote UI" src="https://github.com/user-attachments/assets/8bb35a82-1a14-4e12-bc65-ce4ca6e4f41c" />
 </p>
 
-Adding a new remote is the mandatory first step toward digital enlightenment or at least managing your cloud storage with **Rclone Manager**.
+Adding a new remote is the mandatory first step toward digital enlightenment or at least managing your cloud storage with **RClone Manager**.
 
 To begin, navigate to the **Remotes** section from the main dashboard.
 
-* Look for the **"+" (Add)** button in the top left corner.
-* If you haven't added any remotes yet (how lonely), you will see two prominent buttons in the center of the UI.
-* You have two paths to choose from: **"Add Quick Remote"** or **"Add Detailed Remote."** Both will open the Remote Creation Wizard (or "The Modal," as I like to call it).
+- Look for the **"+" (Add)** button in the top left corner.
+- If you haven't added any remotes yet (how lonely), you will see two prominent buttons in the center of the UI.
+- You have two paths to choose from: **"Add Quick Remote"** or **"Add Detailed Remote."** Both will open the Remote Creation Wizard (or "The Modal," as I like to call it).
 
 ---
 
@@ -55,7 +55,7 @@ Once your identification details are set, press the **"Create Remote +"** button
 <img height="500" alt="OAuth Sequence" src="https://github.com/user-attachments/assets/71d27941-e868-44d4-80ad-aa9a1bbedfd5" />
 </p>
 
-Rclone Manager handles this in a separate process. If you hit "Cancel," your other running operations will remain completely undisturbed. Your default browser will open a login page; once you authorize it, the modal will close, and your new remote will manifest in the list.
+RClone Manager handles this in a separate process. If you hit "Cancel," your other running operations will remain completely undisturbed. Your default browser will open a login page; once you authorize it, the modal will close, and your new remote will manifest in the list.
 
 <p align="center">
 <img height="500" alt="Success UI" src="https://github.com/user-attachments/assets/09d2ec04-239c-4083-a63c-a6522440d409" />
@@ -104,7 +104,7 @@ Since Mega is far too proud for browser-based OAuth, saving this remote does not
 
 ## 3.5 Using the Interactive Configuration
 
-Let us discuss "Interactive Configuration." This is not your standard "click a button, get a token, and go to sleep" setup. This mimics the native Rclone terminal experience, but elevated with Rclone Manager's aesthetic superiority. Let's use OneDrive as our test subject.
+Let us discuss "Interactive Configuration." This is not your standard "click a button, get a token, and go to sleep" setup. This mimics the native Rclone terminal experience, but elevated with RClone Manager's aesthetic superiority. Let's use OneDrive as our test subject.
 
 <p align="center">
 <img height="500" alt="Interactive Setup OneDrive" src="https://github.com/user-attachments/assets/9915773c-7291-418d-9637-b1ecf44f74c2" />
@@ -122,15 +122,15 @@ First, it will demand that you open a browser to connect, exactly like the Rclon
 <img height="500" alt="Interactive Prompts 2" src="https://github.com/user-attachments/assets/0114ca95-8b5d-4efc-8363-bb68da83ba5b" />
 </p>
 
-Then, it will ask for configuration specifics, such as your Drive Type, Drive ID, and so forth. Finally, the interrogation ends. Unlike the CLI, this wizard will *not* pester you with "Do you want to edit advanced configurations?" at the very end. It purely handles the connection setup.
+Then, it will ask for configuration specifics, such as your Drive Type, Drive ID, and so forth. Finally, the interrogation ends. Unlike the CLI, this wizard will _not_ pester you with "Do you want to edit advanced configurations?" at the very end. It purely handles the connection setup.
 
-This interactive logic is necessary for providers like OneDrive, which require you to select specific Drive IDs *after* obtaining the initial web token (unlike Google Drive, which kindly finishes the process immediately).
+This interactive logic is necessary for providers like OneDrive, which require you to select specific Drive IDs _after_ obtaining the initial web token (unlike Google Drive, which kindly finishes the process immediately).
 
 ---
 
 ## 4. Editing a Remote
 
-You have successfully added a remote. Adequate progress. But what if you make a mistake, or simply change your mind? Rclone Manager graciously allows you to edit your remotes. Even remotes created outside of this application via the command line are supported. We do not discriminate against manually typed configs; we merely pity them.
+You have successfully added a remote. Adequate progress. But what if you make a mistake, or simply change your mind? RClone Manager graciously allows you to edit your remotes. Even remotes created outside of this application via the command line are supported. We do not discriminate against manually typed configs; we merely pity them.
 
 First, you must locate your remote. If you only have a few, click the remote from the Quick Remote Access menu. If you have hoarded an excessive number of remotes, click the "hamburger" menu icon in the top left (just below the title bar) to open the sidebar. Next to the "Remotes" title, there is a hidden search toggle. Click it, type your query, and marvel at the efficiency of finding things quickly.
 
@@ -166,7 +166,7 @@ Back on the remote details page, direct your attention to the icons at the top. 
 <img alt="Quick Actions Indicators" src="https://github.com/user-attachments/assets/0721de47-56fb-4b53-b70b-f6224898cc74" />
 </p>
 
-By default, Rclone Manager provides "Mount, Sync, and Bisync" as your quick actions. You are allowed a maximum of three. This arbitrary limit exists to maintain UI harmony and prevent you from cluttering the interface.
+By default, RClone Manager provides "Mount, Sync, and Bisync" as your quick actions. You are allowed a maximum of three. This arbitrary limit exists to maintain UI harmony and prevent you from cluttering the interface.
 
 <p align="center">
 <img alt="Quick Actions Selection" src="https://github.com/user-attachments/assets/cc9f8067-a3f8-46aa-9642-02be39d37411" />
@@ -186,22 +186,22 @@ There are further operations available, tucked away in the vertical three-dot me
 
 Let us review your options:
 
-* **Display on Tray:** By default, new remotes demand attention and appear in your system tray. If you prefer them to suffer in silence out of sight, disable this toggle.
-* **Logs:** Not just any logs, logs filtered *exclusively* for this remote. Imagine having to sift through hundreds of lines of global application text just to find out why your specific remote failed to sync. Now, you don't have to. You're welcome.
+- **Display on Tray:** By default, new remotes demand attention and appear in your system tray. If you prefer them to suffer in silence out of sight, disable this toggle.
+- **Logs:** Not just any logs, logs filtered _exclusively_ for this remote. Imagine having to sift through hundreds of lines of global application text just to find out why your specific remote failed to sync. Now, you don't have to. You're welcome.
 
 <p align="center">
 <img height="500" alt="Remote Logs" src="https://github.com/user-attachments/assets/1fb97c6a-89ff-4459-a31e-316b452905e6" />
 </p>
 
-* **Clone Remote:** Remember my earlier lecture about the permanence of Remote Names in Edit Mode? If the regret is truly unbearable, use this option. It duplicates your configuration, allowing you to bestow a new name upon it. You still cannot change the remote *type*, however. We are cloning data, not performing digital alchemy.
+- **Clone Remote:** Remember my earlier lecture about the permanence of Remote Names in Edit Mode? If the regret is truly unbearable, use this option. It duplicates your configuration, allowing you to bestow a new name upon it. You still cannot change the remote _type_, however. We are cloning data, not performing digital alchemy.
 
 <p align="center">
 <img height="500" alt="Clone Remote" src="https://github.com/user-attachments/assets/5c737cb9-5fbf-456e-ba83-940b37cf4bca" />
 </p>
 
-* **Export Configuration:** You can export the configuration for this *single remote*. This is extremely useful if you need to back up a specific setup or share it with a similarly competent user.
-* **Reset Settings:** This does not destroy your core remote configuration; it merely wipes your customized Mount, Serve, and Sync preferences back to their factory defaults. A clean slate for your operational parameters.
-* **Delete Remote:** The nuclear option. Use it if you must. I will not mourn the deleted data, but you might.
+- **Export Configuration:** You can export the configuration for this _single remote_. This is extremely useful if you need to back up a specific setup or share it with a similarly competent user.
+- **Reset Settings:** This does not destroy your core remote configuration; it merely wipes your customized Mount, Serve, and Sync preferences back to their factory defaults. A clean slate for your operational parameters.
+- **Delete Remote:** The nuclear option. Use it if you must. I will not mourn the deleted data, but you might.
 
 ---
 
@@ -209,7 +209,7 @@ Let us review your options:
 
 So, we have our access tokens. We can access our data, including those beautiful school notes you swore you'd read but never did. However, there is a vulnerability. By default, Rclone stores your configuration file as **plain text**. Terrifying, isn't it? Anyone with access to your computer could simply open the file and read your secrets.
 
-But fear not. Rclone Manager allows us to encrypt the configuration file, rendering it useless to prying eyes.
+But fear not. RClone Manager allows us to encrypt the configuration file, rendering it useless to prying eyes.
 
 ### 7.1 Accessing the Backend Manager
 
@@ -225,13 +225,13 @@ You will see a green dot on the app logo and the text **"Local"**. Click this te
 <img height="500" alt="Backend Selector" src="https://github.com/user-attachments/assets/1df20bea-59d6-41cd-9612-a639feff6e84" />
 </p>
 
-*Side Note:* You can technically access other Rclone instances on your NAS, your Mother’s PC, or some other remote device via this menu. However, for now, we must focus on securing your **Local** environment.
+_Side Note:_ You can technically access other Rclone instances on your NAS, your Mother’s PC, or some other remote device via this menu. However, for now, we must focus on securing your **Local** environment.
 
 ### 7.2 Editing the Local Backend
 
 Locate the **Pencil Icon** next to the "Local" entry. This allows us to edit the backend configuration.
 
-> **Note:** Rclone does not support editing or encrypting *remote* backend configurations through this specific interface. Stick to the local one for now.
+> **Note:** Rclone does not support editing or encrypting _remote_ backend configurations through this specific interface. Stick to the local one for now.
 
 **Useful Tip:** If you are curious about where this configuration file actually lives on your hard drive, hover your mouse over the green file icon at the start of the input field. The path will reveal itself.
 
@@ -253,8 +253,8 @@ You will notice a checkbox indicating **"Password stored in keyring"**. This is 
 
 From this tab, you can also:
 
-* **Change the Password:** If you feel your current password has been compromised.
-* **Remove Encryption:** If you decide you enjoy living dangerously (not recommended).
+- **Change the Password:** If you feel your current password has been compromised.
+- **Remove Encryption:** If you decide you enjoy living dangerously (not recommended).
 
 Your configuration is now encrypted. You may proceed with your digital life, secure in the knowledge that your school notes are safe from everyone including, most likely, yourself.
 
@@ -264,7 +264,7 @@ Your configuration is now encrypted. You may proceed with your digital life, sec
 
 Now that your remote is securely established, you may want to learn how to actually use it.
 
-* [Sync and Transfer](#5-quick-actions)
-* [Mounting](mounting.md)
-* [Scheduler](../platform/configuration-desktop.md)
-* [Troubleshooting](../support/troubleshooting.md)
+- [Sync and Transfer](#5-quick-actions)
+- [Mounting](mounting.md)
+- [Scheduler](../platform/configuration-desktop.md)
+- [Troubleshooting](../support/troubleshooting.md)
