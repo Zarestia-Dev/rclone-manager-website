@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { ModeService } from '../../services/mode.service';
@@ -11,6 +11,7 @@ import { DESKTOP_FEATURES, HEADLESS_FEATURES } from '../../constants/features.co
     MatIconModule
   ],
   templateUrl: './features.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './features.scss'
 })
 export class Features {

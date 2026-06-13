@@ -115,8 +115,9 @@ export class DocService {
 
   loadSearchIndex(forceRefresh = false): Observable<Record<string, string>> {
     if (forceRefresh) this.searchIndexCache$ = undefined;
+    const baseHref = document.querySelector('base')?.getAttribute('href') ?? '/';
     this.searchIndexCache$ ??= this.http
-      .get<Record<string, string>>('docs/search-index.json')
+      .get<Record<string, string>>(`${baseHref}docs/search-index.json`)
       .pipe(shareReplay(1));
     return this.searchIndexCache$;
   }

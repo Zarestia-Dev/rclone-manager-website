@@ -10,6 +10,7 @@
 
 - [Home](getting-started/home.md) {description="Introduction to RClone Manager", icon=home}
 - [Getting Started](getting-started/getting-started.md) {description="A quick overview of the main features", icon=rocket}
+- [Gallery](getting-started/gallery.md) {description="A visual showcase of RClone Manager features", icon=photo_library}
 - [Installation](getting-started/installation.md) {description="How to install RClone Manager on your system", icon=get_app}
 - [Configuration](getting-started/configuration.md) {description="Initial setup and linking your rclone remotes", icon=settings}
 - [Building from Source](getting-started/building.md) {description="Instructions for developers and packagers", icon=build}

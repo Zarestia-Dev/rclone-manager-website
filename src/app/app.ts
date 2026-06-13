@@ -1,4 +1,4 @@
-import { Component, inject, afterNextRender, signal } from '@angular/core';
+import { Component, inject, afterNextRender, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { Home } from './pages/home/home';
@@ -13,6 +13,7 @@ import { DebugService } from './services/debug.service';
   selector: 'app-root',
   imports: [Navbar, Footer, Home, Downloads, Docs, RoadmapPage, CommunityPage],
   templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',
 })
 export class App {

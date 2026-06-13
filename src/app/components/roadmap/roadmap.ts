@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, inject, signal, OnInit, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -12,6 +12,7 @@ import { RoadmapService } from '../../services/roadmap.service';
   standalone: true,
   imports: [CommonModule, MatIconModule, MatChipsModule, MatProgressSpinnerModule],
   templateUrl: './roadmap.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './roadmap.scss',
 })
 export class Roadmap implements OnInit {

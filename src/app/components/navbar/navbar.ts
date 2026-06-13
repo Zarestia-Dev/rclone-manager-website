@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, signal, effect } from '@angular/core';
+import { Component, HostListener, inject, signal, effect, ChangeDetectionStrategy } from '@angular/core';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,6 +21,7 @@ import { NAV_LINKS } from '../../constants/navigation.constants';
     ThemeToggle,
   ],
   templateUrl: './navbar.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './navbar.scss',
 })
 export class Navbar {

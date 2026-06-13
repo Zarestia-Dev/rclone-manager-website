@@ -18,7 +18,8 @@ export class WikiService {
 
   fetchSidebar(): Observable<string> {
     if (USE_LOCAL) {
-      return this.http.get('docs/sidebar.md', { responseType: 'text' }).pipe(
+      const baseHref = document.querySelector('base')?.getAttribute('href') ?? '/';
+      return this.http.get(`${baseHref}docs/sidebar.md`, { responseType: 'text' }).pipe(
         catchError((err) => {
           console.error('Failed to fetch local sidebar, falling back to GitHub:', err);
           return this.fetchSidebarFromGithub();
@@ -44,7 +45,8 @@ export class WikiService {
     }
 
     if (USE_LOCAL) {
-      return this.http.get(`docs/${path}`, { responseType: 'text' }).pipe(
+      const baseHref = document.querySelector('base')?.getAttribute('href') ?? '/';
+      return this.http.get(`${baseHref}docs/${path}`, { responseType: 'text' }).pipe(
         catchError((err) => {
           console.error(`Failed to fetch local doc page: ${path}, falling back to GitHub:`, err);
           return this.fetchPageFromGithub(path);

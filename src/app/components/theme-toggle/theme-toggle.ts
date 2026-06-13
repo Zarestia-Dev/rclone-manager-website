@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeService, Theme } from '../../services/theme.service';
 
@@ -7,6 +7,7 @@ import { ThemeService, Theme } from '../../services/theme.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './theme-toggle.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './theme-toggle.scss',
 })
 export class ThemeToggle {

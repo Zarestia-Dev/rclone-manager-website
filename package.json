@@ -23,13 +23,13 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/cdk": "^21.2.7",
-    "@angular/common": "^21.2.9",
-    "@angular/compiler": "^21.2.9",
-    "@angular/core": "^21.2.9",
-    "@angular/forms": "^21.2.9",
-    "@angular/material": "^21.2.7",
-    "@angular/platform-browser": "^21.2.9",
+    "@angular/cdk": "^22.0.1",
+    "@angular/common": "^22.0.1",
+    "@angular/compiler": "^22.0.1",
+    "@angular/core": "^22.0.1",
+    "@angular/forms": "^22.0.1",
+    "@angular/material": "^22.0.1",
+    "@angular/platform-browser": "^22.0.1",
     "@types/dompurify": "^3.2.0",
     "dompurify": "^3.4.0",
     "marked": "^18.0.2",
@@ -37,20 +37,22 @@
     "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@angular/build": "^21.2.7",
-    "@angular/cli": "^21.2.7",
-    "@angular/compiler-cli": "^21.2.9",
+    "@angular/build": "^22.0.1",
+    "@angular/cli": "^22.0.1",
+    "@angular/compiler-cli": "^22.0.1",
     "@types/jasmine": "~6.0.0",
     "angular-cli-ghpages": "^3.0.2",
     "angular-eslint": "21.3.1",
     "eslint": "^10.2.1",
+    "istanbul-lib-instrument": "^6.0.3",
     "jasmine-core": "~6.2.0",
     "karma": "~6.4.4",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.2.0",
-    "typescript": "^5.9.3",
-    "typescript-eslint": "8.58.2"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "8.58.2",
+    "vitest": "^4.0.8"
   }
 }
