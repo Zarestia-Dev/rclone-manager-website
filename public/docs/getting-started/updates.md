@@ -38,11 +38,23 @@ If the updater has corrupted your installation or left a conflicting package:
     ```bash
     sudo dpkg --remove r-clone-manager
     ```
-2.  Clean build and update the official AUR package:
+2.  Clean build and update the official AUR package using your AUR helper or via a manual build:
+
+    **Using `yay`:**
     ```bash
-    yay -Syu
-    # or to force reinstall/update specifically:
-    yay -S rclone-manager
+    yay -Syu rclone-manager
+    ```
+
+    **Using `paru`:**
+    ```bash
+    paru -Syu rclone-manager
+    ```
+
+    **Manual Build (Git):**
+    ```bash
+    git clone https://aur.archlinux.org/rclone-manager.git
+    cd rclone-manager
+    makepkg -si
     ```
 
 ---
