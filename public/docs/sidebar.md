@@ -12,6 +12,7 @@
 - [Getting Started](getting-started/getting-started.md) {description="A quick overview of the main features", icon=rocket}
 - [Gallery](getting-started/gallery.md) {description="A visual showcase of RClone Manager features", icon=photo_library}
 - [Installation](getting-started/installation.md) {description="How to install RClone Manager on your system", icon=get_app}
+- [Updates & Upgrades](getting-started/updates.md) {description="How application and rclone updates work", icon=update}
 - [Configuration](getting-started/configuration.md) {description="Initial setup and linking your rclone remotes", icon=settings}
 - [Building from Source](getting-started/building.md) {description="Instructions for developers and packagers", icon=build}
 - [Installation - Headless](getting-started/installation-headless.md) {description="How to install RClone Manager on a server", icon=dns}
