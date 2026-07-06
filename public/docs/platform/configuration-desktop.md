@@ -60,6 +60,22 @@ RClone Manager is designed to run seamlessly in the background:
 
 While primarily a GUI application, RClone Manager supports command-line arguments and environment variables for advanced automation.
 
+### Command-Line Arguments
+
+| Argument | Description | Example |
+| :--- | :--- | :--- |
+| `--tray` | Start the application minimized in the system tray. | `rclone-manager --tray` |
+| `--send-to-remote <REMOTE>` | Specify the target remote name for command-line uploads. | `rclone-manager --send-to-remote "Dropbox:"` |
+| `--send-to-path <PATH>` | Target subdirectory/folder path on the remote (optional). | `rclone-manager --send-to-remote "Dropbox:" --send-to-path "Backup"` |
+| `[sources...]` | Trailing positional arguments representing local paths to upload. | `rclone-manager --send-to-remote "Dropbox:" "C:\file.txt"` |
+
+### Example Usage
+To initiate a background upload from the command-line or external scripts:
+```bash
+rclone-manager --send-to-remote "Dropbox:" --send-to-path "Backups" "/local/path/to/backup.tar.gz"
+```
+If another instance of RClone Manager is already running, the parameters will be forwarded to it automatically via single-instance IPC, starting the upload in the background of the running application.
+
 ### Default Directory Locations
 
 | Platform    | Application Data                       | Cache Location                     |

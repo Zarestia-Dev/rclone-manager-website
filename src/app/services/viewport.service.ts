@@ -25,12 +25,4 @@ export class ViewportService {
     this.breakpointObserver.observe('(min-width: 1281px)').pipe(map((res) => res.matches)),
     { initialValue: window.innerWidth > 1280 },
   );
-
-  /**
-   * Helper to check if we're currently on a small screen without a signal
-   * (e.g., for one-time checks in logic).
-   */
-  get currentIsMobile(): boolean {
-    return this.isMobile();
-  }
 }

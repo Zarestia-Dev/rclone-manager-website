@@ -25,7 +25,7 @@
       font-size: var(--font-size-sm);
       padding: var(--space-xxs) var(--space-sm);
       border-radius: var(--radius-lg);
-      background: var(--surface-variant);
+      background: var(--bg-elevated);
       color: var(--primary-color);
       font-weight: 700;
     }
@@ -61,6 +61,9 @@
     color: var(--window-fg-color);
 
     &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+
       img {
         transform: scale(1.1);
       }
@@ -76,33 +79,39 @@
 
     .name {
       font-weight: 700;
-      color: var(--text-primary);
+      color: var(--window-fg-color);
       margin-bottom: 4px;
     }
 
     .count {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
+      font-size: var(--font-size-sm);
+      color: var(--dim-color);
     }
   }
 
-  .donate-grid {
+  .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr)); // 300px
     gap: var(--space-xl);
   }
 
-  .donate-card {
+  .info-card {
     background: var(--view-bg-color);
     box-shadow: var(--shadow-gnome);
     border-radius: var(--radius-lg);
     padding: var(--space-2xl);
     text-align: center;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
 
     .icon-box {
       width: var(--icon-container-size);
       height: var(--icon-container-size);
-      background: var(--surface-variant);
+      background: var(--bg-elevated);
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
@@ -124,7 +133,7 @@
     }
 
     p {
-      color: var(--text-secondary);
+      color: var(--dim-color);
       margin-bottom: var(--space-xl);
       line-height: 1.6;
     }
@@ -145,8 +154,8 @@
     text-align: center;
 
     p {
-      font-size: 1.25rem;
-      color: var(--text-primary);
+      font-size: var(--font-size-xl);
+      color: var(--window-fg-color);
       margin-bottom: var(--space-2xl);
       max-width: 50rem; // 800px
       margin-left: auto;
@@ -157,33 +166,8 @@
     .button-container {
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
       gap: var(--space-md);
     }
-  }
-
-  .donate-section.disabled {
-    position: relative;
-    opacity: 0.6;
-    pointer-events: none;
-    filter: grayscale(0.5);
-
-    .section-header::after {
-      content: '(Coming Soon)';
-      font-size: 0.9rem;
-      color: var(--accent-color);
-      font-weight: 600;
-      text-transform: none;
-    }
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }

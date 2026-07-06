@@ -7,5 +7,18 @@
 .main-content {
   background: var(--window-bg-color);
   flex: 1;
+  display: flex;
+  flex-direction: column;
   padding-top: var(--titlebar-height);
+}
+
+// Grows to fill available space so the footer sits at the bottom on short pages
+// and is pushed down naturally when content overflows.
+.page-host {
+  flex: 1 0 auto;
+  width: 100%;
+}
+
+app-footer {
+  flex-shrink: 0;
 }

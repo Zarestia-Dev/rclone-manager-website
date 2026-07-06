@@ -1,25 +1,16 @@
 import { Component, HostListener, inject, signal, effect, ChangeDetectionStrategy } from '@angular/core';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
 import { ThemeToggle } from '../theme-toggle/theme-toggle';
 import { TabService, AppTab } from '../../services/tab.service';
 import { ModeService } from '../../services/mode.service';
 import { ViewportService } from '../../services/viewport.service';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { NAV_LINKS } from '../../constants/navigation.constants';
+import { NAV_LINKS, EXTERNAL_NAV_LINKS } from '../../constants/navigation.constants';
+import { MatTooltip } from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-navbar',
-  imports: [
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatSlideToggleModule,
-    ThemeToggle,
-  ],
+  imports: [MatButtonModule, MatIconModule, ThemeToggle, MatTooltip],
   templateUrl: './navbar.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './navbar.scss',
@@ -29,6 +20,7 @@ export class Navbar {
   modeService = inject(ModeService);
   viewport = inject(ViewportService);
   navLinks = NAV_LINKS;
+  externalLinks = EXTERNAL_NAV_LINKS;
 
   isScrolled = false;
   isMobileMenuOpen = signal(false);

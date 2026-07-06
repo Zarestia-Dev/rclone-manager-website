@@ -33,6 +33,7 @@ import {
   DOWNLOADS_MESSAGES,
 } from '../../constants/downloads.constants';
 import { createDownloadOption, getDownloadType } from '../../utils/downloads.utils';
+import { isHeadlessRelease } from '../../utils/release.utils';
 import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -89,7 +90,7 @@ export class Downloads {
     const releases = this.allReleases();
     const filtered =
       mode === 'headless'
-        ? releases.filter((r) => this.isHeadlessRelease(r))
+        ? releases.filter((r) => isHeadlessRelease(r))
         : releases.filter((r) => this.isDesktopRelease(r));
 
     return [...filtered].sort(
@@ -155,16 +156,6 @@ export class Downloads {
       duration: DOWNLOADS_CONFIG.SNACKBAR_DURATION,
       panelClass: isError ? ['error-snackbar'] : [],
     });
-  }
-
-  private isHeadlessRelease(release: GitHubRelease): boolean {
-    const tag = release.tag_name?.toLowerCase() ?? '';
-    const name = release.name?.toLowerCase() ?? '';
-    return (
-      tag.includes('headless') ||
-      name.includes('headless') ||
-      !!release.assets?.some((a) => a.name.toLowerCase().includes('headless'))
-    );
   }
 
   private isDesktopRelease(release: GitHubRelease): boolean {

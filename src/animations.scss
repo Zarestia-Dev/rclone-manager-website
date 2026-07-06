@@ -73,6 +73,55 @@
   }
 }
 
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--space-lg)));
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(var(--space-lg));
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Pure fade — no movement, for whole-page containers.
+.animate-fade-in {
+  opacity: 0;
+
+  .app-container.page-loaded & {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+}
+
+// Slide in from the left edge (left-side panels such as the docs sidebar).
+.animate-fade-in-left {
+  opacity: 0;
+
+  .app-container.page-loaded & {
+    animation: fadeInLeft 0.5s ease-out forwards;
+  }
+}
+
+// Slide in from the right edge (right-side panels such as the docs TOC).
+.animate-fade-in-right {
+  opacity: 0;
+
+  .app-container.page-loaded & {
+    animation: fadeInRight 0.5s ease-out forwards;
+  }
+}
+
 @keyframes breathing {
   0% {
     transform: scale(0.9);

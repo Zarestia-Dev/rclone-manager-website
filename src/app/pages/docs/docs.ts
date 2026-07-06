@@ -2,9 +2,11 @@ import {
   Component,
   inject,
   signal,
+  computed,
   ElementRef,
   ViewChild,
   effect,
+  HostListener,
   DestroyRef,
   afterNextRender,
   Injector,
@@ -22,7 +24,7 @@ import {
   MatBottomSheetRef,
 } from '@angular/material/bottom-sheet';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { marked, Renderer } from 'marked';
+import { marked, Renderer, Token } from 'marked';
 import DOMPurify from 'dompurify';
 import { DocService, DocItem } from '../../services/doc.service';
 import { ViewportService } from '../../services/viewport.service';
@@ -60,8 +62,10 @@ export class Docs {
   private pendingScrollTerm: string | undefined;
 
   private renderCleanup?: AbortController;
-  private tocObserver: IntersectionObserver | null = null;
-  private visibleHeadings = new Map<string, IntersectionObserverEntry>();
+  /** Ordered list of heading elements currently rendered in the content area. */
+  private headingElements: HTMLElement[] = [];
+  /** Non-zero while a scroll-driven active-heading update is scheduled. */
+  private scrollSpyRafId = 0;
 
   readonly selectedItem = signal<DocItem | null>(null);
   readonly toc = signal<{ id: string; text: string; level: number }[]>([]);
@@ -71,14 +75,49 @@ export class Docs {
   readonly isSearchFocused = signal(false);
   readonly searchFocusIndex = signal(-1);
 
+  readonly minTocLevel = computed(() => {
+    const levels = this.toc().map((item) => item.level);
+    return levels.length > 0 ? Math.min(...levels) : 2;
+  });
+
+  getTocLinkCoords(index: number): { x1: number; x2: number; relLevel: number } {
+    const toc = this.toc();
+    const link = toc[index];
+    const prevLink = index > 0 ? toc[index - 1] : undefined;
+    const minLevel = this.minTocLevel();
+
+    const relLevel = Math.max(0, Math.min(2, link.level - minLevel));
+    const prevRelLevel = prevLink
+      ? Math.max(0, Math.min(2, prevLink.level - minLevel))
+      : relLevel;
+
+    const getX = (level: number) => 8 + level * 16;
+    const x2 = getX(relLevel);
+    const x1 = getX(prevRelLevel);
+
+    return { x1, x2, relLevel };
+  }
+
+  readonly bgPathD = signal<string>('');
+  readonly activeDashArray = signal<string>('0, 0');
+  readonly activeDashOffset = signal<number>(0);
+  readonly markerVisible = signal<boolean>(false);
+
   @ViewChild('contentArea') contentArea?: ElementRef;
 
   constructor() {
     marked.use({ breaks: true, gfm: true });
     history.scrollRestoration = 'manual';
 
-    this.initIntersectionObserver();
     this.loadDocs();
+
+    // Update active sliding marker position when active heading changes
+    effect(() => {
+      this.activeTocId();
+      requestAnimationFrame(() => {
+        this.updateActiveMarker();
+      });
+    });
 
     // Close the bottom sheet when the viewport leaves mobile
     effect(() => {
@@ -90,33 +129,52 @@ export class Docs {
 
     // Cleanup on destroy
     this.destroyRef.onDestroy(() => {
-      this.tocObserver?.disconnect();
+      if (this.scrollSpyRafId) cancelAnimationFrame(this.scrollSpyRafId);
       this.renderCleanup?.abort();
     });
   }
 
-  // ─── Intersection Observer ──────────────────────────────────────────────────
+  // ─── Scroll spy (active TOC highlighting) ──────────────────────────────────
 
-  private initIntersectionObserver(): void {
-    this.tocObserver = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            this.visibleHeadings.set(entry.target.id, entry);
-          } else {
-            this.visibleHeadings.delete(entry.target.id);
-          }
-        }
-        this.updateActiveTocId();
-      },
-      { rootMargin: '-100px 0px -70% 0px', threshold: 0 },
-    );
+  /**
+   * On scroll, recompute which heading is currently "active".
+   * Uses requestAnimationFrame to coalesce multiple scroll events into one update
+   * so highlighting stays in sync without jank.
+   */
+  @HostListener('window:scroll', [])
+  onWindowScroll(): void {
+    if (this.scrollSpyRafId) return;
+    this.scrollSpyRafId = requestAnimationFrame(() => {
+      this.scrollSpyRafId = 0;
+      this.updateActiveFromScroll();
+    });
   }
 
-  private updateActiveTocId(): void {
-    if (this.visibleHeadings.size === 0) return;
-    const activeId = this.toc().map((t) => t.id).find((id) => this.visibleHeadings.has(id));
-    if (activeId) this.activeTocId.set(activeId);
+  @HostListener('window:resize', [])
+  onWindowResize(): void {
+    this.updateActiveMarker();
+  }
+
+  /**
+   * Pick the active heading: the last heading whose top has scrolled past the
+   * trigger line (navbar height + breathing room). Falls back to the first
+   * heading when the reader is above it. Always sets a value so the TOC never
+   * loses its highlight between sections.
+   */
+  private updateActiveFromScroll(): void {
+    if (this.headingElements.length === 0) return;
+    const triggerLine = 120;
+    let active = this.headingElements[0];
+    for (const heading of this.headingElements) {
+      if (heading.getBoundingClientRect().top <= triggerLine) {
+        active = heading;
+      } else {
+        break;
+      }
+    }
+    if (active.id && this.activeTocId() !== active.id) {
+      this.activeTocId.set(active.id);
+    }
   }
 
   // ─── Data loading ───────────────────────────────────────────────────────────
@@ -135,7 +193,8 @@ export class Docs {
             .replace(this.basePath, '')
             .split('/')
             .filter(Boolean);
-const       pageSlug = (pathParts.length >= 2 ? (pathParts.at(-1) ?? '') : '').toLowerCase();          const restoredItem = pageSlug
+          const pageSlug = (pathParts.length >= 2 ? (pathParts.at(-1) ?? '') : '').toLowerCase();
+          const restoredItem = pageSlug
             ? this.docService.findItemBySlug(data.sections, pageSlug)
             : null;
 
@@ -286,13 +345,8 @@ const       pageSlug = (pathParts.length >= 2 ? (pathParts.at(-1) ?? '') : '').t
               this.attachCopyButtons();
               this.extractAndSetToc();
 
-              if (this.contentArea && this.tocObserver) {
-                this.tocObserver.disconnect();
-                this.visibleHeadings.clear();
-                this.contentArea.nativeElement
-                  .querySelectorAll('h1, h2, h3')
-                  .forEach((h: Element) => this.tocObserver!.observe(h));
-              }
+              // Sync the active TOC entry to the restored scroll position.
+              this.updateActiveFromScroll();
 
               if (this.bottomSheetRef) {
                 this.pendingScrollTerm = query;
@@ -315,12 +369,15 @@ const       pageSlug = (pathParts.length >= 2 ? (pathParts.at(-1) ?? '') : '').t
   private extractAndSetToc(): void {
     if (!this.contentArea) return;
     const tocItems: { id: string; text: string; level: number }[] = [];
-    this.contentArea.nativeElement.querySelectorAll('h1, h2, h3').forEach((h: HTMLElement) => {
+    const headings: HTMLElement[] = [];
+    this.contentArea.nativeElement.querySelectorAll('h1, h2, h3, h4').forEach((h: HTMLElement) => {
       if (!h.id) return;
+      headings.push(h);
       const clone = h.cloneNode(true) as HTMLElement;
       clone.querySelectorAll('.material-icons, .heading-anchor').forEach((el) => el.remove());
       tocItems.push({ id: h.id, text: clone.innerText.trim(), level: parseInt(h.tagName[1]) });
     });
+    this.headingElements = headings;
     this.toc.set(tocItems);
   }
 
@@ -427,7 +484,7 @@ const       pageSlug = (pathParts.length >= 2 ? (pathParts.at(-1) ?? '') : '').t
     const usedIds = new Set<string>();
     const docDir = path.split('/').slice(0, -1).join('/');
 
-    renderer.heading = ({ tokens, depth: level }: { tokens: any[]; depth: number }): string => {
+    renderer.heading = ({ tokens, depth: level }: { tokens: Token[]; depth: number }): string => {
       let text = marked.Parser.parseInline(tokens);
       let id: string | null = null;
       const idMatch = text.match(/\{#(.*?)\}/);
@@ -457,7 +514,7 @@ const       pageSlug = (pathParts.length >= 2 ? (pathParts.at(-1) ?? '') : '').t
       return `<img src="${resolvedHref}" alt="${text}"${title ? ` title="${title}"` : ''}>`;
     };
 
-    renderer.link = ({ href, title, tokens }: { href: string; title?: string | null; tokens: any[] }): string => {
+    renderer.link = ({ href, title, tokens }: { href: string; title?: string | null; tokens: Token[] }): string => {
       const text = marked.Parser.parseInline(tokens);
       if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('mailto')) {
         const slug = href.split('/').pop()?.replace(/\.md$/i, '').toLowerCase() ?? '';
@@ -480,5 +537,75 @@ const       pageSlug = (pathParts.length >= 2 ? (pathParts.at(-1) ?? '') : '').t
       else resolved.push(p);
     }
     return `${this.basePath}/${resolved.join('/')}`;
+  }
+
+  private updateActiveMarker(): void {
+    if (!this.contentArea) {
+      this.markerVisible.set(false);
+      return;
+    }
+
+    const container = document.querySelector('.toc-nav');
+    if (!container) return;
+
+    const links = Array.from(container.querySelectorAll('.toc-link')) as HTMLElement[];
+    if (links.length === 0) {
+      this.markerVisible.set(false);
+      return;
+    }
+
+    const activeEl = container.querySelector(`.toc-link.active`) as HTMLElement;
+
+    // Construct the continuous path
+    let pathD = '';
+    let cumulative = 0;
+    const itemSegments: { start: number; length: number }[] = [];
+
+    for (let i = 0; i < links.length; i++) {
+      const linkEl = links[i];
+      const coords = this.getTocLinkCoords(i);
+      const y = linkEl.offsetTop;
+      const h = linkEl.offsetHeight;
+
+      let segmentLength = 0;
+      if (i === 0) {
+        pathD = `M ${coords.x2} ${y} L ${coords.x2} ${y + h}`;
+        segmentLength = h;
+      } else {
+        const prevCoords = this.getTocLinkCoords(i - 1);
+        if (coords.x1 !== coords.x2) {
+          // It jogs
+          const diag = Math.sqrt(Math.pow(coords.x2 - coords.x1, 2) + 64); // 8px height
+          pathD += ` L ${prevCoords.x2} ${y} L ${coords.x2} ${y + 8} L ${coords.x2} ${y + h}`;
+          segmentLength = (y - (links[i - 1].offsetTop + links[i - 1].offsetHeight)) + diag + (h - 8);
+        } else {
+          // Straight line
+          pathD += ` L ${coords.x2} ${y + h}`;
+          segmentLength = h + (y - (links[i - 1].offsetTop + links[i - 1].offsetHeight));
+        }
+      }
+
+      itemSegments.push({
+        start: cumulative,
+        length: segmentLength
+      });
+      cumulative += segmentLength;
+    }
+
+    this.bgPathD.set(pathD);
+
+    if (activeEl) {
+      const index = links.indexOf(activeEl);
+      if (index !== -1) {
+        const segment = itemSegments[index];
+        this.activeDashArray.set(`${segment.length}, ${cumulative}`);
+        this.activeDashOffset.set(-segment.start);
+        this.markerVisible.set(true);
+      } else {
+        this.markerVisible.set(false);
+      }
+    } else {
+      this.markerVisible.set(false);
+    }
   }
 }

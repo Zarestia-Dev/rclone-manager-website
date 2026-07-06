@@ -1,7 +1,8 @@
 <div class="page-container animate-fade-in">
   <div class="docs-detail-layout">
     <!-- Sidebar Navigation -->
-    <aside class="docs-sidebar animate-fade-in-right" [class.hidden]="viewport.isMobile()">
+    @if (!viewport.isMobile()) {
+    <aside class="docs-sidebar animate-fade-in-left">
 
       <!-- Search -->
       <div class="sidebar-search-wrap">
@@ -85,6 +86,7 @@
         </div>
       </div>
     </aside>
+    }
 
     <!-- Content Area -->
     <div class="docs-content-wrapper">
@@ -120,17 +122,29 @@
       </div>
 
       <!-- Right Side Table of Contents -->
-      @if (toc().length > 0) {
-      <aside class="docs-toc-container animate-fade-in-left" [class.hidden]="!viewport.isWide()">
+      @if (toc().length > 0 && viewport.isWide()) {
+      <aside class="docs-toc-container animate-fade-in-right">
         <div class="toc-card">
           <h4 class="toc-title">
             <mat-icon>list</mat-icon>
             On this page
           </h4>
           <nav class="toc-nav">
-            @for (link of toc(); track link.id) {
-            <a href="javascript:void(0)" class="toc-link" [class.sub-item]="link.level > 2"
-              [class.active]="activeTocId() === link.id" (click)="scrollToSection(link.id, $event)">
+            @if (toc().length > 0) {
+            <svg class="toc-tree-svg">
+              <path [attr.d]="bgPathD()" class="connector-line-bg" />
+              <path [attr.d]="bgPathD()" class="connector-line-active"
+                [style.stroke-dasharray]="activeDashArray()"
+                [style.stroke-dashoffset]="activeDashOffset()"
+                [class.visible]="markerVisible()" />
+            </svg>
+            }
+
+            @for (link of toc(); track link.id; let i = $index) {
+            <a [href]="'#' + link.id" class="toc-link"
+              [class.active]="activeTocId() === link.id"
+              [class]="'level-rel-' + getTocLinkCoords(i).relLevel"
+              (click)="scrollToSection(link.id, $event)">
               {{ link.text }}
             </a>
             }

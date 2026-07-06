@@ -13,6 +13,7 @@ export class TabService {
   }
 
   currentTab = signal<AppTab>(this.readTabFromPath());
+  triggerHomeAnimation = signal<number>(0);
 
   private readTabFromPath(): AppTab {
     const path = window.location.pathname.replace(this.basePath, '');
@@ -24,6 +25,9 @@ export class TabService {
   }
 
   setTab(tab: AppTab) {
+    if (tab === 'general') {
+      this.triggerHomeAnimation.update(v => v + 1);
+    }
     this.currentTab.set(tab);
     window.scrollTo(0, 0);
 

@@ -575,6 +575,9 @@ $dark-theme: (
 
   // Global UI Variables
   --text-muted: var(--dim-color);
+  --text-primary: var(--window-fg-color);
+  --text-secondary: var(--dim-color);
+  --surface-variant: var(--bg-elevated);
   --bg-elevated: color-mix(in srgb, var(--window-fg-color) 3%, transparent);
   --bg-hover: var(--hover-bg-color);
   --bg-selected: var(--selected-bg-color);

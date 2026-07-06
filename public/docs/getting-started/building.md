@@ -1,12 +1,12 @@
 # [[icon:build.primary]] Building from Source
 
-This guide explains how to set up your development environment and compile **RClone Manager** from source code. The project is built using a modern stack featuring **Angular v21** and **Tauri v2**.
+This guide explains how to set up your development environment and compile **RClone Manager** from source code. The project is built using a modern stack featuring **Angular v22** and **Tauri v2**.
 
 ## [[icon:list.primary]] Prerequisites
 
 Before you begin, ensure you have the following installed:
 
-1.  [[icon:code.primary]] **Node.js (v20+)**: Required for Angular v21. [Download Node.js](https://nodejs.org/)
+1.  [[icon:code.primary]] **Node.js (v20+)**: Required for Angular v22. [Download Node.js](https://nodejs.org/)
 2.  [[icon:terminal.primary]] **Rust (Latest Stable)**: Required for the Tauri backend.
     ```bash
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -127,4 +127,4 @@ Builds and packages the application as a Snap with classic confinement.
 
 ---
 
-<small>Documentation updated for RClone Manager v0.2.2+ using Angular v21.</small>
+<small>Documentation updated for RClone Manager v0.2.2+ using Angular v22.</small>

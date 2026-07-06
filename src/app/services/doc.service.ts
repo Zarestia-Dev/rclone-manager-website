@@ -16,6 +16,7 @@ import { WikiService } from './wiki.service';
 import { HttpClient } from '@angular/common/http';
 import { GithubService } from './github.service';
 import { GitHubRelease } from '../models/downloads.model';
+import { isHeadlessRelease } from '../utils/release.utils';
 
 export interface DocItem {
   title: string;
@@ -95,22 +96,12 @@ export class DocService {
         map(
           (releases) =>
             releases
-              .filter((r) => this.isHeadlessRelease(r))
+              .filter((r) => isHeadlessRelease(r))
               .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())[0],
         ),
         shareReplay(1),
       );
     return this.latestHeadlessRelease$;
-  }
-
-  private isHeadlessRelease(release: GitHubRelease): boolean {
-    const tag = release.tag_name?.toLowerCase() ?? '';
-    const name = release.name?.toLowerCase() ?? '';
-    return (
-      tag.includes('headless') ||
-      name.includes('headless') ||
-      !!release.assets?.some((a) => a.name.toLowerCase().includes('headless'))
-    );
   }
 
   loadSearchIndex(forceRefresh = false): Observable<Record<string, string>> {

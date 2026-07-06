@@ -1,4 +1,4 @@
-<svg class="svg-logo" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img"
+<svg class="svg-logo" [class.animate]="isAnimating()" [class.leaving]="isLeaving()" (click)="retrigger()" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img"
     aria-label="RClone Manager Logo">
     <title>RClone Manager Logo</title>
 

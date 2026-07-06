@@ -202,12 +202,30 @@
     }
   }
 
-  // Mobile specific adjustments
-  @media (max-width: 860px) {
-    .mode-toggle {
-      width: 100%;
-      justify-content: center;
-      margin-bottom: var(--space-xs);
+  // External link (e.g. Support Us) — accent-styled CTA that reads as outward navigation
+  .nav-external-link {
+    padding: var(--space-xs) var(--space-md);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: var(--primary-color);
+    background: rgba(var(--primary-color-rgb), 0.1);
+    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
+    transition: var(--transition-standard);
+
+    mat-icon {
+      font-size: var(--icon-size-sm);
+      width: var(--icon-size-sm);
+      height: var(--icon-size-sm);
+    }
+
+    &:hover {
+      background: rgba(var(--primary-color-rgb), 0.18);
+      border-color: rgba(var(--primary-color-rgb), 0.35);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
     }
   }
 }

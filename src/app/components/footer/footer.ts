@@ -2,7 +2,7 @@ import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { TabService, AppTab } from '../../services/tab.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { NAV_LINKS, SOCIAL_LINKS } from '../../constants/navigation.constants';
+import { NAV_LINKS, SOCIAL_LINKS, EXTERNAL_NAV_LINKS } from '../../constants/navigation.constants';
 
 @Component({
   selector: 'app-footer',
@@ -16,6 +16,7 @@ export class Footer {
   currentYear = new Date().getFullYear();
   navLinks = NAV_LINKS;
   socialLinks = SOCIAL_LINKS;
+  supportLinks = EXTERNAL_NAV_LINKS;
 
   setTab(tab: string) {
     this.tabService.setTab(tab as AppTab);
