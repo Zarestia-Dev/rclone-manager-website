@@ -13,43 +13,51 @@ The desktop version of RClone Manager runs as a native application on your compu
 ## [[icon:star.primary]] Key Features
 
 ### Remote Management
+
 - **Add/Edit/Delete/Clone**: Complete CRUD operations for all your remotes.
 - **OAuth Support**: Seamless authentication for cloud providers.
 - **Interactive Configuration**: Wizard-based setup for complex remotes.
 - **Encrypted Configs**: Automatic detection and handling of encrypted rclone configurations.
 
 ### Operations
+
 - **Mount**: Mount remotes as local drives with full VFS support.
 - **Serve**: Expose remotes via HTTP, WebDAV, FTP, SFTP, or DLNA.
 - **Sync/Copy/Move**: Powerful file operations with real-time feedback.
 - **Bisync**: Two-way synchronization with conflict detection.
 
 ### Scheduling & Automation
+
 - **Cron-like Syntax**: Advanced scheduling with full cron expression support.
 - **Flexible Operations**: Schedule any file operation.
 - **Filesystem Watchers**: Local filesystem watchers for sync, copy, move, and bisync automations. Sync, copy, and move require at least one local source path; bisync watches local paths from both sides.
 - > [!TIP]
   > **Example:** `15,45 8-18/2 * 1,11 1-5` runs every 2 hours at minutes 15 and 45, between 08:00–18:00, on Mondays & Fridays, in January and November.
 
-
 ---
 
 ## [[icon:dashboard.primary]] Interface Overview
 
 ### Main Window
+
 The interface is designed to be clean and efficient:
+
 - **Remote List**: All configured remotes with colored status indicators.
 - **Quick Actions**: Pin up to 3 primary operations per remote for one-tap access.
 - **Job Monitor**: Live progress tracking with detailed transfer speeds.
 
 ### Settings & Customization
+
 Access comprehensive settings to tailor your experience:
+
 - **Theme**: Automatic switching between light and dark modes.
 - **Backend Options**: Configure global mount settings and VFS flags.
 - **Memory Optimization**: Experimental options for low-resource environments.
 
 ### System Tray & Window Management
+
 RClone Manager is designed to run seamlessly in the background:
+
 - **Minimize to Tray**: Closing the main window hides the interface to the system tray by default, keeping your mounts, file operations, schedules and file watchers running smoothly in the background.
 - **Memory Optimization Option**: When you enable 'Destroy Window on Close' in the settings (Default enabled after V0.2.0), closing the main window will natively destroy the view to free up RAM. The core app process remains safely running in the background.
 - **Secondary Windows**: Dialogs, file pickers, and other secondary modals are strictly managed by your OS. They are natively destroyed when closed to ensure optimal memory efficiency without impacting background tasks.
@@ -62,27 +70,31 @@ While primarily a GUI application, RClone Manager supports command-line argument
 
 ### Command-Line Arguments
 
-| Argument | Description | Example |
-| :--- | :--- | :--- |
-| `--tray` | Start the application minimized in the system tray. | `rclone-manager --tray` |
-| `--send-to-remote <REMOTE>` | Specify the target remote name for command-line uploads. | `rclone-manager --send-to-remote "Dropbox:"` |
-| `--send-to-path <PATH>` | Target subdirectory/folder path on the remote (optional). | `rclone-manager --send-to-remote "Dropbox:" --send-to-path "Backup"` |
-| `[sources...]` | Trailing positional arguments representing local paths to upload. | `rclone-manager --send-to-remote "Dropbox:" "C:\file.txt"` |
+| Argument                    | Description                                                       | Example                                                              |
+| :-------------------------- | :---------------------------------------------------------------- | :------------------------------------------------------------------- |
+| `--tray`                    | Start the application minimized in the system tray.               | `rclone-manager --tray`                                              |
+| `--send-to-remote <REMOTE>` | Specify the target remote name for command-line uploads.          | `rclone-manager --send-to-remote "Dropbox:"`                         |
+| `--send-to-path <PATH>`     | Target subdirectory/folder path on the remote (optional).         | `rclone-manager --send-to-remote "Dropbox:" --send-to-path "Backup"` |
+| `[sources...]`              | Trailing positional arguments representing local paths to upload. | `rclone-manager --send-to-remote "Dropbox:" "C:\file.txt"`           |
 
 ### Example Usage
+
 To initiate a background upload from the command-line or external scripts:
+
 ```bash
 rclone-manager --send-to-remote "Dropbox:" --send-to-path "Backups" "/local/path/to/backup.tar.gz"
 ```
+
 If another instance of RClone Manager is already running, the parameters will be forwarded to it automatically via single-instance IPC, starting the upload in the background of the running application.
 
 ### Default Directory Locations
 
-| Platform    | Application Data                       | Cache Location                     |
-| :---------- | :------------------------------------- | :--------------------------------- |
-| **Linux**   | `~/.local/share/rclone-manager/`       | `~/.cache/rclone-manager/`         |
-| **macOS**   | `~/Library/Application Support/...`    | `~/Library/Caches/...`             |
-| **Windows** | `%APPDATA%\rclone-manager\`            | `%LOCALAPPDATA%\rclone-manager\`   |
+| Platform    | Application Data                         | Cache Location                                                                     |
+| :---------- | :--------------------------------------- | :--------------------------------------------------------------------------------- |
+| **Linux**   | `~/.local/share/rclone-manager/`         | `~/.cache/rclone-manager/`                                                         |
+| **macOS**   | `~/Library/Application Support/...`      | `~/Library/Caches/...`                                                             |
+| **Windows** | `%APPDATA%\rclone-manager\`              | `%LOCALAPPDATA%\rclone-manager\`                                                   |
+| **Android** | `/data/user/0/com.rclone.manager/files/` | `/data/user/0/com.rclone.manager/cache/` (resources copied to `/cache/resources/`) |
 
 > [!NOTE]
 > **Precedence Logic**  

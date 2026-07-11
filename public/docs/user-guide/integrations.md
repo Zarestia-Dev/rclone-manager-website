@@ -40,6 +40,13 @@ RClone Manager integrates with the most popular Linux file managers:
 > [!NOTE]
 > All Linux context menu desktop and script templates automatically support system localization and are marked with execution permissions (`0o755`) to prevent security warning prompts.
 
+> [!IMPORTANT]
+> **Flatpak Users**: If you are using the Flatpak version of RClone Manager and want to use the Context Menu Integration, you must grant the application access to your home directory. This is required both to write the integration files (extensions, scripts) to your host user directory and for the application to access files to upload when triggered from the context menu:
+> ```bash
+> flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=home
+> ```
+> *(Or enable the **Home folder** permission under **Filesystem** in Flatseal).*
+
 ### macOS (Finder)
 Registers a Finder Quick Action (Service) bundle in `~/Library/Services/` using Automator zsh-action workflows. You can trigger it from Finder's **Quick Actions** menu.
 

@@ -127,6 +127,7 @@ flatpak install flathub com.github.tchx84.Flatseal
 | ---------------------------------------- | ----------------------------------------------- |
 | Mount drives                             | Under **Socket**, turn on **D-Bus session bus** |
 | Mount folders anywhere in my home folder | Under **Filesystem**, add `home`                |
+| Use Context Menu Integration             | Under **Filesystem**, add `home`                |
 
 <p align="center">
 <img src="../assets/troubleshooting/flatseal-socket.png" alt="Flatseal Socket" width="800">
@@ -154,7 +155,7 @@ Run the commands for the permissions you need:
 # For mounting drives
 flatpak override --user io.github.zarestia_dev.rclone-manager --socket=session-bus
 
-# For full home folder access (only if needed)
+# For home folder access (required for Context Menu Integration and local home folder mounts)
 flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=home
 ```
 

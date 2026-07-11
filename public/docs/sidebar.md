@@ -36,6 +36,7 @@
 - [Linux Installation](platform/installation-linux.md) {icon=terminal}
 - [Configuration Desktop](platform/configuration-desktop.md) {icon=desktop_windows}
 - [Configuration Headless](platform/configuration-headless.md) {icon=storage}
+- [Android Support (Beta)](platform/configuration-android.md) {icon=android}
 
 ## Support {icon=help, description="Get help when you need it"}
 

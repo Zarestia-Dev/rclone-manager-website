@@ -85,7 +85,8 @@ flatpak install flathub io.github.zarestia_dev.rclone-manager
 
 > [!NOTE]
 > **Sandboxing & Permissions**  
-> Flatpak apps are isolated from the system. If you need to mount cloud storage or access specific local folders, you may need to use [Flatseal](https://flathub.org/apps/com.github.tchx84.Flatseal) to manage permissions.
+> Flatpak apps are isolated from the system. If you need to mount cloud storage, access specific local folders, or use the **Context Menu Integration** feature, you may need to adjust permissions. Specifically, Context Menu Integration requires access to your home directory (`--filesystem=home`) to install integration scripts/extensions and read files to upload. You can manage these via [Flatseal](https://flathub.org/apps/com.github.tchx84.Flatseal) or run:  
+> `flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=home`
 
 ---
 
