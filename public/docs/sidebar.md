@@ -25,6 +25,7 @@
 - [Dynamic Paths & Macros](user-guide/dynamic-paths.md) {description="Use macros to create time-stamped and system-aware paths", icon=schedule}
 - [Mounting Drives](user-guide/mounting.md) {description="Mount cloud storage as local disks", icon=data_usage}
 - [Filters & File Monitoring](user-guide/filters-and-monitoring.md) {description="Configure filter profiles and set up real-time directory watching", icon=filter_alt}
+- [Alerts & Notifications](user-guide/alerts-and-notifications.md) {description="Configure rule-based alerts and notification channels (Telegram, WhatsApp, Webhooks, MQTT, Email)", icon=notifications}
 - [Integrations](user-guide/integrations.md) {description="How to integrate with other tools and services", icon=extension}
 - [FAQ](user-guide/faq.md) {description="Frequently asked questions", icon=quiz}
 - [Packaging](user-guide/packaging.md) {description="Packaging and distribution details", icon=inventory_2}
