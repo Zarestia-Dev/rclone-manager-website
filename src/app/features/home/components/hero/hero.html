@@ -1,0 +1,48 @@
+<section class="hero" [class.headless-mode]="modeService.currentMode() === 'headless'">
+  <div class="hero-background-wrapper">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="glass-overlay"></div>
+  </div>
+  <div class="hero-container">
+    <div class="hero-content animate-fade-in-up">
+      <app-animated-logo class="animate-float" [trigger]="homeNavTrigger()"></app-animated-logo>
+
+      <div class="mode-text-container">
+        @for (mode of modes; track mode) {
+        <div class="mode-content" [class.active]="modeService.currentMode() === mode">
+          <h1 class="hero-title animate-fade-in-up animate-delay-1" [class.headless]="mode === 'headless'">
+            {{ heroContent[mode].title }}
+          </h1>
+          <p class="hero-subtitle animate-fade-in-up animate-delay-2">
+            {{ heroContent[mode].subtitle }}
+            <br>
+            <span class="tech-stack">{{ heroContent[mode].techStack }}</span>
+          </p>
+        </div>
+        }
+      </div>
+
+      <div class="hero-actions animate-fade-in-up animate-delay-3">
+        @for (action of heroContent.actions; track action.label) {
+        <a
+          mat-raised-button
+          [class]="action.type"
+          [color]="action.type === 'primary' ? 'primary' : null"
+          [routerLink]="'/' + action.path"
+        >
+          <mat-icon>{{ action.icon }}</mat-icon>
+          {{ action.label }}
+        </a>
+        }
+      </div>
+      <div class="hero-scroll-indicator animate-fade-in-up animate-delay-4">
+        <button mat-icon-button (click)="scrollToFeatures()" class="scroll-btn">
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+        <p class="scroll-text">{{ heroContent.scrollText }}</p>
+      </div>
+    </div>
+  </div>
+</section>

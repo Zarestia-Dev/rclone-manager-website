@@ -1,0 +1,72 @@
+@use "app/shared/styles/mixins" as *;
+
+:host {
+  display: block;
+  min-height: calc(100vh - 64px - 192px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.not-found {
+  width: 100%;
+  max-width: 640px;
+  text-align: center;
+
+  &__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &__code {
+    font-size: clamp(80px, 18vw, 140px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--accent-color, #1976d2) 0%, var(--primary-color, #6a1b9a) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 8px;
+  }
+
+  &__icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: var(--text-secondary, rgba(0, 0, 0, 0.55));
+  }
+
+  &__headline {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary, #1a1a1a);
+  }
+
+  &__body {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-secondary, rgba(0, 0, 0, 0.65));
+    max-width: 480px;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  &__cta {
+    .mat-icon {
+      margin-right: 8px;
+    }
+  }
+}

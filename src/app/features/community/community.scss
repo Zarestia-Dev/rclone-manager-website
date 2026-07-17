@@ -1,0 +1,132 @@
+@use "app/shared/styles/mixins" as *;
+
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+
+  .section-header {
+    @include section-header-with-badge;
+  }
+
+  section {
+    margin-bottom: var(--section-gap);
+  }
+
+  .contributors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11.25rem, 1fr));
+    gap: var(--space-xl);
+    position: relative;
+
+    &.loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .contributor-card {
+    @include hover-lift-card;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-xl);
+    text-decoration: none;
+    color: var(--window-fg-color);
+
+    &:hover img {
+      transform: scale(1.1);
+    }
+
+    img {
+      width: var(--icon-container-size);
+      height: var(--icon-container-size);
+      border-radius: 50%;
+      margin-bottom: var(--space-md);
+      transition: transform 0.3s ease;
+    }
+
+    .name {
+      font-weight: 700;
+      color: var(--window-fg-color);
+      margin-bottom: 4px;
+    }
+
+    .count {
+      font-size: var(--font-size-sm);
+      color: var(--dim-color);
+    }
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(18.75rem, 1fr));
+    gap: var(--space-xl);
+  }
+
+  .info-card {
+    @include hover-lift-card;
+    padding: var(--space-2xl);
+    text-align: center;
+
+    .icon-box {
+      width: var(--icon-container-size);
+      height: var(--icon-container-size);
+      background: var(--bg-elevated);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-xl);
+
+      mat-icon {
+        color: var(--primary-color);
+        font-size: var(--icon-size-lg);
+        width: var(--icon-size-lg);
+        height: var(--icon-size-lg);
+      }
+    }
+
+    h3 {
+      font-size: var(--font-size-xl);
+      font-weight: 700;
+      margin-bottom: var(--space-sm);
+    }
+
+    p {
+      color: var(--dim-color);
+      margin-bottom: var(--space-xl);
+      line-height: 1.6;
+    }
+
+    button {
+      width: 100%;
+      height: var(--icon-size-xl);
+      border-radius: var(--button-border-radius);
+      font-weight: 700;
+    }
+  }
+
+  .involved-content {
+    @include hover-lift-card;
+    padding: calc(var(--space-2xl) * 1.5);
+    text-align: center;
+
+    p {
+      font-size: var(--font-size-xl);
+      color: var(--window-fg-color);
+      margin-bottom: var(--space-2xl);
+      max-width: 50rem;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+  }
+}

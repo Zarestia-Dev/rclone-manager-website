@@ -1,0 +1,35 @@
+<section class="not-found" role="main">
+  <div class="not-found__inner">
+    <div class="not-found__code" aria-hidden="true">404</div>
+
+    <mat-icon class="not-found__icon" fontIcon="explore_off"></mat-icon>
+
+    <h1 class="not-found__headline">Page not found</h1>
+
+    <p class="not-found__body">
+      The page you're looking for doesn't exist or may have been moved. If you
+      reached this page from a link inside the RClone Manager docs, please let
+      us know on GitHub so we can fix it.
+    </p>
+
+    <div class="not-found__actions">
+      <a
+        mat-raised-button
+        color="primary"
+        routerLink="/"
+        class="not-found__cta"
+      >
+        <mat-icon fontIcon="home"></mat-icon>
+        Back to home
+      </a>
+
+      <a
+        mat-button
+        routerLink="/docs"
+        class="not-found__secondary"
+      >
+        Browse docs
+      </a>
+    </div>
+  </div>
+</section>

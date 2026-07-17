@@ -1,0 +1,45 @@
+<nav class="navbar" [class.scrolled]="isScrolled">
+  <div class="navbar-container">
+    <a class="logo" routerLink="/" routerLinkActive="" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu()">
+      <img src="rclone.svg" alt="RClone Manager Logo" class="logo-img">
+      <span class="logo-text">RClone Manager</span>
+    </a>
+
+    <button class="mobile-menu-btn" mat-icon-button (click)="toggleMobileMenu()" aria-label="Toggle navigation menu">
+      <mat-icon>{{ isMobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+    </button>
+
+    <div class="nav-links" [class.open]="isMobileMenuOpen()">
+      <!-- Mode Toggle -->
+      <button class="mode-toggle" (click)="toggleMode()" aria-label="Toggle desktop/headless mode">
+        <span class="toggle-track">
+          <span class="toggle-indicator" [class.headless]="modeService.currentMode() === 'headless'">
+            <mat-icon>{{ modeService.modeIcon() }}</mat-icon>
+          </span>
+        </span>
+        <span class="toggle-label">{{ modeService.modeLabel() }}</span>
+      </button>
+
+      @for (link of navLinks; track link.label) {
+        <a
+          mat-button
+          [routerLink]="link.path ? '/' + link.path : '/'"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: link.path === '' }"
+          (click)="closeMobileMenu()"
+        >
+          {{ link.label }}
+        </a>
+      }
+
+      @for (link of externalLinks; track link.label) {
+        <a [matTooltip]="link.label" class="nav-external-link" [href]="link.url" target="_blank" rel="noopener noreferrer"
+          (click)="closeMobileMenu()">
+          <mat-icon>{{ link.icon }}</mat-icon>
+        </a>
+      }
+
+      <app-theme-toggle></app-theme-toggle>
+    </div>
+  </div>
+</nav>

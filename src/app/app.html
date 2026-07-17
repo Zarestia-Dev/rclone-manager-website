@@ -2,27 +2,11 @@
   <app-navbar></app-navbar>
   <main class="main-content">
     <div class="page-host">
-      @switch (tabService.currentTab()) {
-      @case ('general') {
-      <app-home></app-home>
-      }
-      @case ('docs') {
-      <app-docs></app-docs>
-      }
-      @case ('downloads') {
-      <app-downloads></app-downloads>
-      }
-      @case ('roadmap') {
-      <app-roadmap-page></app-roadmap-page>
-      }
-      @case ('community') {
-      <app-community-page></app-community-page>
-      }
-      }
+      <router-outlet></router-outlet>
     </div>
 
     @if (loaded()) {
-    <app-footer></app-footer>
+      <app-footer></app-footer>
     }
   </main>
 </div>

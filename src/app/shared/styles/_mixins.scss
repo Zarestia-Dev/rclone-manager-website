@@ -1,0 +1,112 @@
+// Common Grid Layouts
+@mixin grid-responsive($min-width: 300px, $gap: var(--space-2xl)) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min-width, 1fr));
+  gap: $gap;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Common Card Styles
+@mixin card-base {
+  transition: var(--transition-standard);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-gnome);
+}
+
+// Icon Container (Circular Gradient Background)
+@mixin icon-circle($size: 24px) {
+  background: linear-gradient(
+    135deg,
+    rgba(var(--primary-color-rgb), 0.1),
+    rgba(var(--accent-color-rgb), 0.1)
+  );
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(#{$size} * 2);
+  height: calc(#{$size} * 2);
+
+  mat-icon {
+    color: var(--primary-color);
+    font-size: $size;
+    width: $size;
+    height: $size;
+  }
+}
+
+// Page Header
+@mixin page-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+
+  @media (max-width: 768px) {
+    margin-bottom: var(--space-xl);
+  }
+}
+
+// Sticky layout container
+@mixin sticky-panel($top: 90px, $width: var(--sidebar-width)) {
+  width: $width;
+  flex-shrink: 0;
+  position: sticky;
+  top: $top;
+  align-self: flex-start;
+  max-height: calc(100dvh - #{$top} - var(--space-2xl));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+}
+
+/**
+ * Section header pattern: a left-aligned row with an icon, an h2 title, and
+ * an optional badge pill. Used by Roadmap page, Community page, and others.
+ */
+@mixin section-header-with-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-2xl);
+
+  mat-icon {
+    color: var(--primary-color);
+    font-size: var(--icon-size-lg);
+    width: var(--icon-size-lg);
+    height: var(--icon-size-lg);
+  }
+
+  h2 {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .badge {
+    font-size: var(--font-size-sm);
+    padding: var(--space-xxs) var(--space-sm);
+    border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+    color: var(--primary-color);
+    font-weight: 700;
+  }
+}
+
+/**
+ * Card with hover-lift effect — used by Community contributor cards and
+ * info cards. The lift is a small translateY plus a deeper shadow.
+ */
+@mixin hover-lift-card {
+  background: var(--view-bg-color);
+  box-shadow: var(--shadow-gnome);
+  border-radius: var(--radius-lg);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+}

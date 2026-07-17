@@ -2,13 +2,6 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 
-// Theme detection: apply `.dark` or `.light` class to the document root
-// Behavior:
-// - If user has an explicit preference in localStorage key `theme` with value
-//   'light' | 'dark' | 'system', honor it. If 'system' or not set, follow
-//   the OS/browser `prefers-color-scheme` media query and listen for changes.
-// - If user preference is explicit 'light' or 'dark', we do not attach a
-//   listener so the app preserves the user's choice.
 const THEME_STORAGE_KEY = 'theme';
 
 function setThemeClass(theme: 'light' | 'dark') {
@@ -44,19 +37,9 @@ function initThemeDetection() {
   // Otherwise follow system
   setThemeClass(mql.matches ? 'dark' : 'light');
 
-  const listener = (e: MediaQueryListEvent | MediaQueryList) => {
-    // Some older browsers call listener with MediaQueryList; handle both
-    const matches = 'matches' in e ? e.matches : (e as MediaQueryList).matches;
-    setThemeClass(matches ? 'dark' : 'light');
-  };
-
-  // Modern API
-  if (typeof mql.addEventListener === 'function') {
-    mql.addEventListener('change', listener);
-  } else if (typeof mql.addListener === 'function') {
-    // Fallback for older browsers
-    mql.addListener(listener);
-  }
+  mql.addEventListener('change', (e: MediaQueryListEvent) => {
+    setThemeClass(e.matches ? 'dark' : 'light');
+  });
 }
 
 // Run theme init as early as possible to avoid flicker
