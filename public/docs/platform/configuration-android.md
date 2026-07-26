@@ -8,6 +8,11 @@ RClone Manager is currently in **Beta** for mobile platforms (Android and iOS). 
 
 The Android version of RClone Manager brings powerful cloud storage management directly to your mobile device. Because Android applications run in a highly sandboxed SELinux environment (`untrusted_app`), there are platform-specific capabilities and limitations compared to the desktop version.
 
+> [!NOTE]
+> **Device Testing & Platform Status:**
+> - **Android**: Tested and verified on a Samsung Galaxy S23 FE model.
+> - **iOS**: Status is currently unknown / unverified as an Apple device is not available for testing.
+
 ---
 
 ## [[icon:done_all.success]] What Works
@@ -22,6 +27,12 @@ The Android version of RClone Manager brings powerful cloud storage management d
 
 - **File Transfers**: Sync, Copy, and Move operations run natively in the background.
 - **Server Exposure (Serve)**: Exposing remotes via **WebDAV**, **SFTP**, **FTP**, and **HTTP** works completely. You can run local servers inside the app to stream or share files.
+
+### System Sharing & Android Integration
+
+- **Share to App (Receive Shared Files & Text)**: Share files, text, or links directly from external Android applications (like Gallery, Files, Chrome, or Telegram) into RClone Manager via the Android system share target (`ACTION_SEND` & `ACTION_SEND_MULTIPLE`). Incoming content is received instantly and ready to upload to any cloud remote.
+- **Share from App (Send Content)**: Share remote files directly from the RClone Manager file manager to external Android apps (such as WhatsApp, Telegram, Email, or Google Drive) using the native Android share sheet (`ACTION_SEND` via secure `FileProvider` `content://` URIs).
+- **Open in System Default Apps**: Open files directly in external Android media players, PDF readers, or document editors (`ACTION_VIEW`).
 
 ---
 
@@ -48,9 +59,13 @@ Checking for and installing **both application updates and Rclone binary updates
 
 ---
 
-## [[icon:code.primary]] Custom rclone patches in FFI (These are gonna be open PR to Rclone in future)
+## [[icon:code.primary]] Custom rclone patches in FFI (Upstream PRs Pending)
 
-During compilation of the `librclone` C-shared library, RClone Manager dynamically injects a custom Go file ([imports.go](file:///home/hakan/Documents/GitHub/rclone-manager/src-tauri/build.rs#L226-L408)) to patch or extend standard rclone FFI behavior:
+During compilation of the `librclone` C-shared library, RClone Manager dynamically stages and injects custom Go patch files from the [src-tauri/librclone_patches](https://github.com/Zarestia-Dev/rclone-manager/tree/master/src-tauri/librclone_patches) directory to extend standard rclone FFI behavior:
+
+> [!INFO]
+> **Upstream Integration & Lifecycle:**
+> All patches are located in the [src-tauri/librclone_patches](https://github.com/Zarestia-Dev/rclone-manager/tree/master/src-tauri/librclone_patches) folder. These custom extensions are temporary; once proper native support for these RPC endpoints and features is submitted and merged upstream into official Rclone PRs, these local patches will be removed.
 
 - **Config Encryption Detection (`config/isencrypted` RPC):** Registers a custom endpoint to allow the GUI to query if the local configuration is encrypted before accessing it.
 - **Config Encryption (`config/encrypt` RPC):** Registers a custom endpoint to encrypt the configuration in-process.
