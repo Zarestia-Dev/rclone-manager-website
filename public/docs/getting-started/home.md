@@ -8,8 +8,9 @@
 
 Explore our comprehensive guides to get your environment up and running quickly.
 
-- [[icon:get_app.accent]] **[Installation](Installation)** – Step-by-step desktop guides for Windows, macOS, and Linux.
+- [[icon:get_app.accent]] **[Installation](Installation)** – Step-by-step guides for Windows, macOS, Linux, and Android.
 - [[icon:dns.accent]] **[Installation - Headless](Installation-Headless)** – Optimized setup for Docker, NAS, and remote servers.
+- [[icon:android.accent]] **[Android Support (Beta)](Configuration-Android)** – Mobile setup powered by an in-process Go engine (`librclone`).
 - [[icon:settings.accent]] **[Configuration](Configuration)** – Learn how to link your first rclone remotes and configure global settings.
 
 ---
@@ -28,10 +29,16 @@ Master the powerful capabilities of RClone Manager.
 ## [[icon:layers.primary]] Deployment Modes
 
 ### [[icon:computer.accent]] Desktop Client
+
 The native experience for **Windows**, **macOS**, and **Linux**. Features deep system integration, tray support, and global shortcuts.
 
 ### [[icon:storage.accent]] Headless Server
+
 Run RClone Manager on **Docker**, **VPS**, or **NAS** (Unraid/Synology). Access the full management suite from any web browser on your network.
+
+### [[icon:android.accent]] Mobile App (Android Beta)
+
+Run RClone Manager on **Android** devices with architecture-separated APK builds (arm64-v8a, armeabi-v7a, x86_64, x86) powered by an in-process Go engine (`librclone`).
 
 ---
 

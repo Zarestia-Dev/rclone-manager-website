@@ -10,8 +10,13 @@ The Android version of RClone Manager brings powerful cloud storage management d
 
 > [!NOTE]
 > **Device Testing & Platform Status:**
+>
 > - **Android**: Tested and verified on a Samsung Galaxy S23 FE model.
 > - **iOS**: Status is currently unknown / unverified as an Apple device is not available for testing.
+
+> [!TIP]
+> **Android Beta APK Downloads:**
+> Architecture-separated APK packages (**arm64-v8a**, **armeabi-v7a**, **x86_64**, **x86**) are available on the [GitHub Releases Page](https://github.com/Zarestia-Dev/rclone-manager/releases/latest).
 
 ---
 

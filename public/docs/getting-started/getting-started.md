@@ -17,6 +17,7 @@ To begin, please select the installation guide for your specific operating syste
 - [[icon:desktop_mac.accent]] **[Install on macOS](Installation-macOS)**
 - [[icon:window.accent]] **[Install on Windows](Installation-Windows)**
 - [[icon:terminal.accent]] **[Install on Linux](Installation-Linux)**
+- [[icon:android.accent]] **[Install on Android (Beta)](Configuration-Android)**
 
 > [!TIP]
 > **New to Rclone?**  
