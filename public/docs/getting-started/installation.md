@@ -63,8 +63,9 @@ Run directly on Linux/Node.js environments without Docker.
 
 The application acts as a GUI for **[Rclone](https://rclone.org/)**.
 
-- **Desktop:** The app acts as a setup wizard and will download/configure Rclone for you on the first run.
-- **Headless/Docker:** Usually included in the container or requires a system-level install.
+- **Desktop:** The app acts as a setup wizard and will automatically download, validate, or update Rclone on initial startup.
+- **Headless/Docker:** The Docker entrypoint automatically downloads/updates the Rclone binary on container startup.
+- **Mobile (Android):** Runs natively using an in-process Go library (`librclone`) via FFI bindings.
 
 ### 2. Mounting Drivers (Required for Mount features)
 

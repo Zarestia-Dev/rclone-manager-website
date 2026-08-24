@@ -65,7 +65,7 @@ docker-compose up -d
 ```
 
 > [!TIP]
-> **[→ See Detailed Configuration (Auth, TLS, HTTPS)](../platform/configuration-headless.md)** for secure production setups.
+> **[→ See Detailed Configuration (Auth, TLS, HTTPS, User & Group Mapping)](../platform/configuration-headless.md)** for secure production setups, including user privilege dropping via `setpriv` and supplementary group (`PGIDS`) configuration for ZFS datasets and NFSv4 ACLs.
 
 ---
 

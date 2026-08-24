@@ -49,13 +49,13 @@ Simply search for your provider in the **"Remote type"** dropdown. The app will 
 <img height="500" alt="Final Config" src="https://github.com/user-attachments/assets/40a5a542-5261-4a41-b279-2c9fea791c27" />
 </p>
 
-Once your identification details are set, press the **"Create Remote +"** button. For providers like Google Drive, an OAuth sequence will begin.
+Once your identification details are set, press the **"Create Remote +"** button. For providers like Google Drive or OneDrive, an OAuth sequence will begin.
 
 <p align="center">
 <img height="500" alt="OAuth Sequence" src="https://github.com/user-attachments/assets/71d27941-e868-44d4-80ad-aa9a1bbedfd5" />
 </p>
 
-RClone Manager handles this in a separate process. If you hit "Cancel," your other running operations will remain completely undisturbed. Your default browser will open a login page; once you authorize it, the modal will close, and your new remote will manifest in the list.
+RClone Manager utilizes native Rclone OAuth endpoints (`rclone v1.75+`). If you hit "Cancel," your other running operations will remain completely undisturbed. Your default browser will open a login page; once you authorize it, the modal will close, and your new remote will manifest in the list. Native OAuth integration works smoothly across local desktop engines and remote/headless Rclone server instances.
 
 <p align="center">
 <img height="500" alt="Success UI" src="https://github.com/user-attachments/assets/09d2ec04-239c-4083-a63c-a6522440d409" />

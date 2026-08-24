@@ -25,6 +25,7 @@ The desktop version of RClone Manager runs as a native application on your compu
 - **Serve**: Expose remotes via HTTP, WebDAV, FTP, SFTP, or DLNA.
 - **Sync/Copy/Move**: Powerful file operations with real-time feedback.
 - **Bisync**: Two-way synchronization with conflict detection.
+- **Power Inhibitor**: OS-level sleep and shutdown prevention on Linux (`systemd logind`), Windows (`ShutdownBlockReasonCreate`), and macOS (`IOPMAssertionCreateWithName`) while transfer operations or mounts are active.
 
 ### Scheduling & Automation
 
@@ -61,6 +62,26 @@ RClone Manager is designed to run seamlessly in the background:
 - **Minimize to Tray**: Closing the main window hides the interface to the system tray by default, keeping your mounts, file operations, schedules and file watchers running smoothly in the background.
 - **Memory Optimization Option**: When you enable 'Destroy Window on Close' in the settings (Default enabled after V0.2.0), closing the main window will natively destroy the view to free up RAM. The core app process remains safely running in the background.
 - **Secondary Windows**: Dialogs, file pickers, and other secondary modals are strictly managed by your OS. They are natively destroyed when closed to ensure optimal memory efficiency without impacting background tasks.
+
+### OS Power Inhibitor (Sleep & Shutdown Intercept)
+
+When file transfers, sync, copy, move, or active mount operations are in progress, RClone Manager automatically registers an OS-level power inhibitor assertion to prevent your computer from going to sleep or shutting down mid-transfer:
+
+- **Linux**: Intercepts `systemd logind` D-Bus inhibitor locks (`Inhibit("shutdown:sleep", "RClone Manager", reason, "block")`).
+- **Windows**: Calls native `SetThreadExecutionState` (`ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED`) and `ShutdownBlockReasonCreate`.
+- **macOS**: Holds an `NSProcessInfo` activity assertion (`NSActivityIdleSystemSleepDisabled | NSActivityUserInitiated`).
+
+Power assertions are automatically released when all active transfers complete or are canceled.
+
+#### Verifying Active Power Inhibitors
+
+You can verify if RClone Manager is currently blocking sleep or shutdown using native OS commands in your terminal:
+
+| OS | Terminal Command | What to Look For |
+| :--- | :--- | :--- |
+| **Linux** | `systemd-inhibit --list` | Look for `RClone Manager` in the `Who` / `WHAT` columns. |
+| **Windows** | `powercfg /requests` | Run as Admin; look under `SYSTEM` or `EXECUTION`. |
+| **macOS** | `pmset -g assertions` | Look under `PreventUserIdleSystemSleep` for `rclone-manager`. |
 
 ---
 

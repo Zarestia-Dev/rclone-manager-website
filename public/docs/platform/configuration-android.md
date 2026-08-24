@@ -35,6 +35,11 @@ The Android version of RClone Manager brings powerful cloud storage management d
 
 ### System Sharing & Android Integration
 
+- **Storage Access Framework (SAF) Integration**: Comprehensive SAF support for Android devices.
+  - **SAF Remote & Tree Picker**: Allows selecting and authorizing local storage folders, SD cards, and USB OTG drives via native Android SAF tree picker intents (`ACTION_OPEN_DOCUMENT_TREE`).
+  - **Android DocumentsProvider**: Added `RcloneDocumentsProvider` to expose mounted Rclone remotes directly to external Android apps and system file pickers as a native storage provider.
+  - **SAF VFS Mount Bridge**: In-process virtual filesystem bridge enabling SAF storage provider access without requiring FUSE or root privileges.
+  - **Android Background Keep-Alive & Boot Receiver**: Added `RcloneKeepAliveService` for persistent background mounts and `ResumeUploadsBootReceiver` for boot initialization.
 - **Share to App (Receive Shared Files & Text)**: Share files, text, or links directly from external Android applications (like Gallery, Files, Chrome, or Telegram) into RClone Manager via the Android system share target (`ACTION_SEND` & `ACTION_SEND_MULTIPLE`). Incoming content is received instantly and ready to upload to any cloud remote.
 - **Share from App (Send Content)**: Share remote files directly from the RClone Manager file manager to external Android apps (such as WhatsApp, Telegram, Email, or Google Drive) using the native Android share sheet (`ACTION_SEND` via secure `FileProvider` `content://` URIs).
 - **Open in System Default Apps**: Open files directly in external Android media players, PDF readers, or document editors (`ACTION_VIEW`).
@@ -43,20 +48,12 @@ The Android version of RClone Manager brings powerful cloud storage management d
 
 ## [[icon:warning.error]] Limitations & Mount Workarounds
 
-### FUSE Mounting is Not Supported
+### FUSE Mounting & SAF Bridge
 
-Traditional directory mounting (e.g., mapping a cloud drive to a local directory) is **not supported on non-rooted Android devices**.
+Traditional directory mounting (`mount` syscall to local filesystem directories) is **not supported on non-rooted Android devices** because Android restricts access to `/dev/fuse` for standard user-space apps.
 
-- **Reason:** Android blocks the mount syscall and restricts access to `/dev/fuse` for standard user-space apps due to SELinux permissions. Additionally, utilities like `fusermount` or `fusermount3` do not exist in the Android environment.
-
-### Recommended Workaround: Serve WebDAV
-
-To browse your cloud storage files in other Android apps or file managers:
-
-1. In RClone Manager, select your remote and click **Serve**.
-2. Start a **WebDAV** or **SFTP** server (e.g., listening on `127.0.0.1:8080`).
-3. Open any Android file manager that supports network locations (such as _Cx File Explorer_, _Solid Explorer_, or _FX File Explorer_).
-4. Add a new network storage location using the WebDAV/SFTP address and credentials provided by RClone Manager.
+- **Storage Access Framework (SAF) Mount Bridge**: To work around this, RClone Manager provides an in-process SAF VFS Mount Bridge (`RcloneDocumentsProvider`). This allows external Android file managers and apps to read and write directly to your cloud remotes via Android's native Documents UI, without requiring FUSE or root access.
+- **Recommended Workaround (Network Servers)**: You can also start a **WebDAV** or **SFTP** server in RClone Manager (e.g. listening on `127.0.0.1:8080`) and connect using third-party Android file managers (such as _Cx File Explorer_ or _Solid Explorer_).
 
 ### Updates are Unsupported on Mobile
 

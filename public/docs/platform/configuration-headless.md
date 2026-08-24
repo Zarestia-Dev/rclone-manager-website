@@ -25,6 +25,7 @@ You can configure the server using **Command Line Arguments** (Systemd/Binary) o
 | **Secret File** | _(N/A)_               | `RCLONE_MANAGER_SECRET_FILE`  | _(None)_    |
 | **User ID**     | _(N/A)_               | `PUID`                        | `1000`      |
 | **Group ID**    | _(N/A)_               | `PGID`                        | `1000`      |
+| **Extra Groups**| _(N/A)_               | `PGIDS`                       | _(None)_    |
 | **Log Level**   | _(N/A)_               | `RUST_LOG`                    | `info`      |
 
 ### Path Resolution Hierarchy
@@ -100,18 +101,21 @@ When setting up cloud providers that require a web browser (e.g., Google Drive, 
 > [!WARNING]
 > Mapping port `53682` to the container **does not work** because Rclone binds to `127.0.0.1` inside the container, which refuses connections coming through the Docker gateway.
 
-### [[icon:person.accent]] User Mapping (PUID / PGID)
+### [[icon:person.accent]] User & Group Mapping (PUID / PGID / PGIDS)
 
-The container supports `PUID` and `PGID` environment variables to map the internal user to your host user.
+The container entrypoint drops root privileges safely using Linux `setpriv` and supports `PUID`, `PGID`, and comma-separated supplementary group IDs `PGIDS` to map the internal container user to your host environment.
 
 ```yaml
 environment:
   - PUID=1000
   - PGID=1000
+  - PGIDS=1001,1002
 ```
 
 > [!NOTE]
-> **PUID & PGID** ensure that files created by the application (like downloads or logs) have the same ownership as your host user, preventing permission errors when mounting host directories.
+> **PUID, PGID & PGIDS:**
+> - **PUID & PGID**: Ensure that files created by the application (like downloads or logs) have the same ownership as your host user, preventing permission errors when mounting host directories.
+> - **PGIDS (Supplementary Groups)**: Optional comma-separated group IDs passed to `setpriv --supp-groups`. Useful for resolving permission denied errors (`EACCES`) when accessing ZFS datasets or directories formatted with NFSv4 ACLs in Docker environments.
 
 ### [[icon:downloading.accent]] Rclone Binary
 
