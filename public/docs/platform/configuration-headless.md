@@ -57,10 +57,26 @@ RClone Manager Headless follows a strict precedence when resolving directory pat
 - **Log Dir**: Stores application runtime logs.
 
 ### [[icon:lock.primary]] Secret Management (Advanced)
-RClone Manager uses the `rcman` library to securely store credentials (like remote passwords).
-- **Master Secret**: A master encryption key used to protect your stored credentials. 
-- **Secret Path**: Custom storage location for the encrypted credential store.
-- **Secret File**: Path to a file containing the Master Secret (useful for Docker Secrets).
+RClone Manager uses the `rcman` library to securely store sensitive configuration and connection credentials (like remote passwords, encryption keys, and tokens).
+
+- **`RCLONE_MANAGER_SECRET`**: Master encryption key string passed directly via environment variable.
+  ```bash
+  -e RCLONE_MANAGER_SECRET="MyMasterSecretKey123!"
+  ```
+- **`RCLONE_MANAGER_SECRET_PATH`**: File path inside the container to read the master secret from (useful for Docker Secrets or mounted key files).
+  ```bash
+  # 1. Create the key file on host FIRST (avoid Docker creating it as a directory)
+  echo "MyMasterSecretKey123!" > ~/rcman/secret.key
+  chmod 600 ~/rcman/secret.key
+
+  # 2. Mount it into the container
+  -v ~/rcman/secret.key:/data/.secret:ro \
+  -e RCLONE_MANAGER_SECRET_PATH=/data/.secret
+  ```
+- **`RCLONE_MANAGER_SECRET_FILE`**: Explicit password file path for `rcman` encrypted credentials.
+
+> [!WARNING]
+> If mounting a secret key file with `-v /host/path/secret.key:/data/.secret:ro`, ensure the file exists on the host **before** running `docker run` or `docker compose up`. If the host file does not exist, Docker will create a directory at that path, preventing `rcman` from reading the key.
 
 ### Docker-Specific
 - **User ID (PUID)** & **Group ID (PGID)**: Maps the internal container user to your host user. This is essential for preventing permission issues on mounted volumes.
@@ -80,26 +96,38 @@ The official [`docker-compose.yml`](https://raw.githubusercontent.com/Zarestia-D
 | **rclone-config** | `/config`      | Rclone configuration (`rclone.conf`)                     |
 | **Certs**         | `/app/certs`   | _(Optional)_ Read-only mount point for TLS certificates  |
 
-### [[icon:link.primary]] Remote Authentication (OAuth)
+### [[icon:link.primary]] Remote Authentication (OAuth & Port 53682)
 
-When setting up cloud providers that require a web browser (e.g., Google Drive, OneDrive), Rclone normally launches a temporary web server on `127.0.0.1:53682`. **This flow is fundamentally incompatible with standard Docker bridge networking.**
+When setting up cloud providers that require browser-based OAuth authentication (e.g. Google Drive, OneDrive, Dropbox), Rclone launches a temporary web server on `127.0.0.1:53682` to receive the authorization token callback.
 
-#### Recommended Workarounds
+> [!WARNING]
+> **Why Bridge Mode Fails with `NS_ERROR_NET_EMPTY_RESPONSE`:**
+> Rclone strictly binds its temporary OAuth server to the container's internal loopback (`127.0.0.1:53682`). When using standard Docker bridge port mapping (`-p 53682:53682`), incoming connections arrive at the container's virtual ethernet interface (`eth0`), where the kernel refuses the connection.
 
-1. **Host Network Mode**: 
-   Set `network_mode: host` in your `docker-compose.yml`. This allows the container's loopback to share the host's loopback, making the browser redirect work natively.
+#### Recommended Solutions for OAuth:
+
+1. **Host Network Mode (Recommended on Linux)**:
+   Run the container with `network_mode: host` (or `--net=host`). The container directly shares the host network, making `http://127.0.0.1:53682` accessible directly in your host browser:
    
    ```yaml
    services:
      rclone-manager:
+       image: ghcr.io/zarestia-dev/rclone-manager:latest
        network_mode: host
+       volumes:
+         - rclone-data:/data
+         - rclone-config:/config
    ```
 
-2. **Headless (Manual) Method**:
-   Use `rclone authorize` on a machine with a browser (like your laptop) to generate a token, then paste that token into RClone Manager's manual configuration fields.
+2. **SSH Port Forwarding (For Remote VPS / Headless Servers)**:
+   If RClone Manager is running on a remote VPS or NAS and you access the Web UI from your local computer, forward port `53682` via SSH tunnel from your local terminal:
+   ```bash
+   ssh -L 53682:127.0.0.1:53682 user@your-server-ip
+   ```
+   With this tunnel open, clicking the authentication link in your local browser routes directly through SSH to the remote container.
 
-> [!WARNING]
-> Mapping port `53682` to the container **does not work** because Rclone binds to `127.0.0.1` inside the container, which refuses connections coming through the Docker gateway.
+3. **Headless Manual Token (`rclone authorize`)**:
+   Run `rclone authorize "<provider>"` on your local computer to generate an OAuth token JSON, then paste the resulting token directly into the manual remote configuration fields in RClone Manager Web UI.
 
 ### [[icon:person.accent]] User & Group Mapping (PUID / PGID / PGIDS)
 
