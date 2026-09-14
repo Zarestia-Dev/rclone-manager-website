@@ -41,16 +41,19 @@ If the updater has corrupted your installation or left a conflicting package:
 2.  Clean build and update the official AUR package using your AUR helper or via a manual build:
 
     **Using `yay`:**
+
     ```bash
     yay -Syu rclone-manager
     ```
 
     **Using `paru`:**
+
     ```bash
     paru -Syu rclone-manager
     ```
 
     **Manual Build (Git):**
+
     ```bash
     git clone https://aur.archlinux.org/rclone-manager.git
     cd rclone-manager

@@ -80,15 +80,21 @@ The "Mount" feature allows you to browse cloud files as if they were local disks
 If you encounter issues during installation or setup on macOS, please refer to the following guide:
 
 ### **"App is damaged and can't be opened"**
+
 This is a common macOS Gatekeeper issue for unsigned apps.
+
 - **Solution:** Run the `xattr -rd com.apple.quarantine "/Applications/RClone Manager.app"` command mentioned above.
 
 ### **Permission Denied for Mounts**
+
 If you cannot mount cloud drives, macFUSE might be blocked.
+
 - **Solution:** Check **System Settings > Privacy & Security** and ensure the "macFUSE" system extension is allowed. You may need to click the "Allow" button and restart.
 
 ### **Rclone command not found**
+
 RClone Manager bundled its own rclone, but if you have a custom setup, ensure your path is correct.
+
 - **Solution:** Check the app settings to point to your rclone binary if needed.
 
 > [[icon:open_in_new.accent]] **Detailed Guide:** For more advanced solutions and technical help, please visit our **[macOS Troubleshooting Guide](../support/troubleshooting-macos.md)**.

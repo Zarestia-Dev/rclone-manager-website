@@ -21,7 +21,11 @@
 ## User Guide {icon=menu_book, description="Learn how to use RClone Manager effectively"}
 
 - [Remote Management](user-guide/remote-management.md) {description="Learn how to manage remotes, run sync/copy jobs, and more", icon=folder_shared}
-- [Predefined Performance Presets](user-guide/performance-presets.md) {description="Optimize remote mounts automatically with built-in performance configurations", icon=speed}
+- [Visual Workflows](user-guide/workflows.md) {description="Node-based visual automation and pipeline editor", icon=account_tree}
+- [Quick Runs](user-guide/quick-runs.md) {description="One-click task runners and fast action command presets", icon=bolt}
+- [Keyboard Shortcuts](user-guide/keyboard-shortcuts.md) {description="Master application navigation and file operations with keyboard shortcuts", icon=keyboard}
+- [Power Management & Safety](user-guide/power-management.md) {description="OS sleep prevention, power controls, and emergency stops", icon=power_settings_new}
+- [Template Management](user-guide/template-management.md) {description="Manage custom configuration templates and apply pre-optimized performance presets", icon=tune}
 - [Dynamic Paths & Macros](user-guide/dynamic-paths.md) {description="Use macros to create time-stamped and system-aware paths", icon=schedule}
 - [Mounting Drives](user-guide/mounting.md) {description="Mount cloud storage as local disks", icon=data_usage}
 - [Filters & File Monitoring](user-guide/filters-and-monitoring.md) {description="Configure filter profiles and set up real-time directory watching", icon=filter_alt}

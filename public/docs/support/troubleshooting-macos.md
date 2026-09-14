@@ -7,12 +7,15 @@ This guide provides solutions for common technical challenges encountered by **R
 ## [[icon:report_problem.warn]] Common Issues
 
 ### "App is damaged and can't be opened"
+
 This is the most frequent issue on macOS, caused by Apple's Gatekeeper security system flagging unsigned open-source applications.
 
 #### **Why this happens:**
+
 RClone Manager is a community-driven, open-source project. To maintain its free and open-source status, we do not participate in Apple's paid Developer Program, which is required for official "notarization".
 
 #### **Solution:**
+
 Remove the quarantine attribute manually using the Terminal. This safely tells macOS that you trust the application.
 
 ```bash
@@ -23,6 +26,7 @@ xattr -rd com.apple.quarantine "/Applications/RClone Manager.app"
 ---
 
 ### macFUSE & Mounting Issues [[icon:settings_suggest.primary]]
+
 If the **Mount** features are unavailable or fail to activate, it is typically related to system extension permissions.
 
 - **Check Driver:** Ensure you have the latest version of [macFUSE](https://osxfuse.github.io/) installed.
@@ -36,6 +40,7 @@ If the **Mount** features are unavailable or fail to activate, it is typically r
 When submitting a bug report to our [GitHub Issues](https://github.com/Zarestia-Dev/rclone-manager/issues), providing technical context helps us resolve it faster.
 
 ### Technical Context Checklist:
+
 1.  **macOS Version:** Run `sw_vers` in terminal.
 2.  **Architecture:** Run `uname -m` (x86_64 for Intel, arm64 for Apple Silicon).
 3.  **Installation Method:** (e.g., Homebrew Cask vs. DMG Download).
@@ -52,6 +57,6 @@ When submitting a bug report to our [GitHub Issues](https://github.com/Zarestia-
 
 ## [[icon:info.primary]] Additional Resources
 
-- [[icon:terminal.primary]] **[Installation Guide](Installation-macOS)** - Detailed setup instructions.
+- [[icon:terminal.primary]] **[macOS Installation Guide](../platform/installation-macos.md)** - Detailed setup instructions.
 - [[icon:help.primary]] **[Discussions](https://github.com/Zarestia-Dev/rclone-manager/discussions)** - Community-powered support.
 - [[icon:code.accent]] **[Source Code](https://github.com/Zarestia-Dev/rclone-manager)** - Inspect or build from source.

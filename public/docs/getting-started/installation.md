@@ -12,9 +12,9 @@ Designed for personal use on **Windows**, **Linux**, and **macOS**.
 
 ### Platform Guides
 
-- **[Installation Windows](Installation-Windows)** (Includes Portable `.zip`)
-- **[Installation Linux](Installation-Linux)** (Includes Portable `.tar.gz`)
-- **[Installation macOS](Installation-macOS)**
+- **[Installation Windows](../platform/installation-windows.md)** (Includes Portable `.zip`)
+- **[Installation Linux](../platform/installation-linux.md)** (Includes Portable `.tar.gz`)
+- **[Installation macOS](../platform/installation-macos.md)**
 
 ### Fast Download
 
@@ -28,7 +28,7 @@ Designed for Android devices running ARM64, ARMv7, x86_64, or x86 architectures.
 
 ### Platform Guides
 
-- **[Android Support (Beta)](Configuration-Android)** (Capabilities, FFI engine details, & WebDAV workaround)
+- **[Android Support (Beta)](../platform/configuration-android.md)** (Capabilities, FFI engine details, & WebDAV workaround)
 
 ### Fast Download
 
@@ -44,7 +44,7 @@ Designed for servers, NAS, or running as a web service. Access the full UI via a
 
 The official Docker image is available via the GitHub Container Registry.
 
-- **[Docker Installation Guide](Installation-Docker)**
+- **[Docker Installation Guide](installation-headless.md#docker-quick-start)**
 - **Image:** `ghcr.io/zarestia-dev/rclone-manager`
 - **Registry:** [View on GitHub Packages](https://github.com/Zarestia-Dev/rclone-manager/pkgs/container/rclone-manager)
 
@@ -52,7 +52,7 @@ The official Docker image is available via the GitHub Container Registry.
 
 Run directly on Linux/Node.js environments without Docker.
 
-- **[Headless Setup Guide](Installation-Headless)**
+- **[Headless Setup Guide](installation-headless.md)**
 - **Versions:** Headless versions follow specific tags (e.g., [`headless-v0.1.8`](https://github.com/Zarestia-Dev/rclone-manager/tree/headless-v0.1.8)).
 
 ---

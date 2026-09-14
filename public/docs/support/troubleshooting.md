@@ -4,12 +4,12 @@ If you are running into issues with RClone Manager, please select the category b
 
 ## [[icon:folder.primary]] Categories
 
-* **[General Issues](Troubleshooting-General)** * *Currently there is no issue reported*
-* **[Windows Specific](Troubleshooting-Windows)** * *Currently there is no issue reported*
-* **[Linux Specific](Troubleshooting-Linux)** * * UI not showing, Flatpak problems.*
-* **[macOS Specific](Troubleshooting-macOS)** * *"App is damaged" errors, Security permissions*
+- **[Linux Specific](troubleshooting-linux.md)** – Wayland/X11 rendering, Flatpak sockets, and permission issues.
+- **[macOS Specific](troubleshooting-macos.md)** – "App is damaged" Gatekeeper bypass, macFUSE permissions.
+- **[Windows Specific](troubleshooting-windows.md)** – WinFsp drivers, path length limits, firewall blocks.
 
 ---
 
 ### Still stuck?
+
 If none of these guides solve your problem, please check our [GitHub Issues](https://github.com/Zarestia-Dev/rclone-manager/issues) to see if others have reported it, or open a new ticket with your logs.

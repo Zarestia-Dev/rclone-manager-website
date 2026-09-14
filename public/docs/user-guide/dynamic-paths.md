@@ -92,6 +92,7 @@ If you have a specific use case that requires a new macro, feel free to **[open 
 
 ### Related Documentation
 
+- [Quick Runs](quick-runs.md)
+- [Visual Workflows](workflows.md)
 - [Remote Management](remote-management.md)
 - [Mounting Drives](mounting.md)
-- [Sync and Transfer](remote-management.md#5-quick-actions)

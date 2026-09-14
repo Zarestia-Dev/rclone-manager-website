@@ -25,13 +25,13 @@ The desktop version of RClone Manager runs as a native application on your compu
 - **Serve**: Expose remotes via HTTP, WebDAV, FTP, SFTP, or DLNA.
 - **Sync/Copy/Move**: Powerful file operations with real-time feedback.
 - **Bisync**: Two-way synchronization with conflict detection.
-- **Power Inhibitor**: OS-level sleep and shutdown prevention on Linux (`systemd logind`), Windows (`ShutdownBlockReasonCreate`), and macOS (`IOPMAssertionCreateWithName`) while transfer operations or mounts are active.
+- **Power Inhibitor**: OS-level sleep prevention on Linux (`systemd logind`), Windows (`SetThreadExecutionState`), and macOS (`NSProcessInfo`) while transfer operations or mounts are active. See **[Power Management & Safety](../user-guide/power-management.md)**.
 
 ### Scheduling & Automation
 
 - **Cron-like Syntax**: Advanced scheduling with full cron expression support.
 - **Flexible Operations**: Schedule any file operation.
-- **Filesystem Watchers**: Local filesystem watchers for sync, copy, move, and bisync automations. Sync, copy, and move require at least one local source path; bisync watches local paths from both sides.
+- **Filesystem Watchers**: Local directory monitoring for automated sync runs. For debounce delays and net-change rules, see **[Filters & File Monitoring](../user-guide/filters-and-monitoring.md)**.
 - > [!TIP]
   > **Example:** `15,45 8-18/2 * 1,11 1-5` runs every 2 hours at minutes 15 and 45, between 08:00–18:00, on Mondays & Fridays, in January and November.
 
@@ -52,8 +52,9 @@ The interface is designed to be clean and efficient:
 Access comprehensive settings to tailor your experience:
 
 - **Theme**: Automatic switching between light and dark modes.
-- **Backend Options**: Configure global mount settings and VFS flags.
-- **Memory Optimization**: Experimental options for low-resource environments.
+- **Backend Options**: Configure global mount settings, buffers, and VFS flags. Default configurations can be pre-optimized or customized using **[Template Management](../user-guide/template-management.md)**.
+- **Memory Optimization**: Built-in options for low-resource environments.
+- **Keyboard Navigation**: Global, Nautilus, and Flow shortcuts. See **[Keyboard Shortcuts](../user-guide/keyboard-shortcuts.md)**.
 
 ### System Tray & Window Management
 
@@ -65,38 +66,17 @@ RClone Manager is designed to run seamlessly in the background:
 
 ### OS Power Inhibitor (Sleep & Shutdown Intercept)
 
-When file transfers, sync, copy, move, or active mount operations are in progress, RClone Manager automatically registers an OS-level power inhibitor assertion to prevent your computer from going to sleep or shutting down mid-transfer:
+When file transfers, sync operations, or active mounts are running, RClone Manager automatically registers an OS-level power inhibitor assertion (`systemd logind` on Linux, `SetThreadExecutionState` on Windows, `NSProcessInfo` on macOS) to prevent the computer from going into idle sleep mid-transfer. It also intercepts shutdowns to cleanly unmount FUSE drives.
 
-- **Linux**: Intercepts `systemd logind` D-Bus inhibitor locks (`Inhibit("shutdown:sleep", "RClone Manager", reason, "block")`).
-- **Windows**: Calls native `SetThreadExecutionState` (`ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED`) and `ShutdownBlockReasonCreate`.
-- **macOS**: Holds an `NSProcessInfo` activity assertion (`NSActivityIdleSystemSleepDisabled | NSActivityUserInitiated`).
-
-Power assertions are automatically released when all active transfers complete or are canceled.
-
-#### Verifying Active Power Inhibitors
-
-You can verify if RClone Manager is currently blocking sleep or shutdown using native OS commands in your terminal:
-
-| OS | Terminal Command | What to Look For |
-| :--- | :--- | :--- |
-| **Linux** | `systemd-inhibit --list` | Look for `RClone Manager` in the `Who` / `WHAT` columns. |
-| **Windows** | `powercfg /requests` | Run as Admin; look under `SYSTEM` or `EXECUTION`. |
-| **macOS** | `pmset -g assertions` | Look under `PreventUserIdleSystemSleep` for `rclone-manager`. |
+For full technical specifications, Linux D-Bus details, and terminal verification commands (`systemd-inhibit`, `powercfg`, `pmset`), see the dedicated guide: **[Power Management & Safety](../user-guide/power-management.md)**.
 
 ---
 
 ## [[icon:terminal.primary]] CLI & Path Resolution
 
-While primarily a GUI application, RClone Manager supports command-line arguments and environment variables for advanced automation.
+While primarily a GUI application, RClone Manager supports command-line arguments and environment variables for external automation and shell scripts.
 
-### Command-Line Arguments
-
-| Argument                    | Description                                                       | Example                                                              |
-| :-------------------------- | :---------------------------------------------------------------- | :------------------------------------------------------------------- |
-| `--tray`                    | Start the application minimized in the system tray.               | `rclone-manager --tray`                                              |
-| `--send-to-remote <REMOTE>` | Specify the target remote name for command-line uploads.          | `rclone-manager --send-to-remote "Dropbox:"`                         |
-| `--send-to-path <PATH>`     | Target subdirectory/folder path on the remote (optional).         | `rclone-manager --send-to-remote "Dropbox:" --send-to-path "Backup"` |
-| `[sources...]`              | Trailing positional arguments representing local paths to upload. | `rclone-manager --send-to-remote "Dropbox:" "C:\file.txt"`           |
+For complete flag specifications and environment variables, see the **[CLI Reference](../getting-started/cli.md)**.
 
 ### Example Usage
 

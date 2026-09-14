@@ -14,10 +14,10 @@ Welcome to **RClone Manager**! This guide provides a high-level overview to help
 
 To begin, please select the installation guide for your specific operating system:
 
-- [[icon:desktop_mac.accent]] **[Install on macOS](Installation-macOS)**
-- [[icon:window.accent]] **[Install on Windows](Installation-Windows)**
-- [[icon:terminal.accent]] **[Install on Linux](Installation-Linux)**
-- [[icon:android.accent]] **[Install on Android (Beta)](Configuration-Android)**
+- [[icon:desktop_mac.accent]] **[Install on macOS](../platform/installation-macos.md)**
+- [[icon:window.accent]] **[Install on Windows](../platform/installation-windows.md)**
+- [[icon:terminal.accent]] **[Install on Linux](../platform/installation-linux.md)**
+- [[icon:android.accent]] **[Install on Android (Beta)](../platform/configuration-android.md)**
 
 > [!TIP]
 > **New to Rclone?**  
@@ -30,7 +30,7 @@ To begin, please select the installation guide for your specific operating syste
 Once the installation is complete, follow these steps to initialize your environment:
 
 1.  **Launch the App**: Open **RClone Manager** from your system's application menu.
-2.  **Security Authorization**: On some systems, you may need to authorize the application manually. Please refer to our **[Troubleshooting](Troubleshooting)** guide for platform-specific security bypass instructions.
+2.  **Security Authorization**: On some systems, you may need to authorize the application manually. Please refer to our **[Troubleshooting](../support/troubleshooting.md)** guide for platform-specific security bypass instructions.
 3.  **Initial Setup**: The application will guide you through the process of linking your first cloud storage provider or importing an existing `rclone.conf` file.
 
 ---
@@ -39,9 +39,9 @@ Once the installation is complete, follow these steps to initialize your environ
 
 Continue your journey with our detailed feature guides:
 
-- [[icon:settings.accent]] **[Configuration](Configuration)** – Master remote setup and global application preferences.
-- [[icon:auto_stories.accent]] **[Usage Guide](Usage)** – Learn the fundamentals of file transfers, sync operations, and mounting.
-- [[icon:build.accent]] **[Troubleshooting](Troubleshooting)** – Find professional solutions for common setup and runtime issues.
+- [[icon:settings.accent]] **[Configuration](configuration.md)** – Master remote setup and global application preferences.
+- [[icon:auto_stories.accent]] **[Remote Management](../user-guide/remote-management.md)** – Learn the fundamentals of file transfers, sync operations, and mounting.
+- [[icon:build.accent]] **[Troubleshooting](../support/troubleshooting.md)** – Find professional solutions for common setup and runtime issues.
 
 ---
 

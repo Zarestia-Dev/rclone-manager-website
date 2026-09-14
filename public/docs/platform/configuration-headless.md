@@ -8,25 +8,25 @@ This guide covers how to configure authentication, HTTPS/TLS, ports, and data vo
 
 You can configure the server using **Command Line Arguments** (Systemd/Binary) or **Environment Variables** (Docker).
 
-| Feature         | Flag (Binary/Service) | Environment Variable (Docker) | Default     |
-| :-------------- | :-------------------- | :---------------------------- | :---------- |
-| **Host IP**     | `--host <IP>`         | `RCLONE_MANAGER_HOST`         | `0.0.0.0`   |
-| **Port**        | `--port <PORT>`       | `RCLONE_MANAGER_PORT`         | `8080`      |
-| **Username**    | `--user <NAME>`       | `RCLONE_MANAGER_USER`         | _(None)_    |
-| **Password**    | `--pass <PASS>`       | `RCLONE_MANAGER_PASS`         | _(None)_    |
-| **TLS Cert**    | `--tls-cert <PATH>`   | `RCLONE_MANAGER_TLS_CERT`     | _(None)_    |
-| **TLS Key**     | `--tls-key <PATH>`    | `RCLONE_MANAGER_TLS_KEY`      | _(None)_    |
-| **Data Dir**    | `--data-dir <PATH>`   | `RCLONE_MANAGER_DATA_DIR`     | _(Default)_ |
-| **Cache Dir**   | `--cache-dir <PATH>`  | `RCLONE_MANAGER_CACHE_DIR`    | _(Default)_ |
-| **Log Dir**     | `--logs-dir <PATH>`   | `RCLONE_MANAGER_LOG_DIR`      | _(Default)_ |
-| **Tray**        | `--tray`              | _(N/A)_                       | `false`     |
-| **Master Secret**| _(N/A)_              | `RCLONE_MANAGER_SECRET`       | _(None)_    |
-| **Secret Path** | _(N/A)_               | `RCLONE_MANAGER_SECRET_PATH`  | _(None)_    |
-| **Secret File** | _(N/A)_               | `RCLONE_MANAGER_SECRET_FILE`  | _(None)_    |
-| **User ID**     | _(N/A)_               | `PUID`                        | `1000`      |
-| **Group ID**    | _(N/A)_               | `PGID`                        | `1000`      |
-| **Extra Groups**| _(N/A)_               | `PGIDS`                       | _(None)_    |
-| **Log Level**   | _(N/A)_               | `RUST_LOG`                    | `info`      |
+| Feature           | Flag (Binary/Service) | Environment Variable (Docker) | Default     |
+| :---------------- | :-------------------- | :---------------------------- | :---------- |
+| **Host IP**       | `--host <IP>`         | `RCLONE_MANAGER_HOST`         | `0.0.0.0`   |
+| **Port**          | `--port <PORT>`       | `RCLONE_MANAGER_PORT`         | `8080`      |
+| **Username**      | `--user <NAME>`       | `RCLONE_MANAGER_USER`         | _(None)_    |
+| **Password**      | `--pass <PASS>`       | `RCLONE_MANAGER_PASS`         | _(None)_    |
+| **TLS Cert**      | `--tls-cert <PATH>`   | `RCLONE_MANAGER_TLS_CERT`     | _(None)_    |
+| **TLS Key**       | `--tls-key <PATH>`    | `RCLONE_MANAGER_TLS_KEY`      | _(None)_    |
+| **Data Dir**      | `--data-dir <PATH>`   | `RCLONE_MANAGER_DATA_DIR`     | _(Default)_ |
+| **Cache Dir**     | `--cache-dir <PATH>`  | `RCLONE_MANAGER_CACHE_DIR`    | _(Default)_ |
+| **Log Dir**       | `--logs-dir <PATH>`   | `RCLONE_MANAGER_LOG_DIR`      | _(Default)_ |
+| **Tray**          | `--tray`              | _(N/A)_                       | `false`     |
+| **Master Secret** | _(N/A)_               | `RCLONE_MANAGER_SECRET`       | _(None)_    |
+| **Secret Path**   | _(N/A)_               | `RCLONE_MANAGER_SECRET_PATH`  | _(None)_    |
+| **Secret File**   | _(N/A)_               | `RCLONE_MANAGER_SECRET_FILE`  | _(None)_    |
+| **User ID**       | _(N/A)_               | `PUID`                        | `1000`      |
+| **Group ID**      | _(N/A)_               | `PGID`                        | `1000`      |
+| **Extra Groups**  | _(N/A)_               | `PGIDS`                       | _(None)_    |
+| **Log Level**     | _(N/A)_               | `RUST_LOG`                    | `info`      |
 
 ### Path Resolution Hierarchy
 
@@ -42,21 +42,25 @@ RClone Manager Headless follows a strict precedence when resolving directory pat
 ## [[icon:help_outline.primary]] Parameter Details
 
 ### Network & Authentication
+
 - **Host IP**: The network interface the server binds to.
-    - `0.0.0.0`: Listens on all interfaces (public/remote access).
-    - `127.0.0.1`: Restricts access to the local machine only.
+  - `0.0.0.0`: Listens on all interfaces (public/remote access).
+  - `127.0.0.1`: Restricts access to the local machine only.
 - **Port**: The TCP port for the web interface.
 - **Username & Password**: Enables Basic Authentication. Both must be set to secure the interface.
 
 ### Security (HTTPS/TLS)
+
 - **TLS Cert & Key**: Paths to your `.pem` certificate and private key files. Enables encrypted HTTPS access.
 
 ### Persistence (Paths)
+
 - **Data Dir**: Stores the internal database, settings, and the downloaded `rclone` binary.
 - **Cache Dir**: Stores temporary session data and file browser cache.
 - **Log Dir**: Stores application runtime logs.
 
 ### [[icon:lock.primary]] Secret Management (Advanced)
+
 RClone Manager uses the `rcman` library to securely store sensitive configuration and connection credentials (like remote passwords, encryption keys, and tokens).
 
 - **`RCLONE_MANAGER_SECRET`**: Master encryption key string passed directly via environment variable.
@@ -79,6 +83,7 @@ RClone Manager uses the `rcman` library to securely store sensitive configuratio
 > If mounting a secret key file with `-v /host/path/secret.key:/data/.secret:ro`, ensure the file exists on the host **before** running `docker run` or `docker compose up`. If the host file does not exist, Docker will create a directory at that path, preventing `rcman` from reading the key.
 
 ### Docker-Specific
+
 - **User ID (PUID)** & **Group ID (PGID)**: Maps the internal container user to your host user. This is essential for preventing permission issues on mounted volumes.
 - **Log Level (RUST_LOG)**: Standard Rust environment variable to control the logging verbosity of the backend and internal libraries. Supported values: `error`, `warn`, `info`, `debug`, `trace`.
 
@@ -108,7 +113,7 @@ When setting up cloud providers that require browser-based OAuth authentication 
 
 1. **Host Network Mode (Recommended on Linux)**:
    Run the container with `network_mode: host` (or `--net=host`). The container directly shares the host network, making `http://127.0.0.1:53682` accessible directly in your host browser:
-   
+
    ```yaml
    services:
      rclone-manager:
@@ -121,9 +126,11 @@ When setting up cloud providers that require browser-based OAuth authentication 
 
 2. **SSH Port Forwarding (For Remote VPS / Headless Servers)**:
    If RClone Manager is running on a remote VPS or NAS and you access the Web UI from your local computer, forward port `53682` via SSH tunnel from your local terminal:
+
    ```bash
    ssh -L 53682:127.0.0.1:53682 user@your-server-ip
    ```
+
    With this tunnel open, clicking the authentication link in your local browser routes directly through SSH to the remote container.
 
 3. **Headless Manual Token (`rclone authorize`)**:
@@ -142,6 +149,7 @@ environment:
 
 > [!NOTE]
 > **PUID, PGID & PGIDS:**
+>
 > - **PUID & PGID**: Ensure that files created by the application (like downloads or logs) have the same ownership as your host user, preventing permission errors when mounting host directories.
 > - **PGIDS (Supplementary Groups)**: Optional comma-separated group IDs passed to `setpriv --supp-groups`. Useful for resolving permission denied errors (`EACCES`) when accessing ZFS datasets or directories formatted with NFSv4 ACLs in Docker environments.
 

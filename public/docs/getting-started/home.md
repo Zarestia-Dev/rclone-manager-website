@@ -8,10 +8,10 @@
 
 Explore our comprehensive guides to get your environment up and running quickly.
 
-- [[icon:get_app.accent]] **[Installation](Installation)** – Step-by-step guides for Windows, macOS, Linux, and Android.
-- [[icon:dns.accent]] **[Installation - Headless](Installation-Headless)** – Optimized setup for Docker, NAS, and remote servers.
-- [[icon:android.accent]] **[Android Support (Beta)](Configuration-Android)** – Mobile setup powered by an in-process Go engine (`librclone`).
-- [[icon:settings.accent]] **[Configuration](Configuration)** – Learn how to link your first rclone remotes and configure global settings.
+- [[icon:get_app.accent]] **[Installation](installation.md)** – Step-by-step guides for Windows, macOS, Linux, and Android.
+- [[icon:dns.accent]] **[Installation - Headless](installation-headless.md)** – Optimized setup for Docker, NAS, and remote servers.
+- [[icon:android.accent]] **[Android Support (Beta)](../platform/configuration-android.md)** – Mobile setup powered by an in-process Go engine (`librclone`).
+- [[icon:settings.accent]] **[Configuration](configuration.md)** – Learn how to link your first rclone remotes and configure global settings.
 
 ---
 
@@ -19,10 +19,10 @@ Explore our comprehensive guides to get your environment up and running quickly.
 
 Master the powerful capabilities of RClone Manager.
 
-- [[icon:folder_shared.accent]] **[Remote Management](Remote-Management)** – Comprehensive setup for encryption, OAuth, and advanced remote types.
-- [[icon:sync_alt.accent]] **[Sync & Transfer](Sync-and-Transfer)** – Advanced sync, copy, and move operations with bi-directional support.
-- [[icon:data_usage.accent]] **[Mounting Drives](Mounting)** – Seamlessly mount cloud storage as local disks using WinFsp or FUSE.
-- [[icon:schedule.accent]] **[Scheduler](Scheduler)** – Professional task automation with built-in CRON scheduling.
+- [[icon:folder_shared.accent]] **[Remote Management](../user-guide/remote-management.md)** – Comprehensive setup for encryption, OAuth, and advanced remote types.
+- [[icon:bolt.accent]] **[Quick Runs & Transfers](../user-guide/quick-runs.md)** – Advanced sync, copy, and move operations with bi-directional support.
+- [[icon:data_usage.accent]] **[Mounting Drives](../user-guide/mounting.md)** – Seamlessly mount cloud storage as local disks using WinFsp or FUSE.
+- [[icon:account_tree.accent]] **[Visual Workflows](../user-guide/workflows.md)** – Professional task automation with node-based canvas and CRON scheduling.
 
 ---
 

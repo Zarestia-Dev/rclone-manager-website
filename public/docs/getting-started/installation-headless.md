@@ -7,13 +7,10 @@ _Perfect for servers, NAS devices, and remote systems._
 
 ## [[icon:help_outline.primary]] What is Headless Mode?
 
-RClone Manager Headless is a web server version that runs on Linux servers without a graphical desktop environment. It serves the full interface to your web browser.
+RClone Manager Headless is a native web server built with **Axum** and **Tokio** in Rust. It serves the full Angular graphical interface and real-time Server-Sent Events (SSE) directly to your web browser.
 
-> **⚠️ Important Technical Note:** RClone Manager Headless is built using **Tauri**. To make it work on servers without a display, it uses a **virtual display (Xvfb)** in the background.
->
-> - **Requirement:** It requires GTK/WebKit libraries and Xvfb.
-> - **Docker:** The official image handles all of this automatically.
-> - **Manual:** You may need to install these dependencies manually.
+> [!TIP]
+> **Pure Web Server Architecture:** RClone Manager Headless runs completely standalone without any display server, virtual framebuffers (Xvfb), or GTK/WebKit desktop dependencies. It features a minimal memory footprint and runs seamlessly in Docker, lightweight VPS instances, and headless NAS systems.
 
 ---
 
@@ -84,8 +81,7 @@ _(Note: Headless builds often share version numbers with the Desktop release. Ch
 # Example for the latest headless release
 wget https://github.com/Zarestia-Dev/rclone-manager/releases/download/headless-v{{HEADLESS_LATEST_VERSION}}/rclone-manager-headless_{{HEADLESS_LATEST_VERSION}}_amd64.deb
 sudo dpkg -i rclone-manager-headless_{{HEADLESS_LATEST_VERSION}}_amd64.deb
-sudo apt-get install -f # Install dependencies (xvfb, gtk3, etc.)
-
+sudo apt-get install -f # Resolve any missing system packages
 ```
 
 ### Fedora / RHEL
