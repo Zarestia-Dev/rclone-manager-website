@@ -53,6 +53,7 @@
 
 ## Development {icon=code, description="Resources for contributors and developers"}
 
+- [Architecture & Internals](development/architecture.md) {description="Deep dive into system architecture, macros, and concurrency", icon=account_tree}
 - [Contributing](https://github.com/Zarestia-Dev/rclone-manager/blob/master/CONTRIBUTING.md) {description="How to get involved with development", icon=groups}
 - [License](development/license.md) {description="Open-source licensing details", icon=description}
 - [GitHub Repository](https://github.com/Zarestia-Dev/rclone-manager) {icon=star}
