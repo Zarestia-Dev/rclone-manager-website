@@ -7,6 +7,7 @@ import { CommunityPage } from './features/community/community';
 
 export const routes: Routes = [
   { path: '', component: Home, title: 'RClone Manager' },
+  { path: 'architecture', redirectTo: 'docs/architecture', pathMatch: 'full' },
   { path: 'docs', component: Docs, title: 'Docs · RClone Manager' },
   { path: 'docs/:slug', component: Docs, title: 'Docs · RClone Manager' },
   { path: 'downloads', component: Downloads, title: 'Downloads · RClone Manager' },
