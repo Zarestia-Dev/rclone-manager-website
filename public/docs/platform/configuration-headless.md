@@ -153,6 +153,17 @@ environment:
 > - **PUID & PGID**: Ensure that files created by the application (like downloads or logs) have the same ownership as your host user, preventing permission errors when mounting host directories.
 > - **PGIDS (Supplementary Groups)**: Optional comma-separated group IDs passed to `setpriv --supp-groups`. Useful for resolving permission denied errors (`EACCES`) when accessing ZFS datasets or directories formatted with NFSv4 ACLs in Docker environments.
 
+### [[icon:folder.accent]] FUSE Mounts & `--allow-other` in Docker
+
+When mounting cloud remotes inside the Docker container:
+
+- **Automatic `user_allow_other`**: The container entrypoint automatically enables `user_allow_other` in `/etc/fuse.conf` at startup. When using custom `PUID` and `PGID` values, non-root mount operations configured with `--allow-other` work seamlessly out of the box.
+- **Mounting to Host Filesystem**: To mount remotes directly to folders on your host system:
+  1. Pass the `/dev/fuse` device: `devices: - /dev/fuse`
+  2. Grant the `SYS_ADMIN` capability: `cap_add: - SYS_ADMIN`
+  3. *(Optional)* Set `security_opt: - apparmor:unconfined` if your host enforces AppArmor restrictions.
+  4. Use a bind mount with `rshared` propagation (e.g. `- /mnt/remotes:/mnt/remotes:rshared`) so mounts created inside the container propagate to the host.
+
 ### [[icon:downloading.accent]] Rclone Binary
 
 The rclone binary is **not included** in the Docker image. On first startup, the entrypoint script automatically downloads the latest rclone release to the `/data/rclone-bin/` directory on your persistent volume. Updates to rclone can be done through the application's UI without rebuilding the image.

@@ -206,6 +206,34 @@ user_allow_other
 
 </details>
 
+<details>
+<summary>[[icon:dns]] Docker / Headless container</summary>
+
+RClone Manager's official Docker container automatically uncomments `user_allow_other` in `/etc/fuse.conf` at startup when dropping privileges to `PUID`/`PGID`.
+
+If you are running an older image version or encountering permission errors:
+
+1. **Pull the latest image**:
+   ```bash
+   docker compose pull && docker compose up -d
+   ```
+
+2. **Mounting on Host**: Ensure `/dev/fuse` is exposed and `SYS_ADMIN` capability is provided in your `docker-compose.yml`:
+   ```yaml
+   devices:
+     - /dev/fuse:/dev/fuse
+   cap_add:
+     - SYS_ADMIN
+   ```
+
+3. **Manual workaround (older containers)**: Mount a prepared `fuse.conf` file containing `user_allow_other`:
+   ```yaml
+   volumes:
+     - ./config/fuse.conf:/etc/fuse.conf:ro
+   ```
+
+</details>
+
 ---
 
 ## [[icon:rocket.primary]] Issue 4: App Crashes When Opened After Startup {#issue-4}
