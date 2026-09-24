@@ -1,6 +1,6 @@
 # [[icon:power_settings_new.primary]] Power Management, Sleep Prevention & Safety
 
-RClone Manager includes enterprise-grade OS-level power controls, automatic sleep prevention assertions, and configuration safety mechanisms designed to safeguard long-running cloud transfers and prevent data corruption during unexpected system power events. Hold the `About RClone Manager`.
+RClone Manager includes enterprise-grade OS-level power controls, automatic sleep prevention assertions, and configuration safety mechanisms designed to safeguard long-running cloud transfers and prevent data corruption during unexpected system power events. To access the Power Management modal, long-press (hold) **About RClone Manager** in the main menu.
 
 ---
 
@@ -10,16 +10,16 @@ RClone Manager includes enterprise-grade OS-level power controls, automatic slee
 
 ---
 
-## [[icon:security.primary]] OS Power Inhibitor (Sleep & Shutdown Intercept)
+## [[icon:security.primary]] OS Power Inhibitor (Automatic Sleep Prevention)
 
-When file transfers (Sync, Copy, Move, Bisync) or active FUSE mounts are running, RClone Manager automatically registers an OS-level power assertion to prevent the host operating system from suspending or sleeping mid-operation:
+When file transfers (Sync, Copy, Move, Bisync), active FUSE mounts, or servers are running, RClone Manager automatically registers an OS-level power assertion to prevent the host operating system from going into idle sleep mid-operation:
 
 ### Platform-Specific Implementations
 
 - **Linux (`systemd-logind`)**:
   - Holds an unprivileged D-Bus idle inhibitor lock (`Inhibit("idle", "RClone Manager", reason, "block")`).
   - Automatically suppresses system idle timers while permitting intentional manual sleep and laptop lid closure without requiring Polkit escalation.
-  - Subscribes to `logind`'s `PrepareForShutdown` D-Bus signal to cleanly unmount FUSE mount points and terminate active transfer jobs before system power-off, resolving black-screen shutdown hangs on modern desktop environments (such as KDE Plasma 6 and GNOME).
+  - Subscribes to `logind`'s `PrepareForShutdown` D-Bus signal and Unix `SIGTERM`/`SIGINT` signals to cleanly unmount FUSE mount points, stop servers, and terminate active transfer jobs before system power-off, resolving black-screen shutdown hangs on modern desktop environments (such as KDE Plasma 6 and GNOME).
 - **Windows (`kernel32.dll` & `user32.dll`)**:
   - Invokes `SetThreadExecutionState(ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED | ES_CONTINUOUS)` to prevent system sleep and display timeout during active operations.
   - Registers `ShutdownBlockReasonCreate` with a descriptive reason so Windows presents its native confirmation overlay if a shutdown or restart is attempted mid-transfer.
@@ -44,7 +44,7 @@ You can confirm that RClone Manager is actively protecting your system using nat
 
 ## [[icon:bolt.primary]] Fast Actions & Engine Lifecycle
 
-The **Power & Fast Actions** dialog (accessible from the title bar menu) provides rapid control over the core engine and system power:
+The **Power & Fast Actions** dialog (accessible by long-pressing **About RClone Manager** in the main menu) provides rapid control over the core engine and system power:
 
 ### 1. Engine & Connectivity Controls
 

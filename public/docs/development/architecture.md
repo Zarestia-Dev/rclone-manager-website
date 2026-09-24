@@ -481,9 +481,9 @@ Long-running multi-gigabyte cloud transfers and scheduled synchronizations must 
 
 The [`PowerInhibitor`](https://github.com/Zarestia-Dev/rclone-manager/blob/main/src-tauri/src/core/power) subsystem automatically registers system sleep inhibitors when transfers or active mounts are detected:
 
-- **Linux**: Interacts via D-Bus with `org.freedesktop.ScreenSaver` and `org.freedesktop.PowerManagement.Inhibit`.
-- **Windows**: Invokes `SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)`.
-- **macOS**: Allocates an `IOPMAssertionCreateWithName` power assertion.
+- **Linux**: Interacts via D-Bus with `systemd-logind` (`org.freedesktop.login1.Manager`) holding an unprivileged `idle` inhibitor lock, with `PrepareForShutdown` listener for clean unmount.
+- **Windows**: Invokes `SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED)` and registers `ShutdownBlockReasonCreate`.
+- **macOS**: Holds an `NSActivityOptions` assertion (`NSActivityIdleSystemSleepDisabled | NSActivityUserInitiated`) via `NSProcessInfo`.
 
 When the transfer queue empties, the inhibitor releases its lock, restoring standard system power management without user intervention.
 

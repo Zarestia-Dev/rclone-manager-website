@@ -64,9 +64,9 @@ RClone Manager is designed to run seamlessly in the background:
 - **Memory Optimization Option**: When you enable 'Destroy Window on Close' in the settings (Default enabled after V0.2.0), closing the main window will natively destroy the view to free up RAM. The core app process remains safely running in the background.
 - **Secondary Windows**: Dialogs, file pickers, and other secondary modals are strictly managed by your OS. They are natively destroyed when closed to ensure optimal memory efficiency without impacting background tasks.
 
-### OS Power Inhibitor (Sleep & Shutdown Intercept)
+### OS Power Inhibitor (Automatic Sleep Prevention)
 
-When file transfers, sync operations, or active mounts are running, RClone Manager automatically registers an OS-level power inhibitor assertion (`systemd logind` on Linux, `SetThreadExecutionState` on Windows, `NSProcessInfo` on macOS) to prevent the computer from going into idle sleep mid-transfer. It also intercepts shutdowns to cleanly unmount FUSE drives.
+When file transfers, sync operations, or active mounts are running, RClone Manager automatically registers an OS-level power inhibitor assertion (`systemd logind` on Linux, `SetThreadExecutionState` on Windows, `NSProcessInfo` on macOS) to prevent the computer from going into idle sleep mid-transfer. It also listens for OS shutdown and termination signals to cleanly unmount FUSE drives and stop active tasks.
 
 For full technical specifications, Linux D-Bus details, and terminal verification commands (`systemd-inhibit`, `powercfg`, `pmset`), see the dedicated guide: **[Power Management & Safety](../user-guide/power-management.md)**.
 
