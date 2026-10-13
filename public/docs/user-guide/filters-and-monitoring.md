@@ -52,27 +52,27 @@ Instead of patterns, you can filter files by their physical metadata:
 
 Real-time File Monitoring watches local directories for file additions, modifications, or deletions, and triggers a sync job automatically.
 
-- **Local paths only**: The file watcher can only monitor directories on the local filesystem — remote cloud paths are never watched, regardless of how many paths your automation has configured. How this applies per operation type:
+- **Local paths only**: The file watcher can only monitor directories on the local filesystem - remote cloud paths are never watched, regardless of how many paths your automation has configured. How this applies per operation type:
   - **Sync, Copy, Move**: All source paths are watched, but only the ones that are local. Remote source paths are silently skipped. The automation requires at least one local source path to enable watching.
-  - **Bisync**: Both source and destination paths are watched, again filtering to local paths only. Either side (or both) can be local — any local path found across both sides will be monitored.
+  - **Bisync**: Both source and destination paths are watched, again filtering to local paths only. Either side (or both) can be local - any local path found across both sides will be monitored.
 - **Debounce Delay**: When you edit files, editors often save them using quick, multiple write operations. The **Debounce Delay** (configured in seconds) tells the app to wait until the filesystem has quieted down before launching the sync run, avoiding back-to-back runs.
 
 ### Net-Change Tracking
 
 Within each debounce window, the file watcher tracks the **net effect** of all filesystem events rather than reacting to each one individually. The key rule is:
 
-> If a file is **created and then deleted** within the same debounce window, those two events cancel each other out — no sync is triggered.
+> If a file is **created and then deleted** within the same debounce window, those two events cancel each other out - no sync is triggered.
 
 This elegantly handles the way most editors, compilers, and tools save files. For example:
 
 | Tool behaviour                             | What the watcher sees                                    | Result                                      |
 | :----------------------------------------- | :------------------------------------------------------- | :------------------------------------------ |
-| Editor writes a swap file, then deletes it | Create `file.swp` → Remove `file.swp`                    | Net zero — ignored                          |
+| Editor writes a swap file, then deletes it | Create `file.swp` → Remove `file.swp`                    | Net zero - ignored                          |
 | Atomic save (write temp, rename to target) | Create `file.tmp` → Remove `file.tmp`, Create `file.txt` | `file.tmp` cancels out; `file.txt` triggers |
 | Normal file edit                           | Modify `file.txt`                                        | Triggers                                    |
 | File deleted by user                       | Remove `file.txt` (pre-existing)                         | Triggers                                    |
 
-This means common temporary patterns — editor swap files, partial download files, compiler intermediates — are suppressed automatically, without needing explicit exclude rules for every possible temp file name.
+This means common temporary patterns - editor swap files, partial download files, compiler intermediates - are suppressed automatically, without needing explicit exclude rules for every possible temp file name.
 
 ---
 
@@ -107,7 +107,7 @@ Prevent heavy build artifacts and dependency folders from triggering syncs:
 
 ### 2. Ignore OS Junk and Office Files
 
-Avoid syncing hidden OS metadata and Microsoft Office temporary lock files. Note that most editor temp files (swap files, partial writes) are already suppressed by the net-change tracker — these rules cover files that may persist on disk:
+Avoid syncing hidden OS metadata and Microsoft Office temporary lock files. Note that most editor temp files (swap files, partial writes) are already suppressed by the net-change tracker - these rules cover files that may persist on disk:
 
 - **Exclude Rules:**
   - `.DS_Store`

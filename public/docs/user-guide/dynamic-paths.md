@@ -1,6 +1,6 @@
 # Dynamic Paths & Macros (Digital Time Travel)
 
-Static paths are predictable, reliable, and—let's be honest—a bit boring. Sometimes you want your backups to have a personality, or at least a timestamp so you know exactly which version of your "Very Important Homework" folder you're looking at.
+Static paths are predictable, reliable, and - let's be honest - a bit boring. Sometimes you want your backups to have a personality, or at least a timestamp so you know exactly which version of your "Very Important Homework" folder you're looking at.
 
 RClone Manager supports **Macro Interpolation**, allowing you to inject dynamic system information and timestamps directly into your destination paths and configuration options.
 

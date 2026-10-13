@@ -25,7 +25,7 @@ export class Home {
   constructor() {
     // Replay the logo animation whenever we land on Home from another route.
     // pairwise() lets us compare previous vs current URL so we only fire on
-    // genuine cross-route arrivals — not on initial load (where the logo's
+    // genuine cross-route arrivals - not on initial load (where the logo's
     // built-in intro already plays).
     this.router.events
       .pipe(

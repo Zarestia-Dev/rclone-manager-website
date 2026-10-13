@@ -1,161 +1,178 @@
 # Installation: Headless Server
 
-**Run RClone Manager as a web server on any Linux machine.**
-_Perfect for servers, NAS devices, and remote systems._
+Run RClone Manager in your browser while transfers, mounts, and automations run
+on your server or NAS.
 
----
+## [[icon:help_outline.primary]] Choose a deployment
 
-## [[icon:help_outline.primary]] What is Headless Mode?
+| Variant                     | Intended use                                                   | Desktop runtime required?     |
+| --------------------------- | -------------------------------------------------------------- | ----------------------------- |
+| **Pure server / Docker**    | Background services, containers, servers and NAS devices       | No Tauri, GTK, WebKit or Xvfb |
+| **Server with native tray** | Web access plus a tray and native updater on a desktop machine | Yes                           |
 
-RClone Manager Headless is a native web server built with **Axum** and **Tokio** in Rust. It serves the full Angular graphical interface and real-time Server-Sent Events (SSE) directly to your web browser.
+The pure server executable is `rclone-manager-server`; the tray-enabled native
+server remains `rclone-manager-headless` (add `.exe` on Windows).
+The regular desktop application is `rclone-manager`.
 
-> [!TIP]
-> **Pure Web Server Architecture:** RClone Manager Headless runs completely standalone without any display server, virtual framebuffers (Xvfb), or GTK/WebKit desktop dependencies. It features a minimal memory footprint and runs seamlessly in Docker, lightweight VPS instances, and headless NAS systems.
+Two independent workflows upload to the same `headless-v<version>` release:
+`release-server.yml` builds standalone archives, while `release-headless.yml`
+builds native tray installers. Older releases may contain only tray packages.
 
----
+## [[icon:download.primary]] Download the standalone server
 
-## [[icon:dns.primary]] Method 1: Docker (Recommended)
+Choose a **Server** archive from [Downloads](https://hakanismail.info/zarestia/rclone-manager/downloads)
+with Headless mode selected, or from the
+[headless releases](https://github.com/Zarestia-Dev/rclone-manager/releases).
 
-Pre-built multi-architecture images (`amd64`, `arm64`) are available.
+| OS | Architectures | Archive |
+| --- | --- | --- |
+| Linux | x86_64, aarch64 | `rclone-manager-server_<version>_linux_<arch>.tar.gz` |
+| Windows | x86_64, aarch64 | `rclone-manager-server_<version>_windows_<arch>.zip` |
+| macOS | x86_64, aarch64 | `rclone-manager-server_<version>_macos_<arch>.tar.gz` |
 
-### Quick Start (No Auth)
+Extract the entire archive. Keep the executable, `browser/`, and `i18n/` together.
+Run `./rclone-manager-server --host 127.0.0.1 --port 8080` on Linux/macOS, or
+`.\rclone-manager-server.exe --host 127.0.0.1 --port 8080` in Windows PowerShell.
+Then open `http://localhost:8080`.
+
+Linux archives require glibc 2.35+ and the D-Bus runtime library (for example,
+`libdbus-1-3` on Debian/Ubuntu). Mounting requires FUSE. These archives are not
+static Alpine/musl builds. Other Rclone platforms remain planned work in
+[backend/TODO.md](https://github.com/Zarestia-Dev/rclone-manager/blob/master/backend/TODO.md).
+Only assets actually published in a release appear on the download page.
+
+## [[icon:dns.primary]] Docker
 
 ```bash
 docker run -d \
   --name rclone-manager \
-  -p 8080:8080 \
+  --restart=unless-stopped \
+  -p 127.0.0.1:8080:8080 \
   -v rclone-config:/config \
   -v rclone-data:/data \
   ghcr.io/zarestia-dev/rclone-manager:latest
-
 ```
 
-- **Port 8080:** Web Interface.
+Open `http://localhost:8080` on the host. For a remote host, keep this binding and
+connect with `ssh -L 8080:127.0.0.1:8080 user@your-server`, then open that address
+locally. To expose the service directly on your network, change the mapping to
+`8080:8080` and configure authentication and HTTPS.
 
-### Docker Compose
-
-We support **Profiles** for different configurations (Auth, TLS). Create a `docker-compose.yml`:
+A minimal `compose.yaml`:
 
 ```yaml
 services:
   rclone-manager:
     image: ghcr.io/zarestia-dev/rclone-manager:latest
-    container_name: rclone-manager-headless
     restart: unless-stopped
     ports:
-      - '8080:8080'
+      - "127.0.0.1:8080:8080"
     volumes:
       - rclone-config:/config
       - rclone-data:/data
-    profiles:
-      - '' # Default profile
-
-
-  # See Configuration page for Auth/TLS profiles
+volumes:
+  rclone-config:
+  rclone-data:
 ```
 
-Start it:
+Start with `docker compose up -d`. Preserve both volumes across updates.
+See [configuration](../platform/configuration-headless.md) for authentication,
+TLS, OAuth, user mapping and FUSE mounts.
+
+## [[icon:terminal.primary]] Pure server from source
+
+Follow the [build guide](building.md) for toolchain and dependency setup.
+From the application repository:
 
 ```bash
-docker-compose up -d
-
+npm ci
+npm run build
+npm run build:server
 ```
 
-> [!TIP]
-> **[→ See Detailed Configuration (Auth, TLS, HTTPS, User & Group Mapping)](../platform/configuration-headless.md)** for secure production setups, including user privilege dropping via `setpriv` and supplementary group (`PGIDS`) configuration for ZFS datasets and NFSv4 ACLs.
+The output is `backend/target/release/rclone-manager-server`, with `.exe` on
+Windows. Building with an explicit `--target` inserts that target before `release`.
 
----
+For deployment, put these matching-version files together:
 
-## [[icon:terminal.primary]] Method 2: Native Binary
+```text
+/opt/rclone-manager/
+├── rclone-manager-server
+├── browser/    # Contents of dist/rclone-manager/browser/
+└── i18n/       # Contents of resources/i18n/
+```
 
-Download and install directly on your Linux system.
-
-### Downloads
-
-Visit the **[Releases Page](https://github.com/Zarestia-Dev/rclone-manager/releases)** to get the latest `headless` tag.
-_(Note: Headless builds often share version numbers with the Desktop release. Check the assets list for `headless` tagged packages.)_
-
-### Debian / Ubuntu
+Start the service:
 
 ```bash
-# Example for the latest headless release
-wget https://github.com/Zarestia-Dev/rclone-manager/releases/download/headless-v{{HEADLESS_LATEST_VERSION}}/rclone-manager-headless_{{HEADLESS_LATEST_VERSION}}_amd64.deb
-sudo dpkg -i rclone-manager-headless_{{HEADLESS_LATEST_VERSION}}_amd64.deb
-sudo apt-get install -f # Resolve any missing system packages
+/opt/rclone-manager/rclone-manager-server --host 127.0.0.1 --port 8080
 ```
 
-### Fedora / RHEL
+The frontend is served from disk; it is not embedded by the Cargo build.
+The pure server does not provide a tray or native application updater. Rclone
+itself must be available or installed through the application's engine setup.
+
+## [[icon:download.primary]] Native server packages
+
+The [headless releases](https://github.com/Zarestia-Dev/rclone-manager/releases)
+provide the assets listed in each release. The current native release workflow
+uses Tauri with `web-server,tray,updater`; these packages still need the appropriate
+GUI libraries and a display environment on Linux.
+
+Install the package for your operating system following its release instructions.
+Use the pure server or Docker for machines without a desktop session.
+You can build native server packages yourself with `npm run build:headless`.
+
+## [[icon:settings.primary]] Systemd service for the pure server
+
+After placing the pure server and its resources in `/opt/rclone-manager`, create
+a dedicated user:
 
 ```bash
-wget https://github.com/Zarestia-Dev/rclone-manager/releases/download/headless-v{{HEADLESS_LATEST_VERSION}}/rclone-manager-headless-{{HEADLESS_LATEST_VERSION}}_x86_64.rpm
-sudo rpm -i rclone-manager-headless-{{HEADLESS_LATEST_VERSION}}_x86_64.rpm
-
+sudo useradd --system --create-home --home-dir /var/lib/rclone-manager --shell /usr/sbin/nologin rclone-manager
 ```
 
-### Arch Linux (AUR)
+Create `/etc/systemd/system/rclone-manager-server.service`:
 
-```bash
-yay -S rclone-manager-headless
+```ini
+[Unit]
+Description=RClone Manager web server
+After=network-online.target
+Wants=network-online.target
 
+[Service]
+Type=simple
+User=rclone-manager
+Group=rclone-manager
+StateDirectory=rclone-manager
+CacheDirectory=rclone-manager
+LogsDirectory=rclone-manager
+ExecStart=/opt/rclone-manager/rclone-manager-server --host 127.0.0.1 --port 8080 --data-dir /var/lib/rclone-manager --cache-dir /var/cache/rclone-manager --logs-dir /var/log/rclone-manager
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
 ```
 
-### Configuration (Binary)
-
-When running the binary directly, you can use CLI flags for quick configuration:
-
-```bash
-rclone-manager-headless --port 3000 --user admin --pass mypassword
-```
-
-> [!TIP]
-> Run `rclone-manager-headless --help` to see all available flags, including `--data-dir`, `--cache-dir`, and `--logs-dir`.
-
----
-
-## ⚙️ Method 3: Systemd Service
-
-Run the application as a background service for automatic startup.
-
-**1. Create Dedicated User:**
-Create the system user required by the service file.
-
-```bash
-sudo useradd -r -m -s /bin/false -d /home/rclone-manager rclone-manager
-sudo chown -R rclone-manager:rclone-manager /home/rclone-manager
-
-```
-
-**2. Download Service File:**
-Download the configuration directly to systemd ([File](https://raw.githubusercontent.com/Zarestia-Dev/rclone-manager/master/headless/rclone-manager-headless.service)).
-
-```bash
-sudo wget -O /etc/systemd/system/rclone-manager-headless.service https://raw.githubusercontent.com/Zarestia-Dev/rclone-manager/master/headless/rclone-manager-headless.service
-
-```
-
-**3. Enable & Start:**
-Reload the daemon and start the service.
+The service user must be able to read the executable, `browser/`, and `i18n/`,
+and access any local files you want it to manage. This service does not use
+`DISPLAY` or Xvfb. Its directories are examples; retain your existing paths when
+migrating an installation.
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now rclone-manager-headless
-
+sudo systemctl enable --now rclone-manager-server
+journalctl -u rclone-manager-server -f
 ```
-
----
 
 ## [[icon:sync.primary]] Updating
 
-**Docker:**
+- **Docker Compose:** run `docker compose pull` and `docker compose up -d`.
+- **Pure server:** stop the service, replace the binary and matching `browser/`
+  and `i18n/` directories, then start it again.
+- **Native packages:** use the native updater where available, or install the
+  replacement package.
 
-```bash
-docker pull ghcr.io/zarestia-dev/rclone-manager:latest
-docker-compose up -d
-
-```
-
-**Binary:**
-Download the new `.deb`/`.rpm`/`.AppImage` and install it over the old one.
-
-**Systemd:**
-Restart the service after updating: `sudo systemctl restart rclone-manager-headless`
+Keep application data, Rclone configuration, and credential files. Updating
+RClone Manager and updating the Rclone engine are separate operations.

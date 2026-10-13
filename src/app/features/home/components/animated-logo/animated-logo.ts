@@ -5,7 +5,7 @@ const EXIT_DURATION_MS = 700;
 
 /**
  * Animated RClone logo. Re-runs its intro animation whenever the bound
- * `trigger` input increments — Home uses this to replay the animation each
+ * `trigger` input increments - Home uses this to replay the animation each
  * time the user navigates back to the home route.
  */
 @Component({

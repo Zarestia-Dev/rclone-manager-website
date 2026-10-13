@@ -1,5 +1,4 @@
-@use "app/shared/styles/mixins" as *;
-
+@use 'app/shared/styles/mixins' as *;
 
 .docs-detail-layout {
   display: flex;
@@ -522,33 +521,44 @@
     }
   }
 
-  &.markdown-alert-note {
+  &.markdown-alert-note,
+  &.markdown-alert-info {
     border-left-color: var(--accent-color);
     background: rgba(var(--accent-color-rgb), 0.05);
-    .markdown-alert-title { color: var(--accent-color); }
+    .markdown-alert-title {
+      color: var(--accent-color);
+    }
   }
 
   &.markdown-alert-tip {
     border-left-color: var(--primary-color);
     background: rgba(var(--primary-color-rgb), 0.05);
-    .markdown-alert-title { color: var(--primary-color); }
+    .markdown-alert-title {
+      color: var(--primary-color);
+    }
   }
 
   &.markdown-alert-important {
     border-left-color: var(--purple);
     background: rgba(var(--purple-rgb), 0.05);
-    .markdown-alert-title { color: var(--purple); }
+    .markdown-alert-title {
+      color: var(--purple);
+    }
   }
 
   &.markdown-alert-warning {
     border-left-color: var(--orange);
     background: rgba(var(--orange-rgb), 0.05);
-    .markdown-alert-title { color: var(--orange); }
+    .markdown-alert-title {
+      color: var(--orange);
+    }
   }
 
   &.markdown-alert-caution {
     border-left-color: var(--warn-color);
     background: rgba(var(--warn-color-rgb), 0.05);
-    .markdown-alert-title { color: var(--warn-color); }
+    .markdown-alert-title {
+      color: var(--warn-color);
+    }
   }
 }

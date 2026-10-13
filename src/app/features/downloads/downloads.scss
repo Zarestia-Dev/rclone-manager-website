@@ -1,4 +1,4 @@
-@use "app/shared/styles/mixins" as *;
+@use 'app/shared/styles/mixins' as *;
 
 // Loading and Error States
 .loading-section,
@@ -215,11 +215,21 @@
         border-radius: var(--radius-xs);
         cursor: pointer;
         transition: var(--transition-standard);
+        text-decoration: none;
+        color: inherit;
 
         @media (max-width: 640px) {
           flex-direction: column;
           align-items: flex-start;
           gap: var(--space-xs);
+        }
+
+        &:hover,
+        &:focus,
+        &:visited,
+        &:active {
+          text-decoration: none;
+          color: inherit;
         }
 
         &:hover {

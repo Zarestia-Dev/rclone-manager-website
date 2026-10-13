@@ -63,16 +63,16 @@ Checking for and installing **both application updates and Rclone binary updates
 
 ## [[icon:code.primary]] Custom rclone patches in FFI (Upstream PRs Pending)
 
-During compilation of the `librclone` C-shared library, RClone Manager dynamically stages and injects custom Go patch files from the [src-tauri/librclone_patches](https://github.com/Zarestia-Dev/rclone-manager/tree/master/src-tauri/librclone_patches) directory to extend standard rclone FFI behavior:
+During compilation of the `librclone` C-shared library, RClone Manager dynamically stages and injects custom Go patch files from the [backend/core/librclone_patches](https://github.com/Zarestia-Dev/rclone-manager/tree/master/backend/core/librclone_patches) directory to extend standard rclone FFI behavior:
 
-> [!INFO]
+> [!NOTE]
 > **Upstream Integration & Lifecycle:**
-> All patches are located in the [src-tauri/librclone_patches](https://github.com/Zarestia-Dev/rclone-manager/tree/master/src-tauri/librclone_patches) folder. These custom extensions are temporary; once proper native support for these RPC endpoints and features is submitted and merged upstream into official Rclone PRs, these local patches will be removed.
+> All patches are located in the [backend/core/librclone_patches](https://github.com/Zarestia-Dev/rclone-manager/tree/master/backend/core/librclone_patches) folder. These custom extensions are temporary; once proper native support for these RPC endpoints and features is submitted and merged upstream into official Rclone PRs, these local patches will be removed.
 
 - **Config Encryption Detection (`config/isencrypted` RPC):** Registers a custom endpoint to allow the GUI to query if the local configuration is encrypted before accessing it.
 - **Config Encryption (`config/encrypt` RPC):** Registers a custom endpoint to encrypt the configuration in-process.
 - **Config Decryption (`config/decrypt` RPC):** Registers a custom endpoint to remove password protection and decrypt the configuration in-process.
-- **Config Password Validation (`config/validatepassword` RPC):** Registers a custom endpoint to safely validate a candidate password against the encrypted config file. Unlike the built-in `config/unlock` — which only hashes and stores the password in-memory without ever checking if it is correct — this endpoint reads the config file directly, derives the key via `SHA256("[password][rclone-config]")`, and attempts a real `secretbox.Open` decryption. It returns a structured error (`"wrong password: decryption failed"`) on failure rather than silently succeeding and causing a panic later when `LoadedData()` tries to decrypt the file inside an RC job context. On success it also activates the key in-memory, so no separate `config/unlock` call is required afterwards.
+- **Config Password Validation (`config/validatepassword` RPC):** Registers a custom endpoint to safely validate a candidate password against the encrypted config file. Unlike the built-in `config/unlock` - which only hashes and stores the password in-memory without ever checking if it is correct - this endpoint reads the config file directly, derives the key via `SHA256("[password][rclone-config]")`, and attempts a real `secretbox.Open` decryption. It returns a structured error (`"wrong password: decryption failed"`) on failure rather than silently succeeding and causing a panic later when `LoadedData()` tries to decrypt the file inside an RC job context. On success it also activates the key in-memory, so no separate `config/unlock` call is required afterwards.
 - **Native In-Process Archive Endpoint (`operations/archive` RPC):** Registers a custom endpoint to perform `create`, `extract`, and `list` operations directly in Go using rclone's internal archive packages (`cmd/archive/create`, `cmd/archive/extract`, `cmd/archive/list`). This bypasses Cobra CLI parsing, avoids process-level stdout hijacking, and automatically excludes target archive files created inside source directories to eliminate infinite self-archiving loops.
 - **Native In-Process CryptCheck Endpoint (`operations/cryptcheck` RPC):** Registers a custom endpoint to verify the integrity of encrypted remotes directly in-process via Go FFI.
 - **Native In-Process Cat Endpoint (`operations/cat` RPC):** Registers a custom endpoint to read remote file contents directly in-process without executing subprocesses or redirecting stdout.
@@ -115,7 +115,7 @@ To compile the Android application locally, your development machine must be con
 
 ### Prerequisites
 
-1. **Go Compiler (1.20+):** Required to build the `librclone` FFI shared library.
+1. **Go Compiler:** Use the version required by your Rclone source checkout to build the `librclone` FFI shared library.
 2. **Android SDK & NDK:**
    - Ensure the Android SDK and NDK are installed (NDK version 26.x or newer is recommended).
    - Set the `ANDROID_HOME` environment variable to your Android SDK path.
@@ -130,14 +130,14 @@ To compile the Android application locally, your development machine must be con
 To run the application in development mode with hot-reloading on a connected Android device or emulator:
 
 ```bash
-npm run tauri android dev -- --features librclone -- --no-default-features
+npm run tauri android dev -- --features mobile -- --no-default-features
 ```
 
 To build the debug APK package:
 
 ```bash
-npm run tauri android build -- --debug --features librclone -- --no-default-features
+npm run tauri android build -- --debug --features mobile -- --no-default-features
 ```
 
 Once built, the installer package will be generated at:
-`src-tauri/gen/android/app/build/outputs/apk/debug/app-debug.apk`
+`backend/desktop/gen/android/app/build/outputs/apk/debug/app-debug.apk`

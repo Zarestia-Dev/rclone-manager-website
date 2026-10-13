@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
  * The full highlight.js bundle includes ~190 languages and would add ~1MB to
  * the initial bundle. Instead, we register only the languages actually used
  * in the docs (bash, ini, json, powershell, plaintext, yaml) and only on first
- * use — visitors who never open a docs page never pay the JS cost.
+ * use - visitors who never open a docs page never pay the JS cost.
  *
  * The highlight.js CSS theme is loaded globally via angular.json (it's ~3KB
  * and applies only to `.hljs` elements, so it has no cost on non-docs pages).
@@ -18,7 +18,7 @@ export class HighlightService {
   /**
    * The languages actually used by docs markdown fences:
    *   bash, ini, json, powershell, plaintext, yaml.
-   * Listed here for discoverability — the actual registration happens in
+   * Listed here for discoverability - the actual registration happens in
    * `loadHljs()` below via explicit imports so bundlers can statically split
    * each language into its own lazy chunk.
    */

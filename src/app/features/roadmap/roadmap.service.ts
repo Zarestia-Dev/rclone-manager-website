@@ -124,7 +124,7 @@ export class RoadmapService {
 
   fetchRoadmap(): Observable<RoadmapData> {
     if (!this.github.hasGraphqlAccess()) {
-      console.debug('No GitHub GraphQL access configured — using fallback roadmap data.');
+      console.debug('No GitHub GraphQL access configured - using fallback roadmap data.');
       return of({
         lastUpdated: new Date().toISOString(),
         items: FALLBACK_ITEMS,

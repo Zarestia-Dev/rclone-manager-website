@@ -97,7 +97,9 @@ export class DocService {
           (releases) =>
             releases
               .filter((r) => isHeadlessRelease(r))
-              .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())[0],
+              .sort(
+                (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
+              )[0],
         ),
         shareReplay(1),
       );
@@ -165,6 +167,7 @@ export class DocService {
   processAlerts(html: string): string {
     const alertTypes: Record<string, { icon: string; title: string }> = {
       NOTE: { icon: 'info', title: 'Note' },
+      INFO: { icon: 'info', title: 'Info' },
       TIP: { icon: 'lightbulb', title: 'Tip' },
       IMPORTANT: { icon: 'report_problem', title: 'Important' },
       WARNING: { icon: 'warning', title: 'Warning' },
@@ -172,7 +175,7 @@ export class DocService {
     };
 
     return html.replace(
-      /<blockquote>\s*<p>\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]([\s\S]*?)<\/blockquote>/gi,
+      /<blockquote>\s*<p>\[!(NOTE|INFO|TIP|IMPORTANT|WARNING|CAUTION)\]([\s\S]*?)<\/blockquote>/gi,
       (_match, type: string, content: string) => {
         const upperType = type.toUpperCase();
         const config = alertTypes[upperType];

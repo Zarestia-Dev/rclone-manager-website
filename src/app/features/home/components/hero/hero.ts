@@ -18,7 +18,7 @@ export class Hero {
   protected readonly heroContent = HERO_CONTENT;
   protected readonly modes = ['desktop', 'headless'] as const;
 
-  /** Forwarded from Home — increments to replay the logo intro animation. */
+  /** Forwarded from Home - increments to replay the logo intro animation. */
   readonly homeNavTrigger = input(0);
 
   protected scrollToFeatures(): void {

@@ -270,12 +270,12 @@ export class Docs {
       this.currentSlug = slug;
       void this.router.navigate(['/docs', slug]);
     } else {
-      // Same page — just reload content (e.g. search-triggered re-render).
+      // Same page - just reload content (e.g. search-triggered re-render).
       this.loadContent(item.assetPath, query);
       return;
     }
 
-    // Defer content load until the route change settles — this way the
+    // Defer content load until the route change settles - this way the
     // NavigationEnd handler in the route subscription doesn't double-load.
     this.loadContent(item.assetPath, query);
   }
@@ -381,7 +381,7 @@ export class Docs {
           this.renderedContent.set(this.sanitizer.bypassSecurityTrustHtml(sanitizedHtml));
           this.loading.set(false);
 
-          // Single afterNextRender: DOM is ready — wire up everything that needs it
+          // Single afterNextRender: DOM is ready - wire up everything that needs it
           afterNextRender(
             () => {
               this.attachLinkListeners();
@@ -536,7 +536,7 @@ export class Docs {
         );
       } else if (!href.startsWith('http://') && !href.startsWith('https://') && !href.startsWith('mailto:') && !href.startsWith('tel:')) {
         // Internal doc links are rewritten by the renderer to
-        // `<basePath>/docs/<slug>` — detect the `/docs/<slug>` segment
+        // `<basePath>/docs/<slug>` - detect the `/docs/<slug>` segment
         // anywhere in the path so this works in both dev (basePath='') and
         // prod (basePath='/zarestia/rclone-manager'). External links (http,
         // mailto, tel) are explicitly excluded so a URL like

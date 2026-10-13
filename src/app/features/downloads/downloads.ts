@@ -65,17 +65,19 @@ export class Downloads {
     stream: () => this.changelogService.fetchFullChangelog(),
   });
 
-  // Releases and changelog load independently — keep their states separate.
+  // Releases and changelog load independently - keep their states separate.
   readonly releasesLoading = computed(() => this.releasesResource.isLoading());
   readonly changelogLoading = computed(() => this.changelogResource.isLoading());
 
   // The main loading card is only for the releases fetch (platform grid depends on it).
   readonly isLoading = computed(() => this.releasesLoading());
 
-  // Error only when releases fail — changelog falling back is handled silently via FALLBACK_CHANGELOG.
-  readonly error = computed(() => (this.releasesResource.error() ? DOWNLOADS_MESSAGES.ERROR_LOADING : null));
+  // Error only when releases fail - changelog falling back is handled silently via FALLBACK_CHANGELOG.
+  readonly error = computed(() =>
+    this.releasesResource.error() ? DOWNLOADS_MESSAGES.ERROR_LOADING : null,
+  );
 
-  private readonly mode = computed(() => this.modeService.currentMode());
+  readonly mode = computed(() => this.modeService.currentMode());
 
   readonly allReleases = computed(() => this.releasesResource.value() ?? []);
 
@@ -106,13 +108,17 @@ export class Downloads {
     if (this.error()) return FALLBACK_RELEASE_BODY_HTML;
     const release = this.latestRelease();
     if (!release) return '';
-    // Sanitize before binding to innerHTML — marked output comes from the GitHub API.
+    // Sanitize before binding to innerHTML - marked output comes from the GitHub API.
     return DOMPurify.sanitize(marked.parse(release.body || '') as string);
   });
 
   // platforms only falls back when *releases* fail, not if changelog fails.
   readonly platforms = computed(() => {
-    if (this.releasesResource.error()) return FALLBACK_PLATFORMS;
+    if (this.releasesResource.error()) {
+      return this.mode() === 'headless'
+        ? structuredClone(HEADLESS_PLATFORMS_CONFIG).filter((p) => p.packageManagers?.length)
+        : FALLBACK_PLATFORMS;
+    }
     return this.generatePlatformsFromReleases(this.filteredReleases());
   });
 
@@ -121,12 +127,7 @@ export class Downloads {
   readonly getAssetCount = computed(() => {
     const assets = this.latestRelease()?.assets;
     if (!assets) return 0;
-    return assets.filter(
-      (a) =>
-        !a.name.toLowerCase().includes('.sig') &&
-        !a.name.toLowerCase().includes('source code') &&
-        a.name !== 'latest.json',
-    ).length;
+    return assets.filter((asset) => createDownloadOption(asset) !== null).length;
   });
 
   // Delegated changelog helpers
@@ -135,7 +136,6 @@ export class Downloads {
   getSectionTitle = (s: string) => this.changelogService.getSectionTitle(s);
   getRelativeTime = (d: string) => this.changelogService.getRelativeTime(d);
 
-  downloadFile = (url: string) => window.open(url, '_blank');
   openExternalLink = (url: string) => window.open(url, '_blank');
 
   loadData(): void {
@@ -158,9 +158,7 @@ export class Downloads {
   }
 
   private isDesktopRelease(release: GitHubRelease): boolean {
-    const tag = release.tag_name?.toLowerCase() ?? '';
-    const name = release.name?.toLowerCase() ?? '';
-    return !tag.includes('headless') && !name.includes('headless');
+    return !isHeadlessRelease(release);
   }
 
   private generatePlatformsFromReleases(releases: GitHubRelease[]): DownloadPlatform[] {
@@ -168,31 +166,44 @@ export class Downloads {
     const config = mode === 'headless' ? HEADLESS_PLATFORMS_CONFIG : DESKTOP_PLATFORMS_CONFIG;
     const platforms: DownloadPlatform[] = structuredClone(config);
 
-    if (releases.length === 0) return platforms;
+    if (releases.length === 0) return platforms.filter((p) => p.packageManagers?.length);
 
     for (const asset of releases[0].assets ?? []) {
       const option = createDownloadOption(asset);
       if (!option) continue;
 
-      if (mode === 'headless') {
-        if (
-          option.type === 'Windows Headless' ||
-          option.type === 'MSI Installer' ||
-          option.type === 'EXE Installer' ||
-          option.type === 'Windows Portable'
-        ) {
-          platforms[0]?.downloads.push(option);
-        } else if (
-          option.type === 'Linux Headless' ||
-          option.type === 'DEB Package' ||
-          option.type === 'RPM Package' ||
-          option.type === 'Linux Portable' ||
-          option.type === 'AppImage'
-        ) {
-          platforms[1]?.downloads.push(option);
-        }
-      } else if (option.platformIndex !== undefined) {
+      if (mode === 'headless' && option.type !== 'Server Archive') {
+        option.displayName = `Server + Tray - ${option.displayName || option.name}`;
+      }
+      if (option.platformIndex !== undefined) {
         platforms[option.platformIndex]?.downloads.push(option);
+      }
+    }
+
+    if (mode === 'desktop') {
+      const androidPlatform = platforms.find((p) => p.name === 'Android');
+      if (androidPlatform && androidPlatform.downloads.length === 0) {
+        for (const rel of releases.slice(1)) {
+          for (const asset of rel.assets ?? []) {
+            const option = createDownloadOption(asset);
+            if (option && option.type === 'Android APK') {
+              androidPlatform.downloads.push(option);
+            }
+          }
+          if (androidPlatform.downloads.length > 0) break;
+        }
+
+        if (androidPlatform.downloads.length === 0) {
+          androidPlatform.downloads.push({
+            name: 'View Android releases',
+            displayName: 'View Android releases',
+            architecture: 'ARM64, ARMv7, x64, x86',
+            size: 'GitHub',
+            url: `https://github.com/${GITHUB_REPO}/releases`,
+            type: 'Android APK',
+            platformIndex: 3,
+          });
+        }
       }
     }
 
@@ -200,18 +211,26 @@ export class Downloads {
     return platforms.filter((p) => p.downloads.length > 0 || (p.packageManagers?.length ?? 0) > 0);
   }
 
-  // Arrow function property — preserves `this` binding automatically when
+  // Arrow function property - preserves `this` binding automatically when
   // passed as a comparator to Array.prototype.sort, avoiding the unbound-method
   // pitfall of passing a regular method reference.
   private sortDownloads = (a: DownloadOption, b: DownloadOption): number => {
-    const aType = getDownloadType(a.displayName || a.name);
-    const bType = getDownloadType(b.displayName || b.name);
+    const aType = a.type ?? getDownloadType(a.displayName || a.name);
+    const bType = b.type ?? getDownloadType(b.displayName || b.name);
     const aIndex = DOWNLOAD_TYPE_ORDER.indexOf(aType);
     const bIndex = DOWNLOAD_TYPE_ORDER.indexOf(bType);
 
     if (aIndex !== bIndex) return aIndex - bIndex;
+    if (aType === 'Android APK' && bType === 'Android APK') {
+      const androidOrder = ['ARM64', 'ARMv7', 'x64', 'x86'];
+      const aRank = androidOrder.indexOf(a.architecture);
+      const bRank = androidOrder.indexOf(b.architecture);
+      const safeARank = aRank === -1 ? Number.MAX_SAFE_INTEGER : aRank;
+      const safeBRank = bRank === -1 ? Number.MAX_SAFE_INTEGER : bRank;
+      return safeARank - safeBRank;
+    }
     if (a.architecture === 'x64' && b.architecture === 'ARM64') return -1;
     if (a.architecture === 'ARM64' && b.architecture === 'x64') return 1;
     return 0;
-  }
+  };
 }

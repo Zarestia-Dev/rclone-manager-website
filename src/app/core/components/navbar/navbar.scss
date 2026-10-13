@@ -1,4 +1,4 @@
-@use "app/shared/styles/mixins" as *;
+@use 'app/shared/styles/mixins' as *;
 
 .navbar {
   position: fixed;
@@ -102,7 +102,7 @@
     }
   }
 
-  // In-app nav links render as <a mat-button> — Material applies the same
+  // In-app nav links render as <a mat-button> - Material applies the same
   // .mat-mdc-button class to anchor-based buttons as to <button> ones, so
   // this selector covers both.
   .mat-mdc-button,
@@ -203,33 +203,6 @@
       color: var(--window-fg-color);
       min-width: 3.75rem; // 60px
       text-align: left;
-    }
-  }
-
-  // External link (e.g. Support Us) — accent-styled CTA that reads as outward navigation
-  .nav-external-link {
-    padding: var(--space-xs) var(--space-md);
-    border-radius: var(--radius-lg);
-    text-decoration: none;
-    color: var(--primary-color);
-    background: rgba(var(--primary-color-rgb), 0.1);
-    border: 1px solid rgba(var(--primary-color-rgb), 0.2);
-    transition: var(--transition-standard);
-
-    mat-icon {
-      font-size: var(--icon-size-sm);
-      width: var(--icon-size-sm);
-      height: var(--icon-size-sm);
-    }
-
-    &:hover {
-      background: rgba(var(--primary-color-rgb), 0.18);
-      border-color: rgba(var(--primary-color-rgb), 0.35);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
     }
   }
 }

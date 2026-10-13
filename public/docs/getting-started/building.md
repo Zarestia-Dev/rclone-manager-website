@@ -1,130 +1,121 @@
 # [[icon:build.primary]] Building from Source
 
-This guide explains how to set up your development environment and compile **RClone Manager** from source code. The project is built using a modern stack featuring **Angular v22** and **Tauri v2**.
+The Angular frontend is shared by the desktop application and browser interface.
+Rust code lives in one workspace under `backend/`.
 
 ## [[icon:list.primary]] Prerequisites
 
-Before you begin, ensure you have the following installed:
+- Node.js compatible with the Angular version in `package.json`, plus npm.
+- Rust and Cargo compatible with the locked dependencies.
+- Your platform's compiler and native dependencies. Native Tauri builds need its
+  [platform prerequisites](https://tauri.app/start/prerequisites/), including
+  WebKitGTK 4.1 on Linux. Pure server builds do not need Tauri, GTK or WebKit;
+  they still need native dependencies used by shared Rust libraries. The root
+  `Dockerfile` lists the Linux server build packages used by this project.
+- For mobile, the platform SDK/toolchain and the Go toolchain used for librclone.
 
-1.  [[icon:code.primary]] **Node.js (v20+)**: Required for Angular v22. [Download Node.js](https://nodejs.org/)
-2.  [[icon:terminal.primary]] **Rust (Latest Stable)**: Required for the Tauri backend.
-    ```bash
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-    ```
-3.  [[icon:settings.primary]] **OS Dependencies**:
-    - **Windows**: Microsoft Visual Studio C++ Build Tools.
-    - **Linux**: WebKit2GTK and base build tools (`build-essential`, `libwebkit2gtk-4.0-dev`, `libssl-dev`, etc.).
-    - **macOS**: Xcode Command Line Tools (`xcode-select --install`).
-
-> [[icon:info.accent]] For a complete list of Tauri prerequisites, see the [Tauri Guides](https://tauri.app/start/prerequisites/).
-
----
-
-## [[icon:bolt.primary]] Quick Start (Standard Desktop)
-
-If you just want to build the standard desktop application:
-
-### 1. Clone the Repository
+Clone the application and install JavaScript dependencies:
 
 ```bash
 git clone https://github.com/Zarestia-Dev/rclone-manager.git
 cd rclone-manager
+npm ci
 ```
 
-### 2. Install Dependencies
+## [[icon:folder.primary]] Rust layout
 
-```bash
-npm install
-```
+| Directory         | Responsibility                                                   | Cargo package           |
+| ----------------- | ---------------------------------------------------------------- | ----------------------- |
+| `backend/core`    | Shared settings, Rclone services, workflows and command contract | `rclone-manager-core`   |
+| `backend/server`  | Tokio/Axum server and process startup                            | `rclone-manager-server` |
+| `backend/desktop` | Tauri application, native integrations, mobile and packaging     | `rclone-manager`        |
 
-### 3. Run in Development Mode
+`backend/Cargo.toml` defines the workspace and `backend/Cargo.lock` locks its
+dependencies. The core package is a library, not an executable.
 
-This starts the Angular frontend and the Tauri backend with hot-reload enabled.
+## [[icon:window.primary]] Desktop
 
 ```bash
 npm run tauri dev
-```
-
-### 4. Production Build
-
-To compile a minimized, optimized binary for your current machine:
-
-```bash
 npm run tauri build
 ```
 
-_Outputs: `src-tauri/target/release/`_
+The development command starts Angular and Tauri. The build command prepares the
+frontend and native packages. The executable is `rclone-manager` (`.exe` on Windows).
 
----
+The npm wrapper sets the native project path to `backend/desktop` and the frontend
+path to the repository root. You can keep invoking it from the repository root.
 
-## [[icon:construction.primary]] Advanced Build Configurations
+## [[icon:dns.primary]] Pure server
 
-RClone Manager supports different "Flavors" (Headless, Portable, Flatpak) using **Cargo Features** and specific configuration files. We have provided shorthand scripts in `package.json` for convenience.
+```bash
+npm run build
+npm run dev:server -- --host 127.0.0.1 --port 8080
+```
 
-### [[icon:public.primary]] Headless Mode
+This serves the built frontend at `http://127.0.0.1:8080`. `dev:server` runs Cargo;
+it does not start Angular's development server or watch frontend changes.
 
-Builds the server-only version (no GUI window) that runs in a terminal and serves the UI via HTTP/HTTPS.
+For a release binary:
 
-- **Features**: Enables `web-server` and `updater`.
-- **Scripts**:
+```bash
+npm run build:server
+# Equivalent:
+cargo build --manifest-path backend/Cargo.toml -p rclone-manager-server --release
+```
 
-  ```bash
-  # Development
-  npm run dev:headless
+The executable and Cargo package are both named `rclone-manager-server`.
+There is no need to run the core library separately.
 
-  # Production Build
-  npm run build:headless
-  ```
+The Rust build does not bundle the frontend. When deploying away from the source
+tree, copy `dist/rclone-manager/browser/` as `browser/` and `resources/i18n/` as
+`i18n/` beside the executable. See [server installation](installation-headless.md).
 
-### [[icon:dataset.primary]] Portable Mode (Windows and Linux)
+## [[icon:public.primary]] Server with native tray
 
-Builds a self-contained executable that stores data locally alongside the executable.
+```bash
+npm run dev:headless
+npm run build:headless
+```
 
-- **Features**: Enables `portable`.
-- **Scripts**:
+These select the native Tauri package with `web-server,tray,updater` and disabled
+default features. They provide HTTP access plus native integrations and still
+require native GUI dependencies. Tauri packages the executable as
+`rclone-manager-headless` using `backend/desktop/tauri.conf.headless.json`.
 
-  ```bash
-  # Development
-  npm run dev:portable
+## [[icon:construction.primary]] Other native variants
 
-  # Production Build
-  npm run build:portable
-  ```
+| Variant             | Development            | Build                                                                       |
+| ------------------- | ---------------------- | --------------------------------------------------------------------------- |
+| Portable            | `npm run dev:portable` | `npm run build:portable`                                                    |
+| Flatpak integration | `npm run dev:flatpak`  | `npm run build:flatpak`                                                     |
+| Android             | `npm run dev:android`  | `npm run tauri android build -- --features mobile -- --no-default-features` |
 
-### [[icon:terminal.primary]] Flatpak Version (Linux)
+Flatpak integration enables the application adjustments; distribution packaging
+still needs its own manifest and build process. The Android project remains under
+`backend/desktop/gen/android` because desktop and mobile share the Tauri host.
 
-Builds with specific adjustments for the Flatpak sandboxed environment.
+## Outputs and build scripts
 
-- **Features**: Enables `flatpak`.
-- **Scripts**:
+Outputs normally live in `backend/target/release/`. With `--target <triple>`, use
+`backend/target/<triple>/release/`. Native installers are under `release/bundle/`.
 
-  ```bash
-  # Development
-  npm run dev:flatpak
+- `core/build.rs` prepares and links librclone when enabled, and declares platform
+  configuration flags.
+- `desktop/build.rs` runs Tauri build setup and packages the Android shared library.
+- The server needs no separate `build.rs`; Cargo builds its core dependency.
 
-  # Production Build
-  npm run build:flatpak
-  ```
+## Static checks
 
-### [[icon:shopping_bag.primary]] Snap Version (Linux)
+From the repository root:
 
-Builds and packages the application as a Snap with classic confinement.
+```bash
+cargo fmt --manifest-path backend/Cargo.toml --all -- --check
+cargo clippy --manifest-path backend/Cargo.toml -p rclone-manager-server -- -D warnings
+cargo clippy --manifest-path backend/Cargo.toml -p rclone-manager -- -D warnings
+```
 
-- **Scripts**:
-
-  ```bash
-  # Production Build
-  npm run build:snap
-  ```
-
----
-
-## [[icon:bug_report.primary]] Troubleshooting Build Errors
-
-- **Rust Errors**: Run `cargo update` inside the `src-tauri` folder to ensure dependencies are fresh.
-- **WebView2 (Windows)**: Ensure you have the WebView2 runtime installed.
-- **Pkg-config (Linux)**: If the build fails on Linux, you are likely missing a system library (check for `librsvg`, `libappindicator3`, or `webkit2gtk`).
-
----
-
-<small>Documentation updated for RClone Manager v0.2.2+ using Angular v22.</small>
+Use `LIBRCLONE_SKIP_LINK_CHECK=1` for static mobile checks when the Go library is
+unavailable. This does not validate linking, packaging or device behavior.
+Do not run `cargo update` merely to resolve a moved-directory error; use the
+workspace manifest path and check the reported dependency or toolchain problem.

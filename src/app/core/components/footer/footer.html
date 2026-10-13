@@ -3,7 +3,7 @@
     <div class="footer-content">
       <div class="footer-section">
         <div class="footer-logo">
-          <img src="rclone.svg" alt="RClone Manager">
+          <img src="rclone.svg" alt="RClone Manager" />
           <span>RClone Manager</span>
         </div>
         <p class="footer-description">
@@ -20,7 +20,8 @@
                 [routerLink]="link.path ? '/' + link.path : '/'"
                 routerLinkActive="active"
                 [routerLinkActiveOptions]="{ exact: link.path === '' }"
-              >{{ link.label }}</a>
+                >{{ link.label }}</a
+              >
             </li>
           }
         </ul>
@@ -29,13 +30,6 @@
       <div class="footer-section">
         <h4>Connect</h4>
         <ul class="footer-link-list">
-          @for (link of supportLinks; track link.label) {
-            <li>
-              <a [href]="link.url" target="_blank" rel="noopener noreferrer">
-                {{ link.label }}
-              </a>
-            </li>
-          }
           @for (link of socialLinks; track link.label) {
             <li>
               <a [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.label }}</a>
@@ -44,7 +38,13 @@
         </ul>
         <div class="social-links">
           @for (link of socialLinks; track link.label) {
-            <a [href]="link.url" target="_blank" rel="noopener noreferrer" mat-icon-button [attr.aria-label]="link.label">
+            <a
+              [href]="link.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              mat-icon-button
+              [attr.aria-label]="link.label"
+            >
               <mat-icon>{{ link.icon }}</mat-icon>
             </a>
           }

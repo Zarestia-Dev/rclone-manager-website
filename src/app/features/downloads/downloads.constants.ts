@@ -64,13 +64,21 @@ export const DESKTOP_PLATFORMS_CONFIG: DownloadPlatform[] = [
       },
     ],
   },
+  {
+    name: 'Android',
+    icon: 'android',
+    description:
+      'Android 7.0+. Choose ARM64 for most modern phones, or the APK matching your device.',
+    downloads: [],
+  },
 ];
 
 export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
   {
     name: 'Windows (Headless)',
     icon: 'dns',
-    description: 'For Windows Servers. Run as a background service without GUI.',
+    description:
+      'Server archives run without a desktop window. Server + Tray installers include native integration.',
     downloads: [],
     packageManagers: [
       {
@@ -83,18 +91,25 @@ export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
     ],
   },
   {
+    name: 'macOS (Headless)',
+    icon: 'dns',
+    description: 'Standalone server archives for Intel and Apple Silicon.',
+    downloads: [],
+  },
+  {
     name: 'Linux (Headless)',
     icon: 'dns',
-    description: 'For Linux Servers (Systemd Service). Run as a web server without GUI.',
+    description:
+      'Server: glibc 2.35+ and D-Bus. Server + Tray additionally requires desktop libraries.',
     downloads: [],
     packageManagers: [
       {
         name: 'Docker',
-        command: 'docker pull ghcr.io/zarestia-dev/rclone-manager:headless',
+        command: 'docker pull ghcr.io/zarestia-dev/rclone-manager:latest',
         icon: 'layers',
       },
       {
-        name: 'AUR (Stable)',
+        name: 'AUR (Server + Tray)',
         command: 'yay -S rclone-manager-headless',
         icon: 'terminal',
       },
@@ -115,6 +130,8 @@ export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
 ];
 
 export const DOWNLOAD_TYPE_ORDER = [
+  'Android APK',
+  'Server Archive',
   'MSI Installer',
   'EXE Installer',
   'Windows Portable',
@@ -225,6 +242,19 @@ export const FALLBACK_PLATFORMS: DownloadPlatform[] = [
       },
     ],
   },
+  {
+    name: 'Android',
+    icon: 'android',
+    description: 'Android 7.0+. Visit GitHub releases for available APKs.',
+    downloads: [
+      {
+        name: 'View Android releases',
+        architecture: 'ARM64, ARMv7, x64, x86',
+        size: 'Various',
+        url: 'https://github.com/Zarestia-Dev/rclone-manager/releases',
+      },
+    ],
+  },
 ];
 
 export const FALLBACK_CHANGELOG: ChangelogVersion[] = [
@@ -269,6 +299,11 @@ export const SYSTEM_REQUIREMENTS = [
     icon: 'memory',
     title: 'Linux',
     requirements: ['Modern Linux distribution', '4 GB RAM minimum', '100 MB disk space'],
+  },
+  {
+    icon: 'android',
+    title: 'Android',
+    requirements: ['Android 7.0 (API level 24) or later', '2 GB RAM minimum', '50 MB disk space'],
   },
 ];
 
@@ -354,7 +389,7 @@ export const FILE_EXTENSION_PATTERNS = [
     secondaryPattern: 'linux',
     displayName: 'Linux Headless',
     type: 'Linux Headless',
-    platformIndex: 1,
+    platformIndex: 2,
   },
 ];
 

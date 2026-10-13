@@ -1,6 +1,9 @@
 # 📦 Packaging & Distribution
 
-This guide covers how to generate installers, packages, and Docker images for **RClone Manager**.
+This guide covers installers, packages, and Docker images for **RClone Manager**.
+Commands run from the application repository root. Outputs are under
+`backend/target/release`; explicit target builds use
+`backend/target/<target>/release` instead.
 
 > **⚠️ Important Cross-Compilation Note:**
 > Tauri **cannot** cross-compile native installers.
@@ -24,8 +27,8 @@ npm run tauri build
 
 ```
 
-- **Output:** `src-tauri/target/release/bundle/nsis/*.exe`
-- **Output:** `src-tauri/target/release/bundle/msi/*.msi`
+- **Output:** `backend/target/release/bundle/nsis/*.exe`
+- **Output:** `backend/target/release/bundle/msi/*.msi`
 
 ### Portable Standalone
 
@@ -36,13 +39,13 @@ npm run tauri build -- --features portable --no-bundle
 
 ```
 
-- **Output:** `src-tauri/target/release/rclone-manager.exe`
+- **Output:** `backend/target/release/rclone-manager.exe`
 
 ---
 
 ## [[icon:terminal.primary]] Linux Packaging
 
-The Linux bundler uses the assets located in `src-tauri/linux/` (desktop files, icons) to generate distribution packages.
+The Linux bundler uses the assets located in `backend/desktop/linux/` (desktop files, icons) to generate distribution packages.
 
 ### Universal Bundles (.deb, .rpm, .AppImage)
 
@@ -53,27 +56,16 @@ npm run tauri build
 
 ```
 
-- **Output:** `src-tauri/target/release/bundle/deb/*.deb` (Debian/Ubuntu)
-- **Output:** `src-tauri/target/release/bundle/rpm/*.rpm` (Fedora/RHEL)
-- **Output:** `src-tauri/target/release/bundle/appimage/*.AppImage` (Universal)
+- **Output:** `backend/target/release/bundle/deb/*.deb` (Debian/Ubuntu)
+- **Output:** `backend/target/release/bundle/rpm/*.rpm` (Fedora/RHEL)
+- **Output:** `backend/target/release/bundle/appimage/*.AppImage` (Universal)
 
 ### Flatpak
 
 Packaging for Flathub requires a specific manifest and the `flatpak` feature flag to ensure path compliance.
 
 1. **Build Binary:** `npm run tauri build -- --features flatpak`
-2. **Builder:** Use `flatpak-builder` with the manifest located in the root (or `src-tauri/linux`).
-
-### Snap
-
-To build the Snap package, you need to have `snapcraft` installed along with a build provider (Multipass or LXD).
-
-```bash
-npm run build:snap
-```
-
-- **Process:** Builds the `.deb` bundle and then packages it into a Snap with classic confinement.
-- **Output:** `rclone-manager_{version}_{arch}.snap`
+2. **Builder:** Use `flatpak-builder` with the manifest located in the root (or `backend/desktop/linux`).
 
 ### Portable Standalone
 
@@ -84,7 +76,7 @@ npm run tauri build -- --features portable --no-bundle
 
 ```
 
-- **Output:** `src-tauri/target/release/rclone-manager`
+- **Output:** `backend/target/release/rclone-manager`
 
 ---
 
@@ -99,8 +91,8 @@ npm run tauri build
 
 ```
 
-- **Output:** `src-tauri/target/release/bundle/dmg/*.dmg`
-- **Output:** `src-tauri/target/release/bundle/macos/RClone Manager.app`
+- **Output:** `backend/target/release/bundle/dmg/*.dmg`
+- **Output:** `backend/target/release/bundle/macos/RClone Manager.app`
 
 ### Code Signing & Notarization
 
@@ -115,26 +107,41 @@ To avoid "App Damaged" or "Unidentified Developer" warnings, you must sign the a
 
 The headless version is packaged differently since it serves a web UI instead of opening a window.
 
-### 1. Build the Headless Binary
+### Pure server
 
-First, compile the binary with the web-server feature.
-
-```bash
-npm run tauri build -- --config src-tauri/tauri.conf.headless.json --features web-server,updater
-
-```
-
-- **Output:** `src-tauri/target/release/rclone-manager-headless` (Linux) or `.exe` (Windows). I only build for linux but headless mode works as well on Windows and MacOS to.
-
-### 2. Build the Docker Image
-
-Once the binary is built, you can package it into a container.
+From the application repository root:
 
 ```bash
-# From the project root
-docker build -t rclone-manager:latest -f headless/Dockerfile .
-
+npm run build
+npm run build:server
 ```
+
+The Cargo package is `rclone-manager-server`; its executable is
+`backend/target/release/rclone-manager-server` (plus `.exe` on Windows).
+Ship `browser/` from `dist/rclone-manager/browser/` and `i18n/` from
+`resources/i18n/` beside it. These files must match the binary version.
+The core crate is a linked library and does not produce another server process.
+
+### Native server with tray and updater
+
+```bash
+npm run build:headless
+```
+
+This builds Tauri with `web-server,tray,updater` and uses
+`backend/desktop/tauri.conf.headless.json`. The packaged binary is named
+`rclone-manager-headless`, but this variant needs native desktop libraries.
+A direct Cargo build of the native crate uses its Cargo binary name,
+`rclone-manager`; the headless name is applied by Tauri packaging.
+
+### Docker image
+
+The root Dockerfile builds the frontend and pure server in its build stage:
+
+```bash
+docker build -t rclone-manager:local .
+```
+
 
 ---
 
@@ -154,14 +161,26 @@ We utilize **GitHub Actions** to automate packaging for all platforms.
 - **Trigger:** Manual (`workflow_dispatch`).
 - **Tag Naming:** Releases are prefixed with `headless-v*`.
 - **Architecture:** Builds binaries for both `x86_64` (Intel/AMD) and `aarch64` (ARM/Raspberry Pi) using a matrix strategy.
-- **Command:**
+- **Variant:** Native tray-enabled server packages.
+- **Tauri project:** `backend/desktop`, with `tauri.conf.headless.json` and
+  `web-server,tray,updater`, using `--no-default-features`.
 
-```yaml
-args: >-
-  --config src-tauri/tauri.conf.headless.json
-  --features web-server,updater
-  --target ${{ matrix.arch }}-unknown-linux-gnu
-```
+The action sets `TAURI_APP_PATH` to the native project and `TAURI_FRONTEND_PATH`
+to the repository root. These explicit paths replace Tauri's old `src-tauri`
+directory convention.
+
+### Standalone Server Releases
+
+- **Workflow:** `.github/workflows/release-server.yml`, triggered manually.
+- **Targets:** Linux, Windows, and macOS on x86_64 and aarch64.
+- **Assets:** `rclone-manager-server_<version>_<os>_<arch>.tar.gz` or `.zip` on Windows.
+  Each archive includes the binary, `browser/`, and `i18n/`; `server-SHA256SUMS`
+  contains archive checksums.
+- **Release:** Uploads to the same `headless-v<version>` draft as the tray workflow,
+  without depending on its build jobs. Both workflows serialize release writes.
+  Published releases are not overwritten by the server workflow.
+- **Future targets:** Tracked in
+  [backend/TODO.md](https://github.com/Zarestia-Dev/rclone-manager/blob/master/backend/TODO.md).
 
 ### 3. Docker Registry
 

@@ -27,18 +27,6 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'Community', path: 'community', icon: 'groups' },
 ];
 
-/**
- * External links rendered in the navbar only. These open in a new tab and are
- * not part of the in-app router navigation.
- */
-export const EXTERNAL_NAV_LINKS: ExternalLink[] = [
-  {
-    label: 'Support Us',
-    url: 'https://hakanismail.info/zarestia/support',
-    icon: 'volunteer_activism',
-  },
-];
-
 export const SOCIAL_LINKS: SocialLink[] = [
   {
     label: 'GitHub',

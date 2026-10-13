@@ -6,14 +6,14 @@ RClone Manager supports a wide range of command-line arguments and environment v
 
 ## [[icon:list.primary]] General Options
 
-These parameters are available in **both** the Desktop GUI and the Headless Web Server builds.
+The path options are available in both the desktop and server builds. `--tray` is only compiled into native builds with tray support; the pure server does not accept it.
 
 | Argument / Flag      | Environment Variable       | Description                                                                               |
 | :------------------- | :------------------------- | :---------------------------------------------------------------------------------------- |
 | `--data-dir <PATH>`  | `RCLONE_MANAGER_DATA_DIR`  | Custom path to the application data directory (stores databases, settings, and binaries). |
 | `--cache-dir <PATH>` | `RCLONE_MANAGER_CACHE_DIR` | Custom path to the application session cache.                                             |
 | `--logs-dir <PATH>`  | `RCLONE_MANAGER_LOG_DIR`   | Custom path to the application runtime logs folder.                                       |
-| `--tray`             | _(N/A)_                    | **(Desktop Only)** Starts the application minimized directly in the system tray.          |
+| `--tray`             | _(N/A)_                    | **(Native tray builds only)** Starts or enables the system tray.                          |
 
 ### Path Precedence Hierarchy
 
@@ -43,7 +43,7 @@ rclone-manager --send-to-remote "GoogleDrive:" --send-to-path "ServerBackups" "/
 
 > [!TIP]
 > **Single-Instance IPC**  
-> If RClone Manager is already running in the background, executing this command will automatically forward the parameters to the running instance via local IPC and start the upload immediately without opening a new app window.
+> For native builds with the single-instance plugin, if RClone Manager is already running in the background, executing this command will automatically forward the parameters to the running instance via local IPC and start the upload immediately without opening a new app window.
 
 ---
 
@@ -63,11 +63,16 @@ These parameters configure network binding, authentication, and TLS encryption, 
 ### Basic Auth Example
 
 ```bash
-rclone-manager-headless --user admin --pass MySecretPassword123
+rclone-manager-server --user admin --pass MySecretPassword123
 ```
 
 ### Secure HTTPS Example
 
 ```bash
-rclone-manager-headless --tls-cert /certs/fullchain.pem --tls-key /certs/privkey.pem
+rclone-manager-server --tls-cert /certs/fullchain.pem --tls-key /certs/privkey.pem
 ```
+
+The desktop binary is `rclone-manager`, the pure server is `rclone-manager-server`,
+and the native tray server is `rclone-manager-headless` (with `.exe` on Windows). Run `--help` on your
+installed binary to check its compiled options. Authentication requires both
+username and password; TLS requires both certificate and key.
