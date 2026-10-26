@@ -118,8 +118,8 @@ npm run build:server
 
 The Cargo package is `rclone-manager-server`; its executable is
 `backend/target/release/rclone-manager-server` (plus `.exe` on Windows).
-Ship `browser/` from `dist/rclone-manager/browser/` and `i18n/` from
-`resources/i18n/` beside it. These files must match the binary version.
+The executable embeds the compiled frontend, translations and templates; no
+other files need to ship with it.
 The core crate is a linked library and does not produce another server process.
 
 ### Native server with tray and updater
@@ -173,9 +173,9 @@ directory convention.
 
 - **Workflow:** `.github/workflows/release-server.yml`, triggered manually.
 - **Targets:** Linux, Windows, and macOS on x86_64 and aarch64.
-- **Assets:** `rclone-manager-server_<version>_<os>_<arch>.tar.gz` or `.zip` on Windows.
-  Each archive includes the binary, `browser/`, and `i18n/`; `server-SHA256SUMS`
-  contains archive checksums.
+- **Assets:** `server-<os>-<arch>-<version>.zip`. Each ZIP contains the executable,
+  `LICENSE`, a short `README.txt` and, on Linux, the systemd unit template. The signed
+  `updater.json` catalog is published beside the ZIPs.
 - **Release:** Uploads to the same `headless-v<version>` draft as the tray workflow,
   without depending on its build jobs. Both workflows serialize release writes.
   Published releases are not overwritten by the server workflow.

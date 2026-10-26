@@ -137,6 +137,7 @@ export const DOWNLOAD_TYPE_ORDER = [
   'Windows Portable',
   'DMG Installer',
   'macOS App Bundle',
+  'macOS Portable',
   'AppImage',
   'Linux Portable',
   'DEB Package',
@@ -218,7 +219,7 @@ export const FALLBACK_PLATFORMS: DownloadPlatform[] = [
         url: 'https://github.com/Zarestia-Dev/rclone-manager/releases/latest',
       },
       {
-        name: 'Download Portable (.tar.gz)',
+        name: 'Download Portable (.zip)',
         architecture: 'All',
         size: 'Various',
         url: 'https://github.com/Zarestia-Dev/rclone-manager/releases/latest',
@@ -333,6 +334,8 @@ export const FILE_EXTENSION_PATTERNS = [
     type: 'EXE Installer',
     platformIndex: 0,
   },
+  // Portable names up to 0.3.3 (RClone.Manager_<version>_<arch>_<os>_portable.zip|tar.gz).
+  // Later releases use portable-<os>-<arch>-<version>.zip, parsed in createDownloadOption.
   {
     pattern: '.zip',
     secondaryPattern: 'portable',

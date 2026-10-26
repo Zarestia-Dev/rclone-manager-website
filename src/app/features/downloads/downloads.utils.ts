@@ -18,23 +18,27 @@ export function createDownloadOption(asset: GitHubAsset): DownloadOption | null 
     return null;
   }
 
-  // Server archives have a strict OS/architecture contract with release-server.yml.
-  if (name.startsWith('rclone-manager-server_')) {
+  // Server and portable ZIPs have a strict contract with release-server.yml and
+  // release-portable.yml: <kind>-<os>-<arch>-<version>.zip
+  if (name.startsWith('server-') || name.startsWith('portable-')) {
     const match =
-      /^rclone-manager-server_[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z0-9.-]+)?_(linux|windows|macos)_(x86_64|aarch64)\.(tar\.gz|zip)$/.exec(
+      /^(server|portable)-(linux|windows|macos)-(x86_64|aarch64)-[0-9]+\.[0-9]+\.[0-9]+(?:-[a-z0-9.-]+)?\.zip$/.exec(
         name,
       );
     if (!match) return null;
-    const [, os, arch, extension] = match;
-    if (extension !== (os === 'windows' ? 'zip' : 'tar.gz')) return null;
+    const [, kind, os, arch] = match;
     const architecture = arch === 'x86_64' ? ARCHITECTURE_NAMES.x64 : ARCHITECTURE_NAMES.ARM64;
+    const osName = { windows: 'Windows', macos: 'macOS', linux: 'Linux' }[os];
     return {
       name: asset.name,
-      displayName: `Server (${architecture}, .${extension})`,
+      displayName:
+        kind === 'server'
+          ? `Server (${architecture}, .zip)`
+          : `${osName} Portable (${architecture}, .zip)`,
       architecture,
       size: `${(asset.size / (1024 * 1024)).toFixed(1)} MB`,
       url: asset.browser_download_url,
-      type: 'Server Archive',
+      type: kind === 'server' ? 'Server Archive' : `${osName} Portable`,
       platformIndex: os === 'windows' ? 0 : os === 'macos' ? 1 : 2,
     };
   }

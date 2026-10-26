@@ -39,8 +39,8 @@ Visit our **[GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/rel
 
 - **Installer (.msi or .exe):** Recommended for most users.
 - **Portable (.zip):** Standalone version for x64 or aarch64.
-  - `RClone.Manager_{version}_x86_64_windows_portable.zip`
-  - `RClone.Manager_{version}_aarch64_windows_portable.zip`
+  - `portable-windows-x86_64-{version}.zip`
+  - `portable-windows-aarch64-{version}.zip`
 
 ### 2. Run the Application
 

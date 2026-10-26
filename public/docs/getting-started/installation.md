@@ -13,7 +13,7 @@ Designed for personal use on **Windows**, **Linux**, and **macOS**.
 ### Platform Guides
 
 - **[Installation Windows](../platform/installation-windows.md)** (Includes Portable `.zip`)
-- **[Installation Linux](../platform/installation-linux.md)** (Includes Portable `.tar.gz`)
+- **[Installation Linux](../platform/installation-linux.md)** (Includes Portable `.zip`)
 - **[Installation macOS](../platform/installation-macos.md)**
 
 ### Fast Download

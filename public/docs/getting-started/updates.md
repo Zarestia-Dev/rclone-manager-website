@@ -74,7 +74,7 @@ Environments that lack Tauri Updater support due to sandboxing or containment mu
   ```bash
   docker pull ghcr.io/zarestia-dev/rclone-manager:latest
   ```
-- **Portable Binary**: Download the latest `.tar.gz` (Linux) or `.zip` (Windows) archive from the [Downloads Page](https://hakanismail.info/zarestia/rclone-manager/downloads) or [GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases) and replace the existing binaries.
+- **Portable Binary**: Download the latest portable `.zip` archive from the [Downloads Page](https://hakanismail.info/zarestia/rclone-manager/downloads) or [GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases) and replace the existing binaries.
 
 ---
 

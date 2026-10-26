@@ -181,7 +181,7 @@ not acquire that plugin by depending on shared upload operations.
 
 All translations remain in the repository's `resources/i18n` directory. Tauri
 resource mappings and standalone deployment layouts expose them to their host.
-The pure server also needs the compiled frontend `browser/` directory.
+The pure server embeds the compiled frontend and these translations in its executable.
 
 Backend errors carry localization keys and parameters for the frontend to
 resolve. Rust caches only the translation subsets needed by OS integrations and

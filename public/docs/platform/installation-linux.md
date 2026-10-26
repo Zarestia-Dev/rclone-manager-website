@@ -104,16 +104,16 @@ sudo snap install rclone-manager
 
 ---
 
-## [[icon:archive.primary]] Method 5: Portable (.tar.gz)
+## [[icon:archive.primary]] Method 5: Portable (.zip)
 
 For users who prefer a standalone binary without AppImage or system-wide installation.
 
 ### 1. Download
 
-Visit our **[GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)** and download the `.tar.gz` archive for your architecture:
+Visit our **[GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases)** and download the `.zip` archive for your architecture:
 
-- **x86_64:** `RClone.Manager_{version}_x86_64_linux_portable.tar.gz`
-- **ARM64:** `RClone.Manager_{version}_aarch64_linux_portable.tar.gz`
+- **x86_64:** `portable-linux-x86_64-{version}.zip`
+- **ARM64:** `portable-linux-aarch64-{version}.zip`
 
 ### 2. Dependencies
 
@@ -127,8 +127,8 @@ Unlike AppImage or Flatpak, the portable binary relies on system libraries. Ensu
 Open your terminal in the download folder and run:
 
 ```bash
-tar -xzf RClone.Manager_*.tar.gz
-cd RClone.Manager_*
+unzip portable-linux-*.zip
+cd RCloneManager
 ./RCloneManager
 ```
 

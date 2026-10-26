@@ -67,9 +67,8 @@ cargo build --manifest-path backend/Cargo.toml -p rclone-manager-server --releas
 The executable and Cargo package are both named `rclone-manager-server`.
 There is no need to run the core library separately.
 
-The Rust build does not bundle the frontend. When deploying away from the source
-tree, copy `dist/rclone-manager/browser/` as `browser/` and `resources/i18n/` as
-`i18n/` beside the executable. See [server installation](installation-headless.md).
+The executable embeds the frontend, translations and templates, so it can be copied
+anywhere on its own. See [server installation](installation-headless.md).
 
 ## [[icon:public.primary]] Server with native tray
 

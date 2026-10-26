@@ -15,8 +15,8 @@ server remains `rclone-manager-headless` (add `.exe` on Windows).
 The regular desktop application is `rclone-manager`.
 
 Two independent workflows upload to the same `headless-v<version>` release:
-`release-server.yml` builds standalone archives, while `release-headless.yml`
-builds native tray installers. Older releases may contain only tray packages.
+`release-server.yml` builds standalone ZIP archives, while `release-headless.yml`
+builds native tray installers.
 
 ## [[icon:download.primary]] Download the standalone server
 
@@ -26,12 +26,15 @@ with Headless mode selected, or from the
 
 | OS | Architectures | Archive |
 | --- | --- | --- |
-| Linux | x86_64, aarch64 | `rclone-manager-server_<version>_linux_<arch>.tar.gz` |
-| Windows | x86_64, aarch64 | `rclone-manager-server_<version>_windows_<arch>.zip` |
-| macOS | x86_64, aarch64 | `rclone-manager-server_<version>_macos_<arch>.tar.gz` |
+| Linux | x86_64, aarch64 | `server-linux-<arch>-<version>.zip` |
+| Windows | x86_64, aarch64 | `server-windows-<arch>-<version>.zip` |
+| macOS | x86_64, aarch64 | `server-macos-<arch>-<version>.zip` |
 
-Extract the entire archive. Keep the executable, `browser/`, and `i18n/` together.
-Run `./rclone-manager-server --host 127.0.0.1 --port 8080` on Linux/macOS, or
+Each ZIP contains a `rclone-manager-server/` folder with the executable, `LICENSE`,
+a short `README.txt` and, on Linux, a systemd unit template. The executable embeds
+the web UI and translations, so it runs on its own.
+Extract the archive, then run `./rclone-manager-server --host 127.0.0.1 --port 8080`
+on Linux/macOS, or
 `.\rclone-manager-server.exe --host 127.0.0.1 --port 8080` in Windows PowerShell.
 Then open `http://localhost:8080`.
 
@@ -93,24 +96,18 @@ npm run build:server
 The output is `backend/target/release/rclone-manager-server`, with `.exe` on
 Windows. Building with an explicit `--target` inserts that target before `release`.
 
-For deployment, put these matching-version files together:
-
-```text
-/opt/rclone-manager/
-├── rclone-manager-server
-├── browser/    # Contents of dist/rclone-manager/browser/
-└── i18n/       # Contents of resources/i18n/
-```
-
-Start the service:
+The executable embeds the web UI, translations and templates. For deployment,
+copy it to its destination, for example `/opt/rclone-manager/rclone-manager-server`,
+and start it:
 
 ```bash
 /opt/rclone-manager/rclone-manager-server --host 127.0.0.1 --port 8080
 ```
 
-The frontend is served from disk; it is not embedded by the Cargo build.
-The pure server does not provide a tray or native application updater. Rclone
-itself must be available or installed through the application's engine setup.
+The pure server has no tray and no Tauri updater. When its executable is in a
+location your user owns and can write, the application can update itself;
+otherwise replace the executable. Rclone itself must be available or installed
+through the application's engine setup.
 
 ## [[icon:download.primary]] Native server packages
 
@@ -125,7 +122,7 @@ You can build native server packages yourself with `npm run build:headless`.
 
 ## [[icon:settings.primary]] Systemd service for the pure server
 
-After placing the pure server and its resources in `/opt/rclone-manager`, create
+After placing the pure server executable in `/opt/rclone-manager`, create
 a dedicated user:
 
 ```bash
@@ -155,8 +152,8 @@ RestartSec=5
 WantedBy=multi-user.target
 ```
 
-The service user must be able to read the executable, `browser/`, and `i18n/`,
-and access any local files you want it to manage. This service does not use
+The service user must be able to read the executable and access any local files
+you want it to manage. This service does not use
 `DISPLAY` or Xvfb. Its directories are examples; retain your existing paths when
 migrating an installation.
 
@@ -169,8 +166,8 @@ journalctl -u rclone-manager-server -f
 ## [[icon:sync.primary]] Updating
 
 - **Docker Compose:** run `docker compose pull` and `docker compose up -d`.
-- **Pure server:** stop the service, replace the binary and matching `browser/`
-  and `i18n/` directories, then start it again.
+- **Pure server:** stop the service, replace the executable with the one from the
+  new ZIP, then start it again.
 - **Native packages:** use the native updater where available, or install the
   replacement package.
 

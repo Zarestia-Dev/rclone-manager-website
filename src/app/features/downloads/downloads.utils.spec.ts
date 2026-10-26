@@ -9,21 +9,21 @@ function parse(name: string) {
   });
 }
 
-describe('server download archives', () => {
-  for (const [os, platformIndex, extension] of [
-    ['windows', 0, 'zip'],
-    ['macos', 1, 'tar.gz'],
-    ['linux', 2, 'tar.gz'],
+describe('server and portable ZIP downloads', () => {
+  for (const [os, platformIndex] of [
+    ['windows', 0],
+    ['macos', 1],
+    ['linux', 2],
   ] as const) {
     for (const [arch, architecture] of [
       ['x86_64', 'x64'],
       ['aarch64', 'ARM64'],
     ]) {
-      it(`maps ${os}/${arch} to its platform and architecture`, () => {
-        const name = `rclone-manager-server_0.3.3_${os}_${arch}.${extension}`;
+      it(`maps server ${os}/${arch} to its platform and architecture`, () => {
+        const name = `server-${os}-${arch}-0.3.4.zip`;
         expect(parse(name)).toEqual({
           name,
-          displayName: `Server (${architecture}, .${extension})`,
+          displayName: `Server (${architecture}, .zip)`,
           architecture,
           size: '1.0 MB',
           url: `https://example.com/${name}`,
@@ -31,31 +31,55 @@ describe('server download archives', () => {
           platformIndex,
         });
       });
+
+      it(`maps portable ${os}/${arch} to its own platform`, () => {
+        const osName = { windows: 'Windows', macos: 'macOS', linux: 'Linux' }[os];
+        expect(parse(`portable-${os}-${arch}-0.3.4.zip`)).toMatchObject({
+          displayName: `${osName} Portable (${architecture}, .zip)`,
+          architecture,
+          type: `${osName} Portable`,
+          platformIndex,
+        });
+      });
     }
   }
 
   it('accepts prerelease versions', () => {
-    expect(parse('rclone-manager-server_0.4.0-beta.1_linux_x86_64.tar.gz')?.type).toBe(
-      'Server Archive',
-    );
+    expect(parse('server-linux-x86_64-0.4.0-beta.1.zip')?.type).toBe('Server Archive');
+    expect(parse('portable-linux-x86_64-0.4.0-beta.1.zip')?.type).toBe('Linux Portable');
   });
 
   for (const name of [
     '',
-    'server-SHA256SUMS',
+    'updater.json',
     'latest.json',
-    'rclone-manager-server_0.3.3_linux_x86_64.tar.gz.sig',
-    'rclone-manager-server_0.3.3_linux_x86_64.tar.gz.sha256',
-    'rclone-manager-server_0.3.3_linux_x86_64.zip',
-    'rclone-manager-server_0.3.3_windows_aarch64.tar.gz',
-    'rclone-manager-server_0.3.3_freebsd_x86_64.tar.gz',
-    'rclone-manager-server_0.3.3_linux_armv7.tar.gz',
-    'rclone-manager-server_invalid_linux_x86_64.tar.gz',
+    'server-SHA256SUMS',
+    'server-linux-x86_64-0.3.4.zip.sig',
+    'server-linux-x86_64-0.3.4.zip.sha256',
+    'server-linux-x86_64-0.3.4',
+    'server-windows-x86_64-0.3.4.exe',
+    'server-linux-x86_64-0.3.4.tar.gz',
+    'server-freebsd-x86_64-0.3.4.zip',
+    'server-linux-armv7-0.3.4.zip',
+    'server-linux-x86_64-invalid.zip',
+    'portable-linux-x86_64-0.3.4.tar.gz',
+    'rclone-manager-server_0.3.4_linux_x86_64.tar.gz',
   ]) {
     it(`rejects unsupported or non-download asset ${name}`, () => {
       expect(parse(name)).toBeNull();
     });
   }
+
+  it('keeps the pre-0.3.4 portable names working', () => {
+    expect(parse('RClone.Manager_0.3.3_x86_64_windows_portable.zip')).toMatchObject({
+      type: 'Windows Portable',
+      platformIndex: 0,
+    });
+    expect(parse('RClone.Manager_0.3.3_x86_64_linux_portable.tar.gz')).toMatchObject({
+      type: 'Linux Portable',
+      platformIndex: 2,
+    });
+  });
 
   it('keeps existing tray installer mapping', () => {
     expect(parse('rclone-manager-headless_0.3.3_x64-setup.exe')).toMatchObject({
