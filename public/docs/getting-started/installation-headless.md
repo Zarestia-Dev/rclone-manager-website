@@ -122,12 +122,18 @@ You can build native server packages yourself with `npm run build:headless`.
 
 ## [[icon:settings.primary]] Systemd service for the pure server
 
-After placing the pure server executable in `/opt/rclone-manager`, create
-a dedicated user:
+Create a dedicated user and install the pure server executable in
+`/opt/rclone-manager`, owned by that user:
 
 ```bash
 sudo useradd --system --create-home --home-dir /var/lib/rclone-manager --shell /usr/sbin/nologin rclone-manager
+sudo install -d -o rclone-manager -g rclone-manager /opt/rclone-manager
+sudo install -o rclone-manager -g rclone-manager -m 755 rclone-manager-server /opt/rclone-manager/
 ```
+
+Because the service user owns the executable and its directory, the application
+can update itself. An executable owned by root (for example in `/usr/bin`)
+disables in-app updates; replace it manually instead.
 
 Create `/etc/systemd/system/rclone-manager-server.service`:
 

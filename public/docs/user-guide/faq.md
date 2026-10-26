@@ -123,7 +123,7 @@ Yes, RClone Manager includes bandwidth limiting options. You can set upload and 
 **Category:** features  
 **Tags:** updates, auto-update, version
 
-Yes, RClone Manager includes built-in auto-update functionality using Tauri's updater. You'll be notified when updates are available and can choose when to install them. You can also check for updates manually in the About section.
+Yes, for most installations. The Windows installer, macOS app, AppImage, portable builds and the standalone server update themselves; installations managed by a package manager (AUR, `.deb`, `.rpm`, Flatpak, Docker) only announce new versions and are updated with that package manager. Nothing is installed without your confirmation, and you can check for updates manually in the About section. See [Updates & Upgrades](../getting-started/updates.md).
 
 ### Is RClone Manager open source?
 

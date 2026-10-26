@@ -8,73 +8,70 @@ This guide explains how updates are checked, downloaded, and applied in RClone M
 
 RClone Manager distributes updates through different channels and mechanisms depending on the platform and package format you use.
 
-### 1. Auto-Updates (Tauri Updater)
+### 1. In-App Updates
 
-For native desktop builds (**Windows installer, macOS app, Debian/Ubuntu `.deb`, and Fedora `.rpm`**), the app uses the built-in Tauri Updater to check for updates against the GitHub Releases API.
+How an update is installed depends on how RClone Manager was installed. The app checks the GitHub Releases for a build that matches your platform and only announces an update when a matching package exists.
 
-- **Channels**: In **Settings → About**, you can choose between the **Stable** and **Beta** update channels.
-- **Authentication on Linux**: Standard Linux systems require root privileges to install packages. The updater attempts privilege escalation using the following sequence:
-  1.  **`pkexec`**: A graphical authentication dialog prompts for your password to install the package using the system's package manager (`dpkg` or `rpm`).
-  2.  **Graphical Dialog (Zenity/KDialog)**: If `pkexec` is not available, the app falls back to using `zenity` or `kdialog` to prompt for a password, executing `sudo -S dpkg -i <package>` under the hood.
-  3.  **Terminal Fallback**: Runs a standard `sudo` command. _Note: This fallback only succeeds if RClone Manager was originally launched from a terminal. If the app was launched via a desktop environment's application menu/shortcut, this step will fail since there is no terminal attached to prompt for or receive your password._
+| Installation                                 | How it updates                                                                                                    |
+| :------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
+| Windows installer, macOS app, Linux AppImage | The built-in Tauri updater downloads and installs the signed release (the AppImage must be in a writable folder). |
+| Portable (Windows, Linux, macOS)             | The app downloads the signed portable `.zip`, verifies it and replaces its own executable.                        |
+| Standalone server (`rclone-manager-server`)  | The same signed `.zip` mechanism, when the executable and its folder belong to the user running the server.       |
+| Android (direct APK)                         | The app verifies the APK, then Android's installer asks for your confirmation.                                    |
+| AUR, `.deb`, `.rpm`, Flatpak, Docker         | Not installed by the app. It only announces the new version; update with your package manager (see below).        |
 
----
-
-### 2. [[icon:warning.warn]] Arch Linux & AUR Installation
-
-If you installed RClone Manager via the **Arch User Repository (AUR)**, the in-app updater **should not be used**.
-
-> [!WARNING]
-> **AUR Packaging Conflicts**
->
-> - **Dependency Errors**: The native Tauri updater attempts to execute `dpkg` (Debian Package Manager) to install updates. On Arch Linux, this will fail with `dpkg: command not found` unless you have custom compatibility layers.
-> - **Package Name Collisions**: If you have `dpkg` installed and run the update, it installs the Debian package. The AUR package is registered as `rclone-manager`, but the `.deb` package registers as `r-clone-manager` (with an extra hyphen). This creates a packaging collision, registers duplicate menu entries, and breaks the system tray integration.
-
-#### Resolving a Package Collision
-
-If the updater has corrupted your installation or left a conflicting package:
-
-1.  Uninstall the `.deb` package manually:
-    ```bash
-    sudo dpkg --remove r-clone-manager
-    ```
-2.  Clean build and update the official AUR package using your AUR helper or via a manual build:
-
-    **Using `yay`:**
-
-    ```bash
-    yay -Syu rclone-manager
-    ```
-
-    **Using `paru`:**
-
-    ```bash
-    paru -Syu rclone-manager
-    ```
-
-    **Manual Build (Git):**
-
-    ```bash
-    git clone https://aur.archlinux.org/rclone-manager.git
-    cd rclone-manager
-    makepkg -si
-    ```
+- **Channels**: In **Settings → About**, you can choose between the **Stable** and **Beta** update channels. A beta build can switch to the latest stable release right away, even when its version number is lower; it does not have to wait for the next stable version.
+- **No administrator password**: The app never asks for a root or administrator password. If the executable or its folder is read-only or owned by another user, installation is disabled and the reason is shown; update it with your deployment tooling instead.
+- **Automatic rollback**: After a portable or server update, the new version must report a successful start within 90 seconds and stay running for 10 more seconds. Otherwise the previous executable is restored and the failed version is hidden from the update list. Only the executable is rolled back, not your settings.
+- **Turning updates off**: Set `RCLONE_MANAGER_DISABLE_UPDATES=1` to keep release checks but disable in-app installation.
 
 ---
 
-### 3. Flatpak, Docker, and Portable Updates
+### 2. [[icon:inventory_2.primary]] Package-Managed Installations
 
-Environments that lack Tauri Updater support due to sandboxing or containment must be updated manually.
+When a package manager owns the installation, the in-app updater does not install anything. The app still shows when a new version exists; update it the way you installed it.
 
-- **Flatpak**: The updater is compiled out to respect sandbox isolation. Update via Flatpak:
+- **Arch Linux (AUR)**:
+
+  **Using `yay`:**
+
+  ```bash
+  yay -Syu rclone-manager
+  ```
+
+  **Using `paru`:**
+
+  ```bash
+  paru -Syu rclone-manager
+  ```
+
+  **Manual Build (Git):**
+
+  ```bash
+  git clone https://aur.archlinux.org/rclone-manager.git
+  cd rclone-manager
+  makepkg -si
+  ```
+
+- **Debian/Ubuntu (`.deb`) and Fedora (`.rpm`)**: Download the new package from [GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases) and install it with your package manager (for example `sudo apt install ./package.deb` or `sudo dnf install ./package.rpm`).
+- **Flatpak**:
   ```bash
   flatpak update io.github.zarestia_dev.rclone-manager
   ```
-- **Docker Container**: The container runs a headless server variant that checks only for `headless-` tags. Pull the latest image and re-create your container:
+- **Docker Container**: The container announces a new `headless-` release once its matching server package is published. Pull the latest image and re-create your container:
   ```bash
   docker pull ghcr.io/zarestia-dev/rclone-manager:latest
   ```
-- **Portable Binary**: Download the latest portable `.zip` archive from the [Downloads Page](https://hakanismail.info/zarestia/rclone-manager/downloads) or [GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases) and replace the existing binaries.
+  Docker and Podman containers are detected automatically. On other container runtimes, set `RCLONE_MANAGER_INSTALLATION_TYPE=container` so the app does not try to replace its executable inside the container.
+
+#### Resolving a Package Collision on Arch
+
+If an older release replaced your AUR installation with the Debian package, the AUR package (`rclone-manager`) and the `.deb` (`r-clone-manager`, with an extra hyphen) can both be registered. Remove the `.deb` and reinstall the AUR package:
+
+```bash
+sudo dpkg --remove r-clone-manager
+yay -Syu rclone-manager
+```
 
 ---
 
