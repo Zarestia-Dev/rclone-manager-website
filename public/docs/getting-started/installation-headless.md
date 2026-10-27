@@ -44,6 +44,44 @@ static Alpine/musl builds. Other Rclone platforms remain planned work in
 [backend/TODO.md](https://github.com/Zarestia-Dev/rclone-manager/blob/master/backend/TODO.md).
 Only assets actually published in a release appear on the download page.
 
+## [[icon:inventory_2.primary]] Arch Linux (AUR)
+
+```bash
+yay -S rclone-manager-server
+```
+
+`rclone-manager-server` installs the pure server from the release ZIP. It depends
+only on `glibc`, `gcc-libs` and `dbus`, so it needs no GTK, WebKit or Xvfb. The
+package installs `/usr/bin/rclone-manager-server`, the `rclone-manager-server`
+systemd unit and the `rclone-manager` service user, whose home is
+`/var/lib/rclone-manager`.
+
+The unit listens on `0.0.0.0:8080` and reads credentials from
+`/etc/rclone-manager/server.env`. Set them before starting the service:
+
+```bash
+sudo install -d /etc/rclone-manager
+sudo install -m 600 /dev/null /etc/rclone-manager/server.env
+sudoedit /etc/rclone-manager/server.env   # RCLONE_MANAGER_USER=... and RCLONE_MANAGER_PASS=...
+sudo systemctl enable --now rclone-manager-server
+```
+
+To change the address or port, override the command with
+`sudo systemctl edit rclone-manager-server`:
+
+```ini
+[Service]
+ExecStart=
+ExecStart=/usr/bin/rclone-manager-server --host 127.0.0.1 --port 8080
+```
+
+Pacman owns `/usr/bin/rclone-manager-server`, so the application only announces new
+versions; update it with `yay -Syu rclone-manager-server`.
+
+The AUR also has `rclone-manager-headless` (server with native tray) and
+`rclone-manager-git`. Both need GTK and WebKit; use `rclone-manager-server` on
+servers without a desktop session.
+
 ## [[icon:dns.primary]] Docker
 
 ```bash
@@ -172,6 +210,7 @@ journalctl -u rclone-manager-server -f
 ## [[icon:sync.primary]] Updating
 
 - **Docker Compose:** run `docker compose pull` and `docker compose up -d`.
+- **Arch Linux (AUR):** run `yay -Syu rclone-manager-server`.
 - **Pure server:** stop the service, replace the executable with the one from the
   new ZIP, then start it again.
 - **Native packages:** use the native updater where available, or install the

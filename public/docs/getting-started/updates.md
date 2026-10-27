@@ -45,6 +45,8 @@ When a package manager owns the installation, the in-app updater does not instal
   paru -Syu rclone-manager
   ```
 
+  The server packages update the same way; use `rclone-manager-server` (pure server) or `rclone-manager-headless` (server with tray) instead of `rclone-manager`.
+
   **Manual Build (Git):**
 
   ```bash

@@ -71,7 +71,15 @@ yay -S rclone-manager
 
 # Git Version (Bleeding Edge)
 yay -S rclone-manager-git
+
+# Pure web server without GTK/WebKit, for servers and NAS (see Headless Server)
+yay -S rclone-manager-server
+
+# Web server with a native tray (needs GTK and WebKit)
+yay -S rclone-manager-headless
 ```
+
+See [Installation: Headless Server](../getting-started/installation-headless.md) to set up the `rclone-manager-server` service.
 
 ---
 

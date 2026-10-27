@@ -109,13 +109,13 @@ export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
         icon: 'layers',
       },
       {
-        name: 'AUR (Server + Tray)',
-        command: 'yay -S rclone-manager-headless',
+        name: 'AUR (Server)',
+        command: 'yay -S rclone-manager-server',
         icon: 'terminal',
       },
       {
-        name: 'AUR (Git)',
-        command: 'yay -S rclone-manager-headless-git',
+        name: 'AUR (Server + Tray)',
+        command: 'yay -S rclone-manager-headless',
         icon: 'terminal',
       },
       {
