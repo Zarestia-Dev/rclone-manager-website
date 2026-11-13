@@ -1,6 +1,6 @@
 # [[icon:extension.primary]] File Manager Integrations
 
-RClone Manager provides native file manager integrations across Windows, Linux, and macOS. This allows you to right-click files or folders in your system's file manager and upload them directly to a configured cloud remote in the background.
+RClone Manager provides native file manager integrations across Windows, Linux, and macOS. This allows you to right-click files or folders in your system's file manager and upload them directly to a configured cloud remote in the background. On Android, files reach the app through the system **Share** menu instead.
 
 ---
 
@@ -25,7 +25,10 @@ To unregister and clean up the context menu actions for a path:
 ![Unregistering Remote Integration](../assets/integrations/remove-from-file-manager-menu.png)
 
 > [!NOTE]
-> **Automatic Cleanup**: When RClone Manager is uninstalled or removed from the system, all of these registered context menu actions, extensions, and shell scripts are automatically cleaned up, leaving zero residue on your filesystem.
+> **Names**: Each registration is named after its remote and path, for example `Dropbox - Backups (RClone Manager)`, and the menu entry reads **Upload to** followed by that remote and path. Use **Remove from File Manager Menu** to unregister one.
+
+> [!NOTE]
+> **Cleanup**: Uninstalling with the Windows installer or a DEB/RPM package removes the registered entries automatically (see Uninstallation Clean-up below). Other installs have no uninstaller; unregister your paths in the app first.
 
 ### Windows (Windows Explorer)
 
@@ -39,7 +42,7 @@ RClone Manager creates two types of context menu shortcuts:
 RClone Manager integrates with the most popular Linux file managers:
 
 - **KDE Dolphin**: Registers service menus under `~/.local/share/kio/servicemenus/` as desktop actions, showing up directly in your right-click menu.
-- **Nautilus (GNOME)**: Installs a Python extension (`MenuProvider`) in `~/.local/share/nautilus-python/extensions/` to add native context-menu options, along with a fallback shell script in `~/.local/share/nautilus/scripts/`.
+- **Nautilus (GNOME)**: Installs a Python extension (`MenuProvider`) in `~/.local/share/nautilus-python/extensions/` to add native context-menu options, along with a fallback shell script in `~/.local/share/nautilus/scripts/`. Nautilus loads the extension only when the `nautilus-python` package is installed; without it, use the entry under **Scripts** in the right-click menu.
 - **Nemo (Cinnamon)**: Adds custom Nemo actions in `~/.local/share/nemo/actions/`.
 
 > [!NOTE]
@@ -58,12 +61,22 @@ RClone Manager integrates with the most popular Linux file managers:
 
 Registers a Finder Quick Action (Service) bundle in `~/Library/Services/` using Automator zsh-action workflows. You can trigger it from Finder's **Quick Actions** menu.
 
+### Android (Share menu)
+
+Android has no file manager menu to register, so there is nothing to add under **Add to File Manager Menu**. RClone Manager instead appears in the system **Share** sheet of other apps (Gallery, Files and so on) for one file, several files or text:
+
+1. Share the files to **RClone Manager**. Shared text arrives as a text file.
+2. The files are copied to the app cache and the file browser opens.
+3. Choose the destination remote and folder, then confirm. The upload starts after you confirm.
+
 ---
 
 ## [[icon:delete.primary]] Uninstallation Clean-up
 
-RClone Manager takes care of your filesystem and leaves zero residue:
+Removing RClone Manager with its installer or package takes the registered entries with it:
 
-- **Windows**: The installer (both NSIS `.exe` and WiX `.msi` packages) automatically cleans up all custom registry keys and `.lnk` shortcuts from your SendTo folder upon uninstallation.
-- **Linux**: The system packages (DEB/RPM) run a pre-removal script (`preremove.sh`) to delete all registered context menu actions, python extensions, and shell scripts across all system user home folders.
-- **macOS**: Dragging the app to the Trash does not automatically clean user service bundles, but clicking **Unregister** inside the app GUI will completely remove the `.workflow` folders.
+- **Windows**: The installer (both NSIS `.exe` and WiX `.msi` packages) removes the custom registry keys and the `.lnk` shortcuts in your SendTo folder on uninstall. This covers both the desktop and the headless product.
+- **Linux**: The DEB and RPM packages run a pre-removal script that deletes the Nautilus scripts and Python extensions, Dolphin service menus and Nemo actions of the product being removed, in `/root` and in every user's home under `/home`.
+- **macOS**: Dragging the app to the Trash does not remove your user service bundles. Choose **Remove from File Manager Menu** in the app first; it deletes the `.workflow` folder.
+
+AppImage, Flatpak, portable and standalone server installs have no uninstaller, so entries registered from them stay until you remove them with **Remove from File Manager Menu**.

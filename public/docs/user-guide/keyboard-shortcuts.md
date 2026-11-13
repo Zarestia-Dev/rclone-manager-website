@@ -22,6 +22,8 @@ These shortcuts operate globally across all main views (Dashboard, Remote Overvi
 | **`Ctrl + ?`**         | **Show Shortcuts**         | Opens this interactive keyboard shortcuts cheat sheet.                 |
 | **`Ctrl + ,`**         | **Open Preferences**       | Opens global settings, theme preferences, and system configuration.    |
 | **`Ctrl + .`**         | **Open Flags**             | Opens the Rclone global flags and CLI argument manager.                |
+| **`Ctrl + Alt + R`**   | **RC Console**             | Opens the console for running any rclone remote-control call.          |
+| **`Ctrl + Alt + V`**   | **Open Vault**             | Opens the configuration vault dialog.                                  |
 | **`Ctrl + Alt + A`**   | **Alerts & Notifications** | Opens the Alert Rules and Notification Channels dashboard.             |
 | **`Ctrl + Shift + M`** | **Force Check Mounts**     | Refreshes and validates active mount points and VFS states.            |
 | **`Ctrl + Shift + S`** | **Force Check Serves**     | Refreshes active WebDAV, SFTP, HTTP, and FTP server instances.         |

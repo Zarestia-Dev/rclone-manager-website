@@ -46,7 +46,7 @@ Design, schedule, and execute complex multi-step cloud automation pipelines usin
 
 ### Visual Workflow Canvas
 
-Connect triggers (manual, cron schedules, folder watchers, job finish events) to transfer tasks, branching condition logic, delay timers, parallel splits, and external notifications (Telegram, WhatsApp, Webhooks, Email, MQTT) with smooth Bezier cables.
+Connect triggers (manual, cron schedules, folder watchers, job finish events) to transfer tasks, branching condition logic, delay timers, parallel splits, and external notifications (Telegram, WhatsApp, Webhooks, Email, MQTT) with smooth Bezier cables. The node library on the left, **Dry Run**, presets and recipes, a minimap, and a **Last run** panel with the result and duration of every step help you build and debug a workflow.
 
 ![Visual Workflow Canvas](../assets/workflow-canvas.png)
 
@@ -104,11 +104,49 @@ Instantly host protocols such as **WebDAV**, **SFTP**, **HTTP**, or **FTP** poin
 
 Monitor, analyze, and throttle file transfer operations in real-time.
 
-### Job Watcher
+### Job Monitor & File Report
 
-Keep track of all active transfers. View real-time speed charts, estimated remaining time, individual file transfer progress, and adjust global bandwidth limits on the fly to fit your network conditions.
+One card shows what matters for the kind of job: progress, average and peak speed, time taken or left, files, checks and errors. A finished sync, copy or move job keeps rclone's report as tabs (combined, missing on destination, differ, missing on source, match, errors) with a status for every file. The global bandwidth limit can be changed from the dashboard.
 
-![Job Watcher](../assets/job-watcher.png)
+![Job Monitor and File Report](../assets/job-watcher.png)
+
+### Resolve Differences & BiSync Conflicts
+
+Files that changed on both paths are listed in a **Conflicts** tab. Review one file or a whole selection: the dialog shows both versions with their real paths, size, modification time and checksums, marks which is newer or larger, and asks which version should win. Nothing changes until you apply.
+
+![BiSync Conflict Resolver](../assets/conflict-resolver.png)
+
+---
+
+## [[icon:terminal.primary]] RC Console
+
+Run any rclone remote-control call from the app menu or with `Ctrl + Alt + R`. A sidebar lists every call, suggestions complete calls and parameters as you type, and the console starts in **Read-only** mode with **Secrets masked**. On a local backend it shows the rclone version and can restart the engine.
+
+![RC Console](../assets/rc-control.png)
+
+---
+
+## [[icon:notifications.primary]] Alerts & Notifications
+
+Define rules that decide which events matter, then route them to the actions you set up. See **[Alerts & Notifications](../user-guide/alerts-and-notifications.md)** for the details.
+
+### Alert History
+
+Every alert with its severity, time, description and context. Filter by severity, search, acknowledge or clear them.
+
+![Alert History](../assets/alert-history.png)
+
+### Alert Rules
+
+Rules choose a severity and the events to match, and list the actions they trigger.
+
+![Alert Rules](../assets/alert-rules.png)
+
+### Alert Actions
+
+Send alerts to a **Webhook (HTTP/S)**, **Telegram**, **WhatsApp**, **MQTT** or **Email**. Each action can be switched on or off, tested with the play button, edited or deleted.
+
+![Alert Actions](../assets/alert-actions.png)
 
 ---
 
@@ -133,3 +171,13 @@ Long-press the application header to access fast actions: graceful shutdown, bac
 Export your remotes, workflows, quick runs, and application settings with optional AES-256 password encryption via the `rcman` core library.
 
 ![Configuration Export](../assets/export-modal.png)
+
+### Configuration Vault
+
+Protect your configurations, credentials and sub-settings at rest with AES-256-GCM encryption. A locked vault shows an unlock screen until you enter the master password.
+
+![Vault Locked](../assets/vault-locked.png)
+
+In the vault settings you can lock the vault at once, set an auto-lock timeout, change the master password or disable the protection.
+
+![Configuration Vault Settings](../assets/vault-modal.png)

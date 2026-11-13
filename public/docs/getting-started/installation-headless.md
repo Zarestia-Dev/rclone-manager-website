@@ -173,6 +173,12 @@ Because the service user owns the executable and its directory, the application
 can update itself. An executable owned by root (for example in `/usr/bin`)
 disables in-app updates; replace it manually instead.
 
+After a self-update the service keeps its main PID: the original process stays as
+the parent of the updated server until the service stops, so `systemctl status`
+lists two processes. A small hidden `.rcman-update-…` folder next to the
+executable goes away when the service stops. See [Updates](updates.md) for how
+the automatic rollback works.
+
 Create `/etc/systemd/system/rclone-manager-server.service`:
 
 ```ini

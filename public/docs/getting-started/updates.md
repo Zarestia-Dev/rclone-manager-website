@@ -12,24 +12,27 @@ RClone Manager distributes updates through different channels and mechanisms dep
 
 How an update is installed depends on how RClone Manager was installed. The app checks the GitHub Releases for a build that matches your platform and only announces an update when a matching package exists.
 
-| Installation                                 | How it updates                                                                                                    |
-| :------------------------------------------- | :---------------------------------------------------------------------------------------------------------------- |
-| Windows installer, macOS app, Linux AppImage | The built-in Tauri updater downloads and installs the signed release (the AppImage must be in a writable folder). |
-| Portable (Windows, Linux, macOS)             | The app downloads the signed portable `.zip`, verifies it and replaces its own executable.                        |
-| Standalone server (`rclone-manager-server`)  | The same signed `.zip` mechanism, when the executable and its folder belong to the user running the server.       |
-| Android (direct APK)                         | The app verifies the APK, then Android's installer asks for your confirmation.                                    |
-| AUR, `.deb`, `.rpm`, Flatpak, Docker         | Not installed by the app. It only announces the new version; update with your package manager (see below).        |
+| Installation                                 | How it updates                                                                                                                                                                                                                                     |
+| :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Windows installer, macOS app, Linux AppImage | The built-in Tauri updater downloads and installs the signed release (the AppImage must be in a writable folder).                                                                                                                                  |
+| Portable (Windows, Linux, macOS)             | The app downloads the signed portable `.zip`, verifies it and replaces its own executable.                                                                                                                                                         |
+| Standalone server (`rclone-manager-server`)  | The same signed `.zip` mechanism, when the executable and its folder belong to the user running the server.                                                                                                                                        |
+| Android (direct APK)                         | The app verifies the APK, then Android's installer asks for your confirmation.                                                                                                                                                                     |
+| `.deb` and `.rpm` packages                   | The built-in Tauri updater installs the signed package after asking for your password through the system prompt (`pkexec`, `zenity` or `kdialog`). It applies when the package manager owns the installation, and only newer versions are offered. |
+| AUR, Flatpak, Docker                         | Not installed by the app. It only announces the new version; update with your package manager (see below).                                                                                                                                         |
 
 - **Channels**: In **Settings → About**, you can choose between the **Stable** and **Beta** update channels. A beta build can switch to the latest stable release right away, even when its version number is lower; it does not have to wait for the next stable version.
-- **No administrator password**: The app never asks for a root or administrator password. If the executable or its folder is read-only or owned by another user, installation is disabled and the reason is shown; update it with your deployment tooling instead.
-- **Automatic rollback**: After a portable or server update, the new version must report a successful start within 90 seconds and stay running for 10 more seconds. Otherwise the previous executable is restored and the failed version is hidden from the update list. Only the executable is rolled back, not your settings.
+- **Administrator password**: The portable and server updaters never ask for a root or administrator password. If the executable or its folder is read-only or owned by another user, installation is disabled and the reason is shown; update it with your deployment tooling instead. `.deb` and `.rpm` updates are the exception: they use the system's own password prompt, and without a session that can show one (a headless service, for example) the app reports the failure and keeps the verified download for another try.
+- **Automatic rollback**: After a portable or server update, the new version must report a successful start within 90 seconds. If it exits or does not report in time, the previous executable is restored and the failed version is hidden from the update list. Once the new version has reported its start, the update is kept, even if you close the app right away. Only the executable is rolled back, not your settings.
+- **Background process and folder (Linux and macOS)**: While an updated portable app or server runs, the original process stays in the background as its parent, so that service managers, containers and terminals that track the process keep seeing the same one. A small hidden `.rcman-update-…` folder stays next to the executable. Both disappear when the app or service stops; if an update was rolled back, the folder stays until the failure has been shown to you.
+- **Credentials and launch arguments**: The updated app is started with the same arguments as the running one. Anything on the command line, such as `--pass`, is visible to every user on the machine through `ps` and `/proc/<pid>/cmdline`, so give passwords through `RCLONE_MANAGER_PASS` in an owner-only file instead (see the [headless guide](installation-headless.md)). During the update the arguments pass through an environment variable that is not written to disk and not inherited by rclone or other child processes; on Linux it stays visible to the process owner and root in `/proc/<pid>/environ`, like the rest of the service's environment.
 - **Turning updates off**: Set `RCLONE_MANAGER_DISABLE_UPDATES=1` to keep release checks but disable in-app installation.
 
 ---
 
 ### 2. [[icon:inventory_2.primary]] Package-Managed Installations
 
-When a package manager owns the installation, the in-app updater does not install anything. The app still shows when a new version exists; update it the way you installed it.
+For AUR, Flatpak and Docker installations the in-app updater does not install anything. The app still shows when a new version exists; update it the way you installed it.
 
 - **Arch Linux (AUR)**:
 
@@ -55,7 +58,7 @@ When a package manager owns the installation, the in-app updater does not instal
   makepkg -si
   ```
 
-- **Debian/Ubuntu (`.deb`) and Fedora (`.rpm`)**: Download the new package from [GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases) and install it with your package manager (for example `sudo apt install ./package.deb` or `sudo dnf install ./package.rpm`).
+- **Debian/Ubuntu (`.deb`) and Fedora (`.rpm`)**: The app installs new versions itself (see the table above). If that is not possible, for example without a password prompt, download the new package from [GitHub Releases](https://github.com/Zarestia-Dev/rclone-manager/releases) and install it with your package manager (for example `sudo apt install ./package.deb` or `sudo dnf install ./package.rpm`). A `.deb` that an AUR package repackaged stays with the AUR.
 - **Flatpak**:
   ```bash
   flatpak update io.github.zarestia_dev.rclone-manager

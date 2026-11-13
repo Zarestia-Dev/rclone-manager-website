@@ -6,30 +6,32 @@ This guide covers how to configure authentication, HTTPS/TLS, ports, and data vo
 
 ## [[icon:list.primary]] Configuration Reference
 
-Both the pure server and the native tray-enabled server accept the network and path options below. Command-line arguments and `RCLONE_MANAGER_*` environment variables work with standalone binaries as well as Docker. `PUID`, `PGID`, and `PGIDS` are specific to the container entrypoint.
+Both the pure server and the native tray-enabled server accept the network and path options below. Command-line arguments and `RCLONE_MANAGER_*` environment variables work with standalone binaries as well as Docker. `PUID`, `PGID`, and `PGIDS` are specific to the container entrypoint. The [CLI reference](../getting-started/cli.md) lists every option and the variables that have no flag.
 
-| Feature           | Flag (Binary/Service)             | Environment Variable         | Default     |
-| :---------------- | :-------------------------------- | :--------------------------- | :---------- |
-| **Host IP**       | `--host <IP>`                     | `RCLONE_MANAGER_HOST`        | `0.0.0.0`   |
-| **Port**          | `--port <PORT>`                   | `RCLONE_MANAGER_PORT`        | `8080`      |
-| **Username**      | `--user <NAME>`                   | `RCLONE_MANAGER_USER`        | _(None)_    |
-| **Password**      | `--pass <PASS>`                   | `RCLONE_MANAGER_PASS`        | _(None)_    |
-| **TLS Cert**      | `--tls-cert <PATH>`               | `RCLONE_MANAGER_TLS_CERT`    | _(None)_    |
-| **TLS Key**       | `--tls-key <PATH>`                | `RCLONE_MANAGER_TLS_KEY`     | _(None)_    |
-| **Data Dir**      | `--data-dir <PATH>`               | `RCLONE_MANAGER_DATA_DIR`    | _(Default)_ |
-| **Cache Dir**     | `--cache-dir <PATH>`              | `RCLONE_MANAGER_CACHE_DIR`   | _(Default)_ |
-| **Log Dir**       | `--logs-dir <PATH>`               | `RCLONE_MANAGER_LOG_DIR`     | _(Default)_ |
-| **Tray**          | `--tray` (native tray build only) | _(N/A)_                      | `false`     |
-| **Master Secret** | _(N/A)_                           | `RCLONE_MANAGER_SECRET`      | _(None)_    |
-| **Secret Path**   | _(N/A)_                           | `RCLONE_MANAGER_SECRET_PATH` | _(None)_    |
-| **Secret File**   | _(N/A)_                           | `RCLONE_MANAGER_SECRET_FILE` | _(None)_    |
-| **User ID**       | _(N/A)_                           | `PUID`                       | `1000`      |
-| **Group ID**      | _(N/A)_                           | `PGID`                       | `1000`      |
-| **Extra Groups**  | _(N/A)_                           | `PGIDS`                      | _(None)_    |
+| Feature                 | Flag (Binary/Service)             | Environment Variable                 | Default     |
+| :---------------------- | :-------------------------------- | :----------------------------------- | :---------- |
+| **Host IP**             | `--host <IP>`                     | `RCLONE_MANAGER_HOST`                | `0.0.0.0`   |
+| **Port**                | `--port <PORT>`                   | `RCLONE_MANAGER_PORT`                | `8080`      |
+| **Username**            | `--user <NAME>`                   | `RCLONE_MANAGER_USER`                | _(None)_    |
+| **Password**            | `--pass <PASS>`                   | `RCLONE_MANAGER_PASS`                | _(None)_    |
+| **TLS Cert**            | `--tls-cert <PATH>`               | `RCLONE_MANAGER_TLS_CERT`            | _(None)_    |
+| **TLS Key**             | `--tls-key <PATH>`                | `RCLONE_MANAGER_TLS_KEY`             | _(None)_    |
+| **Data Dir**            | `--data-dir <PATH>`               | `RCLONE_MANAGER_DATA_DIR`            | _(Default)_ |
+| **Cache Dir**           | `--cache-dir <PATH>`              | `RCLONE_MANAGER_CACHE_DIR`           | _(Default)_ |
+| **Log Dir**             | `--logs-dir <PATH>`               | `RCLONE_MANAGER_LOG_DIR`             | _(Default)_ |
+| **Tray**                | `--tray` (native tray build only) | _(N/A)_                              | `false`     |
+| **Master Secret**       | _(N/A)_                           | `RCLONE_MANAGER_SECRET`              | _(None)_    |
+| **Secret Path**         | _(N/A)_                           | `RCLONE_MANAGER_SECRET_PATH`         | _(None)_    |
+| **Secret File**         | _(N/A)_                           | `RCLONE_MANAGER_SECRET_FILE`         | _(None)_    |
+| **Vault Password**      | _(N/A)_                           | `RCLONE_MANAGER_VAULT_PASSWORD`      | _(None)_    |
+| **Vault Password File** | _(N/A)_                           | `RCLONE_MANAGER_VAULT_PASSWORD_FILE` | _(None)_    |
+| **User ID**             | _(N/A)_                           | `PUID`                               | `1000`      |
+| **Group ID**            | _(N/A)_                           | `PGID`                               | `1000`      |
+| **Extra Groups**        | _(N/A)_                           | `PGIDS`                              | _(None)_    |
 
 ### Path Resolution Hierarchy
 
-RClone Manager Headless follows a strict precedence when resolving directory paths:
+RClone Manager Headless follows the same precedence as every build (see the [CLI reference](../getting-started/cli.md)):
 
 1. **CLI Arguments**: `--data-dir`, `--cache-dir`, or `--logs-dir` (highest)
 2. **Environment Variables**: `RCLONE_MANAGER_DATA_DIR`, `RCLONE_MANAGER_CACHE_DIR`, or `RCLONE_MANAGER_LOG_DIR`
@@ -49,25 +51,31 @@ paths when moving an existing installation.
 
 ### Network & Authentication
 
-- **Host IP**: The network interface the server binds to.
-  - `0.0.0.0`: Listens on all interfaces (public/remote access).
-  - `127.0.0.1`: Restricts access to the local machine only.
-- **Port**: The TCP port for the web interface.
-- **Username & Password**: Enables Basic Authentication. Both must be set to secure the interface.
+- **Host IP**: `0.0.0.0` listens on all interfaces (remote access); `127.0.0.1` restricts access to the local machine.
+- **Username & Password**: Enable Basic Authentication. Both must be set. Give the password through `RCLONE_MANAGER_PASS` (an owner-only file or `.env`), not `--pass`: command-line arguments are visible to every user through `ps`.
 
 ### Security (HTTPS/TLS)
 
-- **TLS Cert & Key**: Paths to your `.pem` certificate and private key files. Enables encrypted HTTPS access.
+- **TLS Cert & Key**: Paths to your `.pem` certificate and private key. Both are required; together they enable HTTPS.
 
 ### Persistence (Paths)
 
-- **Data Dir**: Stores the internal database, settings, and the downloaded `rclone` binary.
-- **Cache Dir**: Stores temporary session data and file browser cache.
-- **Log Dir**: Stores application runtime logs.
+- **Data Dir**: Internal database, settings and the downloaded `rclone` binary.
+- **Cache Dir**: Temporary session data and the file browser cache.
+- **Log Dir**: Application runtime logs. The log level is a developer setting in the application; the shared logger does not read `RUST_LOG`.
 
-### [[icon:lock.primary]] Secret Management (Advanced)
+### [[icon:lock.primary]] Secrets and the Vault (Advanced)
 
-RClone Manager uses the `rcman` library to securely store sensitive configuration and connection credentials (like remote passwords, encryption keys, and tokens).
+Two separate passwords protect sensitive data. Do not mix them up:
+
+| Purpose                                                                                                         | Variables                                                                           |
+| :-------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
+| **Credential store**: remote passwords, encryption keys and tokens that the `rcman` library keeps encrypted     | `RCLONE_MANAGER_SECRET`, `RCLONE_MANAGER_SECRET_PATH`, `RCLONE_MANAGER_SECRET_FILE` |
+| **Configuration vault**: AES-256-GCM protection of your configuration, unlocked with a master password at start | `RCLONE_MANAGER_VAULT_PASSWORD`, `RCLONE_MANAGER_VAULT_PASSWORD_FILE`               |
+
+#### Credential store
+
+A container has no OS keyring. **Without `RCLONE_MANAGER_SECRET` (or a key file), secrets are kept in memory only and must be entered again after every restart.** Set one of these to persist them:
 
 - **`RCLONE_MANAGER_SECRET`**: Master encryption key string passed directly via environment variable.
   ```bash
@@ -90,10 +98,14 @@ RClone Manager uses the `rcman` library to securely store sensitive configuratio
 > [!WARNING]
 > If mounting a secret key file with `-v /host/path/secret.key:/data/.secret:ro`, ensure the file exists on the host **before** running `docker run` or `docker compose up`. If the host file does not exist, Docker will create a directory at that path, preventing `rcman` from reading the key.
 
-### Docker-Specific
+#### Configuration vault
 
-- **User ID (PUID)** & **Group ID (PGID)**: Maps the internal container user to your host user. This is essential for preventing permission issues on mounted volumes.
-- **Application log level**: Configure the developer log-level setting in the application. The shared logger does not read `RUST_LOG`.
+A server whose configuration vault is enabled stays locked until the master password is entered. To unlock it automatically at startup, provide the password with one of these:
+
+- **`RCLONE_MANAGER_VAULT_PASSWORD_FILE`**: Path to a file that holds the password, for example a Docker or systemd secret (`chmod 600`). Preferred.
+- **`RCLONE_MANAGER_VAULT_PASSWORD`**: The password itself. It is used first when both are set.
+
+Empty values count as unset, so a Compose entry such as `RCLONE_MANAGER_VAULT_PASSWORD=${VAULT_PASSWORD}` does not stop the server when the host variable is missing.
 
 ---
 
@@ -108,6 +120,15 @@ The repository’s `docker-compose.yml` provides one service with commented opti
 | **rclone-data**   | `/data`        | Persistent app data and runtime-downloaded rclone binary |
 | **rclone-config** | `/config`      | Rclone configuration (`rclone.conf`)                     |
 | **Certs**         | `/app/certs`   | _(Optional)_ Read-only mount point for TLS certificates  |
+
+The image sets `RCLONE_MANAGER_DATA_DIR=/data`, `RCLONE_MANAGER_LOG_DIR=/data/logs`, `RCLONE_MANAGER_CACHE_DIR=/data/cache` and `RCLONE_MANAGER_INSTALLATION_TYPE=docker`. A container never replaces its own executable: to update, pull the new image and re-create the container (see [Updates](../getting-started/updates.md)).
+
+### [[icon:favorite.accent]] Healthcheck
+
+The server answers `GET /health` without authentication. The image checks it every 30 seconds: over `http`, or over `https` (accepting a self-signed certificate) when `RCLONE_MANAGER_TLS_CERT` is set, on `RCLONE_MANAGER_PORT` (default `8080`).
+
+> [!WARNING]
+> The sample `docker-compose.yml` defines its own `healthcheck`, which replaces the image's and always requests `http://localhost:8080/health`. If you enable TLS or change `RCLONE_MANAGER_PORT`, update or remove that block, otherwise the container is reported as `unhealthy`.
 
 ### [[icon:link.primary]] Remote Authentication (OAuth & Port 53682)
 
@@ -199,37 +220,38 @@ volumes:
 
 Merge these entries with existing environment variables and volumes. Do not
 replace `/data` or `/config` mounts. TLS uses the configured server port (8080 by
-default); it does not automatically switch to 8443. Restart with
-`docker compose up -d` and access the server using `https://` when TLS is enabled.
+default); it does not automatically switch to 8443.
+
+Update or remove the compose `healthcheck` block as well (see Healthcheck above).
+Restart with `docker compose up -d` and access the server using `https://` when TLS
+is enabled.
 
 ---
 
 ## [[icon:settings.primary]] Systemd Service Configuration
 
-For the pure server, create the service described in the [installation guide](../getting-started/installation-headless.md). Installing a package does not necessarily create or enable that service. Tray-enabled native packages still require a GUI runtime.
+For the pure server, create the service described in the [installation guide](../getting-started/installation-headless.md), which also covers the service user and file ownership. Installing a package does not necessarily create or enable that service. Tray-enabled native packages still require a GUI runtime.
 
-**1. Edit the Service:**
+**1. Put credentials in the environment file** (owner-only, never in `ExecStart`, because unit files and command lines are readable by every user):
 
 ```bash
-sudo nano /etc/systemd/system/rclone-manager-server.service
-
+sudo install -m 600 /dev/null /etc/rclone-manager/server.env
+sudoedit /etc/rclone-manager/server.env
+# RCLONE_MANAGER_USER=admin
+# RCLONE_MANAGER_PASS=<long random password>
 ```
 
-**2. Modify the `ExecStart` line:**
-Find the `[Service]` section. Add or remove flags to change the configuration.
+**2. Change network options in `ExecStart`** (`sudoedit /etc/systemd/system/rclone-manager-server.service`):
 
-_Example: Changing port to 3000 and setting a custom password._
+_Example: changing the port to 3000._
 
 ```ini
 [Service]
 # ...
 ExecStart=/opt/rclone-manager/rclone-manager-server \
     --host 0.0.0.0 \
-    --port 3000 \
-    --user admin \
-    --pass MySecretPass
+    --port 3000
 # ...
-
 ```
 
 **3. Apply Changes:**
@@ -237,7 +259,6 @@ ExecStart=/opt/rclone-manager/rclone-manager-server \
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl restart rclone-manager-server
-
 ```
 
 ---
@@ -263,33 +284,18 @@ $env:RCLONE_MANAGER_PASS="MySecretPass"
 
 ---
 
-## [[icon:report_problem.warn]] Important: OAuth Port 53682
-
-When adding remotes that require browser authentication (like Google Drive, OneDrive, or Dropbox), Rclone needs to receive a callback token.
-
-- **Docker Users:** You **must** expose port `53682` (it is included in our default `docker-compose.yml`).
-- **Firewall:** Ensure your firewall (UFW/IPTables) allows incoming traffic on port `53682`.
-
-If this port is blocked, the authentication tab in your browser will hang or show "Connection Refused."
-
----
-
 ## [[icon:build.primary]] Troubleshooting
 
 <details>
 <summary><b>Docker Healthcheck Failing?</b></summary>
 
-The Docker container includes a healthcheck.
+The container reports `unhealthy` when `GET /health` does not answer. The endpoint needs no authentication, so a wrong password is not the cause.
 
-- **Default Profile:** Checks `http://localhost:8080/health`
-- **Auth Profile:** Checks using `curl -u user:pass ...`
-- **TLS Profile:** Checks `https://...` with `-k` (insecure) to support self-signed certs.
-
-If the container shows `unhealthy`, check the logs:
+- If you use the sample `docker-compose.yml` with TLS or a custom `RCLONE_MANAGER_PORT`, its `healthcheck` still requests `http://localhost:8080/health`. Update or remove it (see the Healthcheck section above).
+- Check the logs:
 
 ```bash
 docker logs rclone-manager
-
 ```
 
 </details>
@@ -297,15 +303,19 @@ docker logs rclone-manager
 <details>
 <summary><b>Systemd Service Won't Start?</b></summary>
 
-Because RClone Manager uses Tauri/GTK, it requires a virtual display.
+Read the service log first:
 
-1. Ensure `Xvfb` is installed on your system.
-2. Ensure the service file includes:
-
-```ini
-Environment="DISPLAY=:99"
-
+```bash
+journalctl -u rclone-manager-server -e
 ```
+
+The server refuses to start in these cases:
+
+- A username without a password, or the other way round.
+- A TLS certificate without a key, or the other way round.
+- The port is already in use. Change `--port`.
+
+The pure server needs no display. The tray-enabled native packages (`rclone-manager-headless`) use Tauri: their launcher script starts `Xvfb` by itself when no display is available, but only if `Xvfb` is installed, so install it on a machine without a desktop session. The pure server or Docker avoid this altogether.
 
 </details>
 

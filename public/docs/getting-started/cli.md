@@ -27,7 +27,7 @@ RClone Manager resolves directories using the following precedence:
 
 ## [[icon:send.primary]] File Manager / Integration Options
 
-These arguments are used by RClone Manager's context menu integrations to launch background file uploads. You can also run them manually or call them from custom scripts.
+These arguments are used by the file manager integrations that RClone Manager registers on Windows, Linux and macOS (Explorer, Nautilus, Dolphin, Nemo and Finder; see [File Manager Integrations](../user-guide/integrations.md)) to launch background file uploads. You can also run them manually or call them from custom scripts. Android has no command line: shared files arrive through the system **Share** menu instead.
 
 | Argument / Flag             | Description                                                                         | Example / Usage                       |
 | :-------------------------- | :---------------------------------------------------------------------------------- | :------------------------------------ |
@@ -44,6 +44,10 @@ rclone-manager --send-to-remote "GoogleDrive:" --send-to-path "ServerBackups" "/
 > [!TIP]
 > **Single-Instance IPC**  
 > For native builds with the single-instance plugin, if RClone Manager is already running in the background, executing this command will automatically forward the parameters to the running instance via local IPC and start the upload immediately without opening a new app window.
+
+> [!NOTE]
+> **No window, and the vault stays locked**  
+> A send-to command does not open the app window. It waits for the engine, uploads, and shuts down again. If the configuration vault is locked, the transfer is refused instead of bypassing the lock; unlock the app first.
 
 ---
 
@@ -63,8 +67,13 @@ These parameters configure network binding, authentication, and TLS encryption, 
 ### Basic Auth Example
 
 ```bash
-rclone-manager-server --user admin --pass MySecretPassword123
+export RCLONE_MANAGER_PASS="$(cat /etc/rclone-manager/pass)"
+rclone-manager-server --user admin
 ```
+
+> [!WARNING]
+> **Do not put the password on the command line.**  
+> Anything passed with `--pass` is visible to every user on the machine through `ps` and `/proc/<pid>/cmdline`. Give it through `RCLONE_MANAGER_PASS`, preferably from an owner-only file (`chmod 600`) such as the systemd `EnvironmentFile` described in the [headless guide](installation-headless.md). The same applies to the arguments of an updated app: it is started with the same arguments as the running one (see [Updates](updates.md)).
 
 ### Secure HTTPS Example
 
@@ -76,3 +85,17 @@ The desktop binary is `rclone-manager`, the pure server is `rclone-manager-serve
 and the native tray server is `rclone-manager-headless` (with `.exe` on Windows). Run `--help` on your
 installed binary to check its compiled options. Authentication requires both
 username and password; TLS requires both certificate and key.
+
+---
+
+## [[icon:settings.primary]] Environment-Only Variables
+
+These variables have no command-line flag. For the two vault variables, empty values count as unset, so a Compose entry such as `RCLONE_MANAGER_VAULT_PASSWORD=${VAULT_PASSWORD}` does not stop the app when the host variable is missing.
+
+| Environment Variable                                                   | Description                                                                                                                                                                                  |
+| :--------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RCLONE_MANAGER_VAULT_PASSWORD`                                        | Master password that unlocks the configuration vault at startup, so a protected installation starts without anyone typing it.                                                                |
+| `RCLONE_MANAGER_VAULT_PASSWORD_FILE`                                   | Path to a file that holds that password (for example a Docker or systemd secret). It is used only when `RCLONE_MANAGER_VAULT_PASSWORD` is unset or empty. Prefer it over the variable above. |
+| `RCLONE_MANAGER_SECRET`, `RCLONE_MANAGER_SECRET_PATH`, `…_SECRET_FILE` | Master key or key file for the encrypted credential store of the headless server. See **Secret Management** in the [headless configuration](../platform/configuration-headless.md).          |
+| `RCLONE_MANAGER_DISABLE_UPDATES`                                       | Set to `1` or `true` to keep release checks but turn off in-app installation. See [Updates](updates.md).                                                                                     |
+| `RCLONE_MANAGER_INSTALLATION_TYPE`                                     | Declares how the app is deployed (for example `container`) so it does not try to replace its own executable. Docker and Podman are detected automatically. See [Updates](updates.md).        |

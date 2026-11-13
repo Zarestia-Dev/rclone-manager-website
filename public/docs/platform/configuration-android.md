@@ -55,9 +55,11 @@ Traditional directory mounting (`mount` syscall to local filesystem directories)
 - **Storage Access Framework (SAF) Mount Bridge**: To work around this, RClone Manager provides an in-process SAF VFS Mount Bridge (`RcloneDocumentsProvider`). This allows external Android file managers and apps to read and write directly to your cloud remotes via Android's native Documents UI, without requiring FUSE or root access.
 - **Recommended Workaround (Network Servers)**: You can also start a **WebDAV** or **SFTP** server in RClone Manager (e.g. listening on `127.0.0.1:8080`) and connect using third-party Android file managers (such as _Cx File Explorer_ or _Solid Explorer_).
 
-### Updates are Unsupported on Mobile
+### Updates
 
-Checking for and installing **both application updates and Rclone binary updates** is not supported on mobile platforms.
+Direct APK installs update from inside the app: it downloads the APK, checks that the package name, the signing certificates and a higher version code match the installed app, and then hands it to Android's installer, which asks for your confirmation. If **Install unknown apps** is not allowed for RClone Manager, the app opens that Android setting and keeps the verified download so you can try again. Play Store in-app updates are not implemented.
+
+Rclone itself ships inside the app as a library, so it is not updated separately; it changes with the app.
 
 ---
 
