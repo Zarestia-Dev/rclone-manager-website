@@ -6,17 +6,98 @@ Having trouble? Start here, find your symptom below and jump straight to the fix
 
 ## [[icon:search.accent]] What's happening?
 
-| I'm seeing this…                                                | Go to                 |
-| --------------------------------------------------------------- | --------------------- |
-| App won't open, shows a blank window, or freezes                | [Issue 1 →](#issue-1) |
-| Flatpak version can't mount drives or shows permission errors   | [Issue 2 →](#issue-2) |
-| Mounting fails with an error about `allow_other`                | [Issue 3 →](#issue-3) |
-| App crashes when I click "Show App" after startup               | [Issue 4 →](#issue-4) |
-| Files dropped into the app are ignored or show errors (Flatpak) | [Issue 6 →](#issue-6) |
+| I'm seeing this…                                                               | Go to                 |
+| ------------------------------------------------------------------------------ | --------------------- |
+| Buttons and text only appear while I hover over them, or flicker and disappear | [Issue 1 →](#issue-1) |
+| App won't open, shows a blank window, or freezes                               | [Issue 2 →](#issue-2) |
+| Flatpak version can't mount drives or shows permission errors                  | [Issue 3 →](#issue-3) |
+| Mounting fails with an error about `allow_other`                               | [Issue 4 →](#issue-4) |
+| App crashes when I click "Show App" after startup                              | [Issue 5 →](#issue-5) |
+| Can't use the system `rclone` or reach folders outside the sandbox (Flatpak)   | [Issue 6 →](#issue-6) |
+| Files dropped into the app are ignored or show errors (Flatpak)                | [Issue 7 →](#issue-7) |
 
 ---
 
-## [[icon:bug_report.warn]] Issue 1: App Won't Start, Shows a Blank Screen, or Freezes {#issue-1}
+## [[icon:visibility_off.warn]] Issue 1: Interface Is Only Visible When Hovering, or Flickers and Disappears {#issue-1}
+
+### [[icon:search.accent]] What you might see
+
+- The window opens, but buttons, text, and panels only appear while the mouse is over them
+- Parts of the interface vanish a moment after they are drawn
+- It started after a system update, or you are on a Wayland session with an NVIDIA GPU (including laptops with both Intel and NVIDIA graphics)
+
+### [[icon:settings.accent]] What's going on (in plain English)
+
+The web engine that draws RClone Manager (WebKitGTK) has several rendering shortcuts that can be switched off with environment variables. Switching them off used to fix crashes and blank windows on some NVIDIA setups, but with recent WebKitGTK versions (2.54 and newer) the same switches can make the window repaint only partly, which is what you see.
+
+Two things can set those variables for you:
+
+- **You or an older guide.** A fix you added earlier (for example `WEBKIT_DISABLE_DMABUF_RENDERER=1` or `WEBKIT_DISABLE_COMPOSITING_MODE=1`) may no longer be needed and can now cause this problem.
+- **RClone Manager itself.** On Wayland sessions with an NVIDIA driver loaded, on KDE Plasma older than 6.8 and on Hyprland, the app turns software compositing on automatically to avoid a crash. On laptops where the app is actually drawn by the Intel or AMD GPU, that is not needed and can cause this problem.
+
+---
+
+### [[icon:build_circle.success]] Fix it
+
+**Step 1: Remove old overrides.** Check each place where you may have added one of these variables, and remove the line:
+
+<details>
+<summary>[[icon:inventory_2]] I installed it via Flatpak</summary>
+
+See what is set:
+
+```bash
+flatpak override --user --show io.github.zarestia_dev.rclone-manager
+```
+
+Remove the variables if they appear:
+
+```bash
+flatpak override --user --unset-env=WEBKIT_DISABLE_DMABUF_RENDERER io.github.zarestia_dev.rclone-manager
+flatpak override --user --unset-env=WEBKIT_DISABLE_COMPOSITING_MODE io.github.zarestia_dev.rclone-manager
+flatpak override --user --unset-env=GDK_BACKEND io.github.zarestia_dev.rclone-manager
+```
+
+</details>
+
+<details>
+<summary>[[icon:desktop_windows]] I installed it normally (.deb, .rpm, AppImage, AUR)</summary>
+
+Look for `WEBKIT_DISABLE_DMABUF_RENDERER`, `WEBKIT_DISABLE_COMPOSITING_MODE` or `GDK_BACKEND` in:
+
+- The `Exec=` line of `/usr/share/applications/RClone Manager.desktop` or `~/.local/share/applications/RClone Manager.desktop`
+- `~/.config/autostart/RClone Manager.desktop`
+- `~/.config/plasma-workspace/env/` (for example `rclone-manager-fix.sh`)
+- `~/.config/environment.d/` and your shell profile (`~/.profile`, `~/.bashrc`, `~/.zshrc`)
+
+</details>
+
+Then fully quit RClone Manager (right-click the tray icon, **Quit**) and start it again.
+
+**Step 2: If it still happens, stop the app from forcing software compositing.** Setting the variable to `0` tells RClone Manager not to turn it on by itself.
+
+```bash
+WEBKIT_DISABLE_COMPOSITING_MODE=0 rclone-manager
+```
+
+For Flatpak:
+
+```bash
+flatpak run --env=WEBKIT_DISABLE_COMPOSITING_MODE=0 io.github.zarestia_dev.rclone-manager
+```
+
+If the interface now draws correctly, make it permanent the same way as in [Issue 2](#issue-2), using `WEBKIT_DISABLE_COMPOSITING_MODE=0` instead of `WEBKIT_DISABLE_DMABUF_RENDERER=1`. For Flatpak:
+
+```bash
+flatpak override --user --env=WEBKIT_DISABLE_COMPOSITING_MODE=0 io.github.zarestia_dev.rclone-manager
+```
+
+> [!NOTE]
+> If the app crashes with `Protocol error` or `explicit sync` after this change, you need the automatic workaround on your system. Remove the override again (`--unset-env=WEBKIT_DISABLE_COMPOSITING_MODE`) and see [Issue 5](#issue-5).
+
+---
+
+## [[icon:bug_report.warn]] Issue 2: App Won't Start, Shows a Blank Screen, or Freezes {#issue-2}
 
 ### [[icon:search.accent]] What you might see
 
@@ -35,6 +116,9 @@ RClone Manager uses your GPU to render its interface. On some Linux setups, this
 > [!TIP]
 > **Not sure which command to try?**  
 > Start with the first one. If it doesn't work, try the second.
+
+> [!WARNING]
+> These variables can themselves cause drawing problems on newer WebKitGTK versions (2.54+), such as an interface that only appears when you hover over it. If the app opens but looks wrong, or you added them for an older problem, see [Issue 1](#issue-1) before using them.
 
 **Open a terminal and run:**
 
@@ -94,7 +178,7 @@ From now on, the fix applies automatically every time you launch the app.
 
 ---
 
-## [[icon:lock.warn]] Issue 2: Flatpak Version Can't Mount Drives {#issue-2}
+## [[icon:lock.warn]] Issue 3: Flatpak Version Can't Mount Drives {#issue-3}
 
 ### [[icon:search.accent]] What you might see
 
@@ -169,7 +253,7 @@ flatpak override --user --show io.github.zarestia_dev.rclone-manager
 
 ---
 
-## [[icon:block.warn]] Issue 3: Mounting Fails with an "allow_other" Error {#issue-3}
+## [[icon:block.warn]] Issue 4: Mounting Fails with an "allow_other" Error {#issue-4}
 
 ### [[icon:search.accent]] What you might see
 
@@ -214,11 +298,13 @@ RClone Manager's official Docker container automatically uncomments `user_allow_
 If you are running an older image version or encountering permission errors:
 
 1. **Pull the latest image**:
+
    ```bash
    docker compose pull && docker compose up -d
    ```
 
 2. **Mounting on Host**: Ensure `/dev/fuse` is exposed and `SYS_ADMIN` capability is provided in your `docker-compose.yml`:
+
    ```yaml
    devices:
      - /dev/fuse:/dev/fuse
@@ -236,7 +322,7 @@ If you are running an older image version or encountering permission errors:
 
 ---
 
-## [[icon:rocket.primary]] Issue 4: App Crashes When Opened After Startup {#issue-4}
+## [[icon:rocket.primary]] Issue 5: App Crashes When Opened After Startup {#issue-5}
 
 ### [[icon:search.accent]] What you might see
 
@@ -320,7 +406,7 @@ flatpak override --user \
 
 ---
 
-## [[icon:folder.warn]] Issue 5: Accessing System Binaries or Host Paths in Flatpak {#issue-5}
+## [[icon:folder.warn]] Issue 6: Accessing System Binaries or Host Paths in Flatpak {#issue-6}
 
 ### [[icon:search.accent]] What you might see
 
@@ -354,11 +440,11 @@ When selecting or typing paths in the app's settings, you must navigate through 
 ```
 
 > [!TIP]
-> If you just want standard access to your `~` (home) directory without manually typing prefix paths for everything, you can simply grant the app full home access via Flatseal or the terminal (`flatpak override --user --filesystem=home io.github.zarestia_dev.rclone-manager`) as described in [Issue 2](#issue-2).
+> If you just want standard access to your `~` (home) directory without manually typing prefix paths for everything, you can simply grant the app full home access via Flatseal or the terminal (`flatpak override --user --filesystem=home io.github.zarestia_dev.rclone-manager`) as described in [Issue 3](#issue-3).
 
 ---
 
-## [[icon:upload_file.warn]] Issue 6: Files dropped into the app are ignored or show errors (Flatpak) {#issue-6}
+## [[icon:upload_file.warn]] Issue 7: Files dropped into the app are ignored or show errors (Flatpak) {#issue-7}
 
 ### [[icon:search.accent]] What you might see
 

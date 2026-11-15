@@ -99,4 +99,4 @@ The manager selects an update strategy dynamically based on folder write permiss
 
 > [!TIP]
 > **Check Current Settings**  
-> You can view or change the active Rclone binary path in **Settings → Core → Rclone Binary**. If you are using the Flatpak version and want to use your system's Rclone binary, ensure it points to the host prefix path: `/var/run/host/usr/bin/rclone` as explained in the [Linux Troubleshooting Guide](../support/troubleshooting-linux.md#issue-5).
+> You can view or change the active Rclone binary path in **Settings → Core → Rclone Binary**. If you are using the Flatpak version and want to use your system's Rclone binary, ensure it points to the host prefix path: `/var/run/host/usr/bin/rclone` as explained in the [Linux Troubleshooting Guide](../support/troubleshooting-linux.md#issue-6).
