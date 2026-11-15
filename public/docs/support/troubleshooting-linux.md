@@ -33,7 +33,7 @@ The web engine that draws RClone Manager (WebKitGTK) has several rendering short
 Two things can set those variables for you:
 
 - **You or an older guide.** A fix you added earlier (for example `WEBKIT_DISABLE_DMABUF_RENDERER=1` or `WEBKIT_DISABLE_COMPOSITING_MODE=1`) may no longer be needed and can now cause this problem.
-- **RClone Manager itself.** On Wayland sessions with an NVIDIA driver loaded, on KDE Plasma older than 6.8 and on Hyprland, the app turns software compositing on automatically to avoid a crash. On laptops where the app is actually drawn by the Intel or AMD GPU, that is not needed and can cause this problem.
+- **RClone Manager itself.** On Wayland sessions with an NVIDIA driver loaded, on KDE Plasma older than 6.8 and on Hyprland, the app turns software compositing on automatically to avoid a crash. On laptops where the app is actually drawn by the Intel or AMD GPU, that is not needed and can cause this problem. Versions after 0.3.6 skip this workaround when the main GPU is not NVIDIA, so update first if you can.
 
 ---
 
