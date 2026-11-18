@@ -29,6 +29,10 @@ All documentation is located in the `public/docs/` directory as Markdown files.
 
 - To add a new page, create a `.md` file in the appropriate subdirectory.
 - Update `public/docs/sidebar.md` to include your new page in the navigation.
+- The page's URL is its file name: `user-guide/mounting.md` is served at `/docs/mounting`.
+- Format with Prettier before opening a pull request: `npx prettier --write "public/docs/**/*.md"`.
+- Rebuild the search index with `node scripts/build-search-index.js`.
+- The pull request template has a short checklist for documentation changes.
 
 ### 🖼️ Adding Images
 

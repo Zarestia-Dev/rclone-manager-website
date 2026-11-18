@@ -142,7 +142,6 @@ The root Dockerfile builds the frontend and pure server in its build stage:
 docker build -t rclone-manager:local .
 ```
 
-
 ---
 
 ## [[icon:smart_toy.primary]] CI/CD Automation
