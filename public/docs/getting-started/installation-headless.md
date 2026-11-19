@@ -24,11 +24,11 @@ Choose a **Server** archive from [Downloads](https://hakanismail.info/zarestia/r
 with Headless mode selected, or from the
 [headless releases](https://github.com/Zarestia-Dev/rclone-manager/releases).
 
-| OS | Architectures | Archive |
-| --- | --- | --- |
-| Linux | x86_64, aarch64 | `server-linux-<arch>-<version>.zip` |
+| OS      | Architectures   | Archive                               |
+| ------- | --------------- | ------------------------------------- |
+| Linux   | x86_64, aarch64 | `server-linux-<arch>-<version>.zip`   |
 | Windows | x86_64, aarch64 | `server-windows-<arch>-<version>.zip` |
-| macOS | x86_64, aarch64 | `server-macos-<arch>-<version>.zip` |
+| macOS   | x86_64, aarch64 | `server-macos-<arch>-<version>.zip`   |
 
 Each ZIP contains a `rclone-manager-server/` folder with the executable, `LICENSE`,
 a short `README.txt` and, on Linux, a systemd unit template. The executable embeds
@@ -107,7 +107,7 @@ services:
     image: ghcr.io/zarestia-dev/rclone-manager:latest
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8080:8080"
+      - '127.0.0.1:8080:8080'
     volumes:
       - rclone-config:/config
       - rclone-data:/data
