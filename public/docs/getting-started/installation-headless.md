@@ -135,6 +135,11 @@ image and sets:
 - Port `8080` for the web UI. Pick another host port if 8080 is already in use
   on your server.
 
+Set **Web UI username** and **Web UI password** (`RCLONE_MANAGER_USER` and
+`RCLONE_MANAGER_PASS`). Without both, the web UI has no login, so anyone who can
+reach the port can control the app and read your stored cloud credentials. Leave
+them empty only behind a reverse proxy that requires its own login.
+
 Keep your shares out of `/home/rclone-manager`: the container changes the owner
 of that folder, `/config` and `/data` at every start. Set **Master secret**
 (`RCLONE_MANAGER_SECRET`) so saved remote credentials survive restarts. For FUSE
