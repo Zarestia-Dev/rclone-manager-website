@@ -21,6 +21,8 @@
 ## User Guide {icon=menu_book, description="Learn how to use RClone Manager effectively"}
 
 - [Remote Management](user-guide/remote-management.md) {description="Learn how to manage remotes, run sync/copy jobs, and more", icon=folder_shared}
+- [Sync & Transfer Jobs](user-guide/sync-and-transfer.md) {description="Create sync, copy, move and bisync profiles and run them", icon=sync}
+- [Scheduler & Automations](user-guide/scheduler.md) {description="Run profiles on startup, on a cron schedule or when files change", icon=schedule}
 - [Visual Workflows](user-guide/workflows.md) {description="Node-based visual automation and pipeline editor", icon=account_tree}
 - [Quick Runs](user-guide/quick-runs.md) {description="One-click task runners and fast action command presets", icon=bolt}
 - [Keyboard Shortcuts](user-guide/keyboard-shortcuts.md) {description="Master application navigation and file operations with keyboard shortcuts", icon=keyboard}
