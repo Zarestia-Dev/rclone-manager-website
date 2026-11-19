@@ -120,6 +120,31 @@ Start with `docker compose up -d`. Preserve both volumes across updates.
 See [configuration](../platform/configuration-headless.md) for authentication,
 TLS, OAuth, user mapping and FUSE mounts.
 
+## [[icon:storage.primary]] Unraid (Community Applications)
+
+RClone Manager is available in Unraid's Community Applications. Search for
+**RClone Manager** in the **Apps** tab, or open its
+[Community Applications page](https://ca.unraid.net/apps/rclone-manager-1wrkqwm0tcyixe).
+The template runs the official `ghcr.io/zarestia-dev/rclone-manager:latest`
+image and sets:
+
+- `PUID=99` and `PGID=100` (`nobody:users`), the owner of Unraid shares.
+- `/config` and `/data` in `/mnt/user/appdata/rclone-manager`.
+- The Unraid shares at `/mnt/user`, for the local sources and destinations of
+  your jobs.
+- Port `8080` for the web UI. Pick another host port if 8080 is already in use
+  on your server.
+
+Keep your shares out of `/home/rclone-manager`: the container changes the owner
+of that folder, `/config` and `/data` at every start. Set **Master secret**
+(`RCLONE_MANAGER_SECRET`) so saved remote credentials survive restarts. For FUSE
+mounts, add `--device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined`
+to **Extra Parameters**.
+
+The template is maintained in
+[repires/unraid-templates](https://github.com/repires/unraid-templates); report
+template problems there.
+
 ## [[icon:terminal.primary]] Pure server from source
 
 Follow the [build guide](building.md) for toolchain and dependency setup.
