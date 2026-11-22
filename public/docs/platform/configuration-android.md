@@ -39,7 +39,7 @@ The Android version of RClone Manager brings powerful cloud storage management d
   - **SAF Remote & Tree Picker**: Allows selecting and authorizing local storage folders, SD cards, and USB OTG drives via native Android SAF tree picker intents (`ACTION_OPEN_DOCUMENT_TREE`).
   - **Android DocumentsProvider**: Added `RcloneDocumentsProvider` to expose mounted Rclone remotes directly to external Android apps and system file pickers as a native storage provider.
   - **SAF VFS Mount Bridge**: In-process virtual filesystem bridge enabling SAF storage provider access without requiring FUSE or root privileges.
-  - **Android Background Keep-Alive & Boot Receiver**: Added `RcloneKeepAliveService` for persistent background mounts and `ResumeUploadsBootReceiver` for boot initialization.
+  - **Android Background Keep-Alive & Boot Receiver**: Added `RcloneKeepAliveService` for persistent background mounts and `SafBootReceiver` for boot initialization (see [Running in the Background](#running-in-the-background)).
 - **Share to App (Receive Shared Files & Text)**: Share files, text, or links directly from external Android applications (like Gallery, Files, Chrome, or Telegram) into RClone Manager via the Android system share target (`ACTION_SEND` & `ACTION_SEND_MULTIPLE`). Incoming content is received instantly and ready to upload to any cloud remote.
 - **Share from App (Send Content)**: Share remote files directly from the RClone Manager file manager to external Android apps (such as WhatsApp, Telegram, Email, or Google Drive) using the native Android share sheet (`ACTION_SEND` via secure `FileProvider` `content://` URIs).
 - **Open in System Default Apps**: Open files directly in external Android media players, PDF readers, or document editors (`ACTION_VIEW`).
@@ -61,6 +61,38 @@ Direct APK installs update from inside the app: it downloads the APK, checks tha
 
 Rclone itself ships inside the app as a library, so it is not updated separately; it changes with the app.
 
+### Running in the Background
+
+With **Run in Background** turned on, RClone Manager keeps a background service with an ongoing notification, so jobs, mounts, serves and schedules keep working while the app window is closed. **Start on Boot** starts this service when the phone boots.
+
+The service does not keep the phone awake on its own. The phone stays awake only while jobs or servers run, a folder watcher is about to start its run, or another app has files open or is still uploading files saved through the app. For schedules, the app sets an exact alarm that wakes the phone for the next run. While nothing of this happens, the phone sleeps as usual.
+
+If the app starts in the background while the vault is locked (after a boot, or after Android closed it), nothing runs until you unlock the vault in the app, and the notification says so. A vault that locks itself while the app runs does not stop jobs, schedules or folder watchers: they use the settings read when the app started.
+
+Android can still close the app:
+
+- **Android System WebView updates**: The app's interface is a WebView, and the backend runs in the same process. When the Play Store updates Android System WebView, Android closes every app that has loaded it, even one with a background service. Apps with a native interface, such as WhatsApp, are not affected.
+- **Low memory**, and cleanup by the phone's manufacturer (for example, optimization in Samsung's Device care), can also close background apps.
+
+What happens then:
+
+- Android usually restarts the background service by itself. With **Run in Background** on, the service starts the backend again, as after a boot: auto-start profiles, Quick Runs, Workflows and schedules come back without opening the app.
+- Jobs and servers that were running are lost, because rclone keeps them in memory, and they cannot be resumed. A notification says how many jobs were interrupted and how many servers were stopped; nothing is shown when none was running. Servers set to start automatically start again with the app.
+- Mounts stay available: file managers can still open them, and the app lists them again when it starts. A mount started by a workflow comes back when the workflow runs again.
+- If you use a vault, it is locked after the restart, so auto-starts and schedules wait until you unlock it in the app.
+- After a **Force stop**, Android restarts nothing until you open the app again.
+
+> [!TIP]
+> Exempting RClone Manager from battery optimization (offered in the first-run wizard) makes Android less likely to close it in the background.
+
+To see why Android closed the app, connect the phone with `adb` and run:
+
+```bash
+adb shell dumpsys activity exit-info com.rclone.manager
+```
+
+`PACKAGE UPDATED` with `stop com.google.android.webview` is a WebView update and `LOW_MEMORY` is memory pressure. `TOO MANY EMPTY PROCS` is normal: Android removed the process after the background service had already stopped.
+
 ---
 
 ## [[icon:code.primary]] Custom rclone patches in FFI (Upstream PRs Pending)
@@ -71,13 +103,16 @@ During compilation of the `librclone` C-shared library, RClone Manager dynamical
 > **Upstream Integration & Lifecycle:**
 > All patches are located in the [backend/core/librclone_patches](https://github.com/Zarestia-Dev/rclone-manager/tree/master/backend/core/librclone_patches) folder. These custom extensions are temporary; once proper native support for these RPC endpoints and features is submitted and merged upstream into official Rclone PRs, these local patches will be removed.
 
-- **Config Encryption Detection (`config/isencrypted` RPC):** Registers a custom endpoint to allow the GUI to query if the local configuration is encrypted before accessing it.
+- **Config Encryption Detection (`config/isencrypted` RPC):** Registers a custom endpoint to allow the GUI to query if the local configuration is encrypted before accessing it. A file encrypted with a newer format than `RCLONE_ENCRYPT_V0` is reported as an error, as rclone itself does, rather than as not encrypted.
 - **Config Encryption (`config/encrypt` RPC):** Registers a custom endpoint to encrypt the configuration in-process.
 - **Config Decryption (`config/decrypt` RPC):** Registers a custom endpoint to remove password protection and decrypt the configuration in-process.
-- **Config Password Validation (`config/validatepassword` RPC):** Registers a custom endpoint to safely validate a candidate password against the encrypted config file. Unlike the built-in `config/unlock` - which only hashes and stores the password in-memory without ever checking if it is correct - this endpoint reads the config file directly, derives the key via `SHA256("[password][rclone-config]")`, and attempts a real `secretbox.Open` decryption. It returns a structured error (`"wrong password: decryption failed"`) on failure rather than silently succeeding and causing a panic later when `LoadedData()` tries to decrypt the file inside an RC job context. On success it also activates the key in-memory, so no separate `config/unlock` call is required afterwards.
+- **Config Password Validation (`config/validatepassword` RPC):** Registers a custom endpoint to safely validate a candidate password against the encrypted config file. Unlike the built-in `config/unlock` - which only hashes and stores the password in-memory without ever checking if it is correct - this endpoint reads the config file directly, derives the key via `SHA256("[password][rclone-config]")`, and attempts a real `secretbox.Open` decryption. It returns a structured error (`"wrong password: decryption failed"`) on failure rather than silently succeeding and causing a panic later when `LoadedData()` tries to decrypt the file inside an RC job context. On success it also activates the key in-memory, so no separate `config/unlock` call is required afterwards. A wrong password leaves the active key untouched, so the check is also safe while the configuration is unlocked; rclone's own `config.Decrypt` would clear it.
 - **Native In-Process Archive Endpoint (`operations/archive` RPC):** Registers a custom endpoint to perform `create`, `extract`, and `list` operations directly in Go using rclone's internal archive packages (`cmd/archive/create`, `cmd/archive/extract`, `cmd/archive/list`). This bypasses Cobra CLI parsing, avoids process-level stdout hijacking, and automatically excludes target archive files created inside source directories to eliminate infinite self-archiving loops.
 - **Native In-Process CryptCheck Endpoint (`operations/cryptcheck` RPC):** Registers a custom endpoint to verify the integrity of encrypted remotes directly in-process via Go FFI.
-- **Native In-Process Cat Endpoint (`operations/cat` RPC):** Registers a custom endpoint to read remote file contents directly in-process without executing subprocesses or redirecting stdout.
+- **Cancellable File Reads (`operations/getfile` and `operations/cancelread` RPC):** Wraps rclone's `operations/getfile` in place. A call with a `readToken` stops after 30 seconds, or as soon as `operations/cancelread` is called with the same token; a call without one behaves exactly as upstream.
+- **Cache Directory (`config/setcachedir` RPC):** Sets rclone's cache directory at run time. rclone only takes it as the `--cache-dir` flag, which an in-process library cannot pass, and the default points at a directory Android apps cannot write.
+- **Bisync Working Directory (`sync/bisync` wrapper):** Points a missing `workdir`, or one under `/data/local/tmp` that a profile saved from an old default, at the app's cache directory.
+- **Storage Access Framework VFS (`vfs/stream/*` RPC):** `mount`, `unmount`, `list`, `stat`, `open`, `read`, `write`, `close` and `forget` give the documents provider file-handle access to a remote through rclone's VFS. `vfs/stream/busy` reports, through rclone's `VFS.Busy()`, whether a file is still open for writing or waiting to be uploaded, so the app keeps the phone awake until the upload is done.
 - **Automatic Confirmation & Passwords:** Sets global options (`AskPassword = false` and `AutoConfirm = true`) to prevent Go FFI calls from locking/hanging on interactive terminal prompts.
 - **Environment Sync (`RcloneSyncEnv`):** Exports a C function to synchronize environment variables between Rust/Tauri and the Go runtime.
 - **DNS-over-HTTPS (DoH) Injection:** Specifically on Android, overrides the default net resolver to route all hostname lookups securely via HTTPS, bypassing system socket blocks on port 53.
