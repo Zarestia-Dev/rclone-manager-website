@@ -24,11 +24,11 @@ Choose a **Server** archive from [Downloads](https://hakanismail.info/zarestia/r
 with Headless mode selected, or from the
 [headless releases](https://github.com/Zarestia-Dev/rclone-manager/releases).
 
-| OS | Architectures | Archive |
-| --- | --- | --- |
-| Linux | x86_64, aarch64 | `server-linux-<arch>-<version>.zip` |
+| OS      | Architectures   | Archive                               |
+| ------- | --------------- | ------------------------------------- |
+| Linux   | x86_64, aarch64 | `server-linux-<arch>-<version>.zip`   |
 | Windows | x86_64, aarch64 | `server-windows-<arch>-<version>.zip` |
-| macOS | x86_64, aarch64 | `server-macos-<arch>-<version>.zip` |
+| macOS   | x86_64, aarch64 | `server-macos-<arch>-<version>.zip`   |
 
 Each ZIP contains a `rclone-manager-server/` folder with the executable, `LICENSE`,
 a short `README.txt` and, on Linux, a systemd unit template. The executable embeds
@@ -107,7 +107,7 @@ services:
     image: ghcr.io/zarestia-dev/rclone-manager:latest
     restart: unless-stopped
     ports:
-      - "127.0.0.1:8080:8080"
+      - '127.0.0.1:8080:8080'
     volumes:
       - rclone-config:/config
       - rclone-data:/data
@@ -134,6 +134,11 @@ image and sets:
   your jobs.
 - Port `8080` for the web UI. Pick another host port if 8080 is already in use
   on your server.
+
+Set **Web UI username** and **Web UI password** (`RCLONE_MANAGER_USER` and
+`RCLONE_MANAGER_PASS`). Without both, the web UI has no login, so anyone who can
+reach the port can control the app and read your stored cloud credentials. Leave
+them empty only behind a reverse proxy that requires its own login.
 
 Keep your shares out of `/home/rclone-manager`: the container changes the owner
 of that folder, `/config` and `/data` at every start. Set **Master secret**

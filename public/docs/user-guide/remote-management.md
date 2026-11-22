@@ -264,6 +264,8 @@ Your configuration is now encrypted. You may proceed with your digital life, sec
 
 Now that your remote is securely established, you may want to learn how to actually use it.
 
+- [Sync & Transfer Jobs](sync-and-transfer.md)
+- [Scheduler & Automations](scheduler.md)
 - [Visual Workflows](workflows.md)
 - [Quick Runs](quick-runs.md)
 - [Mounting Drives](mounting.md)
