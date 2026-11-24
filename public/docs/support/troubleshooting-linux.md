@@ -15,6 +15,7 @@ Having trouble? Start here, find your symptom below and jump straight to the fix
 | App crashes when I click "Show App" after startup                              | [Issue 5 →](#issue-5) |
 | Can't use the system `rclone` or reach folders outside the sandbox (Flatpak)   | [Issue 6 →](#issue-6) |
 | Files dropped into the app are ignored or show errors (Flatpak)                | [Issue 7 →](#issue-7) |
+| Window is blank or see-through and `WebKitWebProcess` uses ~100% CPU           | [Issue 8 →](#issue-8) |
 
 ---
 
@@ -119,6 +120,9 @@ RClone Manager uses your GPU to render its interface. On some Linux setups, this
 
 > [!WARNING]
 > These variables can themselves cause drawing problems on newer WebKitGTK versions (2.54+), such as an interface that only appears when you hover over it. If the app opens but looks wrong, or you added them for an older problem, see [Issue 1](#issue-1) before using them.
+
+> [!NOTE]
+> If the window stays blank or see-through and a `WebKitWebProcess` process keeps using a full CPU core, these variables won't help. See [Issue 8](#issue-8).
 
 **Open a terminal and run:**
 
@@ -473,6 +477,48 @@ Run this command:
 ```bash
 flatpak override --user io.github.zarestia_dev.rclone-manager --filesystem=home
 ```
+
+---
+
+## [[icon:font_download.warn]] Issue 8: Blank or See-Through Window with High CPU Use {#issue-8}
+
+### [[icon:search.accent]] What you might see
+
+- The window appears in the taskbar and takes focus, but nothing is drawn: it is empty or fully transparent
+- The tray icon works and your mounts still start, only the window is affected
+- A `WebKitWebProcess` process uses close to 100% of one CPU core from the moment the app starts
+- It started after a distribution upgrade (for example Fedora 44 to 45), and the [Issue 2](#issue-2) variables change nothing
+
+To check the CPU use, run this while the window is blank:
+
+```bash
+ps -C WebKitWebProcess -o pid,%cpu,etime,cmd
+```
+
+### [[icon:settings.accent]] What's going on (in plain English)
+
+Before it can draw the window, the web engine asks fontconfig for the list of installed fonts. Fontconfig keeps a cache of that list. After a distribution upgrade the cache can be out of date or no longer match the new fontconfig version, and WebKitGTK can then loop on it and never finish drawing the first screen. The Flatpak version reads your computer's font cache too, so it is affected in the same way.
+
+---
+
+### [[icon:build_circle.success]] Fix it
+
+**Step 1: Rebuild the font cache.** Run this on your computer, not inside the Flatpak sandbox:
+
+```bash
+fc-cache -f
+```
+
+**Step 2: Fully quit RClone Manager** (right-click the tray icon, **Quit**) and start it again.
+
+**Step 3: If the window is still blank,** rebuild the system-wide cache as well, then quit and start the app again:
+
+```bash
+sudo fc-cache -f
+```
+
+> [!NOTE]
+> Remove any `WEBKIT_DISABLE_*` or `GDK_BACKEND` variables you added while trying to fix this (see [Issue 1](#issue-1), Step 1). They are not needed for this problem.
 
 ---
 
