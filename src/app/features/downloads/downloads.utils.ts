@@ -13,7 +13,9 @@ export function createDownloadOption(asset: GitHubAsset): DownloadOption | null 
     name.includes('.sig') ||
     name.includes('source code') ||
     name === 'latest.json' ||
-    /(?:sha256|checksums)/.test(name)
+    /(?:sha256|checksums)/.test(name) ||
+    // 0.3.7 server packages under the Headless name, for the 0.3.6 app's updater.
+    /^rclone\.manager\.headless[_-]0\.3\.7[-_].*\.(?:deb|rpm)$/.test(name)
   ) {
     return null;
   }

@@ -51,9 +51,9 @@ rclone-manager --send-to-remote "GoogleDrive:" --send-to-path "ServerBackups" "/
 
 ---
 
-## [[icon:dns.primary]] Headless Server Options
+## [[icon:dns.primary]] Server Options
 
-These parameters configure network binding, authentication, and TLS encryption, and are **only** compiled into the Headless Web Server build.
+These parameters configure network binding, authentication, and TLS encryption, and are **only** compiled into the server (`rclone-manager-server`).
 
 | Argument / Flag     | Environment Variable      | Default   | Description                                            |
 | :------------------ | :------------------------ | :-------- | :----------------------------------------------------- |
@@ -81,9 +81,9 @@ rclone-manager-server --user admin
 rclone-manager-server --tls-cert /certs/fullchain.pem --tls-key /certs/privkey.pem
 ```
 
-The desktop binary is `rclone-manager`, the pure server is `rclone-manager-server`,
-and the native tray server is `rclone-manager-headless` (with `.exe` on Windows). Run `--help` on your
-installed binary to check its compiled options. Authentication requires both
+The desktop binary is `rclone-manager` and the server is `rclone-manager-server`
+(with `.exe` on Windows). Run `--help` on your installed binary to check its
+compiled options. Authentication requires both
 username and password; TLS requires both certificate and key.
 
 ---

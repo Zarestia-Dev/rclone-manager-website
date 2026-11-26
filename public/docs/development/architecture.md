@@ -63,13 +63,12 @@ core's `updater` feature, so a standalone server can update itself.
 | Desktop          | `rclone-manager` (default `desktop,tray`)        | `rclone-manager`                               |
 | Portable         | `rclone-manager`, with `portable`                | Desktop executable that updates itself         |
 | Flatpak          | `rclone-manager`, with `flatpak`                 | Desktop build with Flatpak adjustments         |
-| Pure server      | `rclone-manager-server`                          | `rclone-manager-server`                        |
-| Server with tray | `rclone-manager`, with `web-server,tray,updater` | Tauri packages it as `rclone-manager-headless` |
+| Server           | `rclone-manager-server` (tray except on macOS)   | `rclone-manager-server`                        |
 | Shared services  | `rclone-manager-core`                            | Library                                        |
 | Mobile           | `rclone-manager`, with `mobile`                  | Android application and native library         |
 
 Windows executables add `.exe`. Cargo output lives under `backend/target`. The
-desktop and headless products share one code base and differ by a `ProductInfo`
+desktop and server products share one code base and differ by a `ProductInfo`
 value (display name, release prefix, integration key and Flatpak ID), so names such
 as release assets and file manager entries follow the product that runs. See
 [building from source](../getting-started/building.md) for the commands.

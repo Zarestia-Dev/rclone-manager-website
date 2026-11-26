@@ -19,9 +19,10 @@ export const HERO_CONTENT = {
     techStack: 'Built with Angular 21 + Tauri · Linux • Windows • macOS • ARM Support',
   } as HeroModeContent,
   headless: {
-    title: 'RClone Manager Headless',
-    subtitle: 'Run as a web server on Linux servers without a GUI!',
-    techStack: 'Perfect for NAS, VPS, and remote systems. Official Docker support with security profiles.',
+    title: 'RClone Manager Server',
+    subtitle: 'Run it as a web server on your NAS, VPS or desktop, and manage it from the browser.',
+    techStack:
+      'Perfect for NAS, VPS, and remote systems. Official Docker support with security profiles.',
   } as HeroModeContent,
   actions: [
     {

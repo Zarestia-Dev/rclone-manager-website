@@ -12,7 +12,7 @@ export class ModeService {
 
   readonly currentMode = signal<AppMode>(this.getInitialMode());
 
-  readonly modeLabel = computed(() => (this.currentMode() === 'desktop' ? 'Desktop' : 'Headless'));
+  readonly modeLabel = computed(() => (this.currentMode() === 'desktop' ? 'Desktop' : 'Server'));
   readonly modeIcon = computed(() => (this.currentMode() === 'desktop' ? 'monitor' : 'dns'));
 
   constructor() {

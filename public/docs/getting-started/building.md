@@ -70,18 +70,6 @@ There is no need to run the core library separately.
 The executable embeds the frontend, translations and templates, so it can be copied
 anywhere on its own. See [server installation](installation-headless.md).
 
-## [[icon:public.primary]] Server with native tray
-
-```bash
-npm run dev:headless
-npm run build:headless
-```
-
-These select the native Tauri package with `web-server,tray,updater` and disabled
-default features. They provide HTTP access plus native integrations and still
-require native GUI dependencies. Tauri packages the executable as
-`rclone-manager-headless` using `backend/desktop/tauri.conf.headless.json`.
-
 ## [[icon:construction.primary]] Other native variants
 
 | Variant             | Development            | Build                                                                       |

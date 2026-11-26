@@ -1,6 +1,6 @@
-# [[icon:dns.primary]] Configuration: Headless Server
+# [[icon:dns.primary]] Configuration: RClone Manager Server
 
-This guide covers how to configure authentication, HTTPS/TLS, ports, and data volumes for **RClone Manager Headless**.
+This guide covers how to configure authentication, HTTPS/TLS, ports, and data volumes for **RClone Manager Server**.
 
 ---
 
@@ -31,7 +31,7 @@ Both the pure server and the native tray-enabled server accept the network and p
 
 ### Path Resolution Hierarchy
 
-RClone Manager Headless follows the same precedence as every build (see the [CLI reference](../getting-started/cli.md)):
+RClone Manager Server follows the same precedence as every build (see the [CLI reference](../getting-started/cli.md)):
 
 1. **CLI Arguments**: `--data-dir`, `--cache-dir`, or `--logs-dir` (highest)
 2. **Environment Variables**: `RCLONE_MANAGER_DATA_DIR`, `RCLONE_MANAGER_CACHE_DIR`, or `RCLONE_MANAGER_LOG_DIR`
@@ -315,7 +315,7 @@ The server refuses to start in these cases:
 - A TLS certificate without a key, or the other way round.
 - The port is already in use. Change `--port`.
 
-The pure server needs no display. The tray-enabled native packages (`rclone-manager-headless`) use Tauri: their launcher script starts `Xvfb` by itself when no display is available, but only if `Xvfb` is installed, so install it on a machine without a desktop session. The pure server or Docker avoid this altogether.
+The server needs no display. Without a desktop session it runs without its tray.
 
 </details>
 

@@ -107,7 +107,7 @@ To avoid "App Damaged" or "Unidentified Developer" warnings, you must sign the a
 
 The headless version is packaged differently since it serves a web UI instead of opening a window.
 
-### Pure server
+### Server
 
 From the application repository root:
 
@@ -121,22 +121,11 @@ The Cargo package is `rclone-manager-server`; its executable is
 The executable embeds the compiled frontend, translations and templates; no
 other files need to ship with it.
 The core crate is a linked library and does not produce another server process.
-
-### Native server with tray and updater
-
-```bash
-npm run build:headless
-```
-
-This builds Tauri with `web-server,tray,updater` and uses
-`backend/desktop/tauri.conf.headless.json`. The packaged binary is named
-`rclone-manager-headless`, but this variant needs native desktop libraries.
-A direct Cargo build of the native crate uses its Cargo binary name,
-`rclone-manager`; the headless name is applied by Tauri packaging.
+On Linux and Windows the server includes its tray; it needs no GTK or WebKit.
 
 ### Docker image
 
-The root Dockerfile builds the frontend and pure server in its build stage:
+The root Dockerfile builds the frontend and the server in its build stage:
 
 ```bash
 docker build -t rclone-manager:local .
@@ -154,30 +143,27 @@ We utilize **GitHub Actions** to automate packaging for all platforms.
 - **Trigger:** Manual (`workflow_dispatch`).
 - **Actions:** Builds Windows, macOS, and Linux assets simultaneously and uploads them to the release page.
 
-### 2. Headless Releases
-
-- **Workflow:** `.github/workflows/release-headless.yml`
-- **Trigger:** Manual (`workflow_dispatch`).
-- **Tag Naming:** Releases are prefixed with `headless-v*`.
-- **Architecture:** Builds binaries for both `x86_64` (Intel/AMD) and `aarch64` (ARM/Raspberry Pi) using a matrix strategy.
-- **Variant:** Native tray-enabled server packages.
-- **Tauri project:** `backend/desktop`, with `tauri.conf.headless.json` and
-  `web-server,tray,updater`, using `--no-default-features`.
-
 The action sets `TAURI_APP_PATH` to the native project and `TAURI_FRONTEND_PATH`
 to the repository root. These explicit paths replace Tauri's old `src-tauri`
 directory convention.
 
-### Standalone Server Releases
+### 2. Server Releases
 
-- **Workflow:** `.github/workflows/release-server.yml`, triggered manually.
+- **Workflow:** `.github/workflows/release-headless.yml`, triggered manually.
+- **Tag Naming:** Releases are prefixed with `headless-v*`, the tag the RClone
+  Manager Headless app and the server's updater look for.
 - **Targets:** Linux, Windows, and macOS on x86_64 and aarch64.
-- **Assets:** `server-<os>-<arch>-<version>.zip`. Each ZIP contains the executable,
-  `LICENSE`, a short `README.txt` and, on Linux, the systemd unit template. The signed
-  `updater.json` catalog is published beside the ZIPs.
-- **Release:** Uploads to the same `headless-v<version>` draft as the tray workflow,
-  without depending on its build jobs. Both workflows serialize release writes.
-  Published releases are not overwritten by the server workflow.
+- **Assets:** `server-<os>-<arch>-<version>.zip` for every target. Each ZIP contains
+  the executable, `LICENSE`, a short `README.txt` and, on Linux, the systemd unit
+  template. Linux and Windows also get the same executable as
+  `RClone.Manager.Server_<version>_<amd64|arm64>.deb`,
+  `RClone.Manager.Server-<version>-1.<x86_64|aarch64>.rpm` (both built with nfpm),
+  `RClone.Manager.Server_<version>_<x64|arm64>-setup.exe` (NSIS) and
+  `RClone.Manager.Server_<version>_<x64|arm64>_en-US.msi` (nfpm), made from
+  `backend/server/package/`.
+- **Updates:** The signed `updater.json` catalog is published beside the assets,
+  with a `latest.json` that moves installs of the RClone Manager Headless app to
+  the server package of their format.
 - **Future targets:** Tracked in
   [backend/TODO.md](https://github.com/Zarestia-Dev/rclone-manager/blob/master/backend/TODO.md).
 

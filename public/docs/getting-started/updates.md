@@ -48,7 +48,7 @@ For AUR, Flatpak and Docker installations the in-app updater does not install an
   paru -Syu rclone-manager
   ```
 
-  The server packages update the same way; use `rclone-manager-server` (pure server) or `rclone-manager-headless` (server with tray) instead of `rclone-manager`.
+  The server package updates the same way; use `rclone-manager-server` instead of `rclone-manager`.
 
   **Manual Build (Git):**
 

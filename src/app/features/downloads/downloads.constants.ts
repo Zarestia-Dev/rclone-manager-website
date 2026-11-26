@@ -75,10 +75,10 @@ export const DESKTOP_PLATFORMS_CONFIG: DownloadPlatform[] = [
 
 export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
   {
-    name: 'Windows (Headless)',
+    name: 'Windows (Server)',
     icon: 'dns',
     description:
-      'Server archives run without a desktop window. Server + Tray installers include native integration.',
+      'The setup (for you) or MSI (for all users) adds a menu entry and a tray; the ZIP runs anywhere.',
     downloads: [],
     packageManagers: [
       {
@@ -91,16 +91,16 @@ export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
     ],
   },
   {
-    name: 'macOS (Headless)',
+    name: 'macOS (Server)',
     icon: 'dns',
     description: 'Standalone server archives for Intel and Apple Silicon.',
     downloads: [],
   },
   {
-    name: 'Linux (Headless)',
+    name: 'Linux (Server)',
     icon: 'dns',
     description:
-      'Server: glibc 2.35+ and D-Bus. Server + Tray additionally requires desktop libraries.',
+      'glibc 2.35+ and D-Bus. The DEB and RPM add a menu entry and a tray; no GTK or WebKit needed.',
     downloads: [],
     packageManagers: [
       {
@@ -109,13 +109,8 @@ export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
         icon: 'layers',
       },
       {
-        name: 'AUR (Server)',
+        name: 'AUR',
         command: 'yay -S rclone-manager-server',
-        icon: 'terminal',
-      },
-      {
-        name: 'AUR (Server + Tray)',
-        command: 'yay -S rclone-manager-headless',
         icon: 'terminal',
       },
       {
@@ -142,6 +137,7 @@ export const DOWNLOAD_TYPE_ORDER = [
   'Linux Portable',
   'DEB Package',
   'RPM Package',
+  'Arch Package',
   'Windows Headless',
   'Linux Headless',
 ];
@@ -371,6 +367,12 @@ export const FILE_EXTENSION_PATTERNS = [
     pattern: '.rpm',
     displayName: 'RPM Package',
     type: 'RPM Package',
+    platformIndex: 2,
+  },
+  {
+    pattern: '.pkg.tar.zst',
+    displayName: 'Arch Linux Package',
+    type: 'Arch Package',
     platformIndex: 2,
   },
   {

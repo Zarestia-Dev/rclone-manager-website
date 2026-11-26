@@ -92,6 +92,31 @@ describe('server and portable ZIP downloads', () => {
       platformIndex: 2,
     });
   });
+
+  it('maps the server packages that replaced the headless app', () => {
+    for (const [name, type, architecture, platformIndex] of [
+      ['RClone.Manager.Server_0.3.7_amd64.deb', 'DEB Package', 'x64', 2],
+      ['RClone.Manager.Server-0.3.7-1.aarch64.rpm', 'RPM Package', 'ARM64', 2],
+      ['RClone.Manager.Server-0.3.7-1-x86_64.pkg.tar.zst', 'Arch Package', 'x64', 2],
+      ['RClone.Manager.Server_0.3.7_arm64-setup.exe', 'EXE Installer', 'ARM64', 0],
+      ['RClone.Manager.Server_0.3.7_x64_en-US.msi', 'MSI Installer', 'x64', 0],
+    ] as const) {
+      expect(parse(name)).toMatchObject({ type, architecture, platformIndex });
+    }
+  });
+
+  it('skips the 0.3.7 server packages copied under the Headless name', () => {
+    for (const name of [
+      'RClone.Manager.Headless_0.3.7-beta.2_amd64.deb',
+      'RClone.Manager.Headless_0.3.7_arm64.deb',
+      'RClone.Manager.Headless-0.3.7-beta.2-1.x86_64.rpm',
+      'RClone.Manager.Headless-0.3.7-1.aarch64.rpm',
+    ]) {
+      expect(parse(name)).toBeNull();
+    }
+    expect(parse('RClone.Manager.Headless_0.3.6_amd64.deb')?.type).toBe('DEB Package');
+    expect(parse('RClone.Manager.Headless-0.3.6-1.x86_64.rpm')?.type).toBe('RPM Package');
+  });
 });
 
 describe('Android APK downloads', () => {

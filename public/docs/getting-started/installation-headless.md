@@ -1,28 +1,31 @@
-# Installation: Headless Server
+# Installation: RClone Manager Server
 
 Run RClone Manager in your browser while transfers, mounts, and automations run
-on your server or NAS.
+on your server, NAS or desktop.
 
-## [[icon:help_outline.primary]] Choose a deployment
+## [[icon:help_outline.primary]] Choose a package
 
-| Variant                     | Intended use                                                   | Desktop runtime required?     |
-| --------------------------- | -------------------------------------------------------------- | ----------------------------- |
-| **Pure server / Docker**    | Background services, containers, servers and NAS devices       | No Tauri, GTK, WebKit or Xvfb |
-| **Server with native tray** | Web access plus a tray and native updater on a desktop machine | Yes                           |
+| Package                                     | Intended use                                                  |
+| ------------------------------------------- | ------------------------------------------------------------- |
+| **Server ZIP / Docker**                     | Background services, containers, servers and NAS devices      |
+| **Server packages (DEB, RPM, setup, MSI)**  | A desktop machine: menu entry, start at login, in-app updates |
 
-The pure server executable is `rclone-manager-server`; the tray-enabled native
-server remains `rclone-manager-headless` (add `.exe` on Windows).
-The regular desktop application is `rclone-manager`.
+Both are the same program, `rclone-manager-server` (add `.exe` on Windows). It
+needs no Tauri, GTK, WebKit or Xvfb, and shows a system tray on Linux and Windows
+whenever a desktop session is there to show it; macOS builds have none. The
+regular desktop application is `rclone-manager`.
 
-Two independent workflows upload to the same `headless-v<version>` release:
-`release-server.yml` builds standalone ZIP archives, while `release-headless.yml`
-builds native tray installers.
+RClone Manager Server replaces the RClone Manager Headless app (0.3.6 and older).
+See **Moving from RClone Manager Headless** below.
+
+`release-headless.yml` builds the ZIP archives and the packages of each
+`headless-v<version>` release.
 
 ## [[icon:download.primary]] Download the standalone server
 
 Choose a **Server** archive from [Downloads](https://hakanismail.info/zarestia/rclone-manager/downloads)
-with Headless mode selected, or from the
-[headless releases](https://github.com/Zarestia-Dev/rclone-manager/releases).
+with Server mode selected, or from the
+[server releases](https://github.com/Zarestia-Dev/rclone-manager/releases) (tagged `headless-v<version>`).
 
 | OS      | Architectures   | Archive                               |
 | ------- | --------------- | ------------------------------------- |
@@ -50,11 +53,12 @@ Only assets actually published in a release appear on the download page.
 yay -S rclone-manager-server
 ```
 
-`rclone-manager-server` installs the pure server from the release ZIP. It depends
+`rclone-manager-server` installs the server from the release's DEB. It depends
 only on `glibc`, `gcc-libs` and `dbus`, so it needs no GTK, WebKit or Xvfb. The
-package installs `/usr/bin/rclone-manager-server`, the `rclone-manager-server`
-systemd unit and the `rclone-manager` service user, whose home is
-`/var/lib/rclone-manager`.
+package installs `/usr/bin/rclone-manager-server` with its menu entry, the
+`rclone-manager-server` systemd unit and the `rclone-manager` service user, whose
+home is `/var/lib/rclone-manager`. On a desktop, start it from the menu; on a
+server, set up the service as below.
 
 The unit listens on `0.0.0.0:8080` and reads credentials from
 `/etc/rclone-manager/server.env`. Set them before starting the service:
@@ -78,9 +82,9 @@ ExecStart=/usr/bin/rclone-manager-server --host 127.0.0.1 --port 8080
 Pacman owns `/usr/bin/rclone-manager-server`, so the application only announces new
 versions; update it with `yay -Syu rclone-manager-server`.
 
-The AUR also has `rclone-manager-headless` (server with native tray) and
-`rclone-manager-git`. Both need GTK and WebKit; use `rclone-manager-server` on
-servers without a desktop session.
+`rclone-manager-server` replaces the `rclone-manager-headless` AUR package. The
+AUR also has `rclone-manager-git`, the desktop app built from source, which needs
+GTK and WebKit.
 
 ## [[icon:dns.primary]] Docker
 
@@ -172,21 +176,42 @@ and start it:
 /opt/rclone-manager/rclone-manager-server --host 127.0.0.1 --port 8080
 ```
 
-The pure server has no tray and no Tauri updater. When its executable is in a
+The server has no Tauri updater. When its executable is in a
 location your user owns and can write, the application can update itself;
 otherwise replace the executable. Rclone itself must be available or installed
 through the application's engine setup.
 
-## [[icon:download.primary]] Native server packages
+## [[icon:download.primary]] Server packages
 
-The [headless releases](https://github.com/Zarestia-Dev/rclone-manager/releases)
-provide the assets listed in each release. The current native release workflow
-uses Tauri with `web-server,tray,updater`; these packages still need the appropriate
-GUI libraries and a display environment on Linux.
+Each release also has the server as packages for desktop machines:
 
-Install the package for your operating system following its release instructions.
-Use the pure server or Docker for machines without a desktop session.
-You can build native server packages yourself with `npm run build:headless`.
+| Package       | File                                                     | Installs for       |
+| ------------- | -------------------------------------------------------- | ------------------ |
+| DEB           | `RClone.Manager.Server_<version>_<amd64\|arm64>.deb`     | All users          |
+| RPM           | `RClone.Manager.Server-<version>-1.<x86_64\|aarch64>.rpm` | All users          |
+| Windows setup | `RClone.Manager.Server_<version>_<x64\|arm64>-setup.exe`  | The current user   |
+| Windows MSI   | `RClone.Manager.Server_<version>_<x64\|arm64>_en-US.msi`  | All users          |
+
+They add a menu entry and update from inside the app: the DEB and RPM through
+`pkexec`, which asks for the administrator password in the desktop session; the
+setup without administrator rights; the MSI with administrator approval each time.
+
+### Moving from RClone Manager Headless
+
+The server keeps the headless app's settings, remotes and data folder
+(`com.rclone.manager.headless`), and on its first start moves the app's
+start-at-login and file manager (Send To) entries to its own name.
+
+- **DEB and RPM:** the in-app update installs `rclone-manager-server`, which
+  removes `r-clone-manager-headless`. The old `rclone-manager-headless` command
+  still starts the server.
+- **Windows setup:** the in-app update removes the old installation, keeping its
+  settings, and starts the server.
+- **Windows MSI:** the in-app update replaces the old MSI. Start
+  **RClone Manager Server** once from the Start menu; until then, starting at
+  login does not work.
+- **AUR:** run `yay -S rclone-manager-server` once and let pacman remove
+  `rclone-manager-headless`.
 
 ## [[icon:settings.primary]] Systemd service for the pure server
 
@@ -233,8 +258,8 @@ WantedBy=multi-user.target
 ```
 
 The service user must be able to read the executable and access any local files
-you want it to manage. This service does not use
-`DISPLAY` or Xvfb. Its directories are examples; retain your existing paths when
+you want it to manage. This service needs no
+display. Its directories are examples; retain your existing paths when
 migrating an installation.
 
 ```bash
@@ -247,10 +272,10 @@ journalctl -u rclone-manager-server -f
 
 - **Docker Compose:** run `docker compose pull` and `docker compose up -d`.
 - **Arch Linux (AUR):** run `yay -Syu rclone-manager-server`.
-- **Pure server:** stop the service, replace the executable with the one from the
-  new ZIP, then start it again.
-- **Native packages:** use the native updater where available, or install the
-  replacement package.
+- **Server ZIP:** the app updates itself when its executable and folder belong to
+  your user; otherwise stop the service, replace the executable with the one from
+  the new ZIP, then start it again.
+- **Server packages:** update from inside the app, or install the new package.
 
 Keep application data, Rclone configuration, and credential files. Updating
 RClone Manager and updating the Rclone engine are separate operations.
