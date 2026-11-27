@@ -76,7 +76,7 @@ yay -S rclone-manager-git
 yay -S rclone-manager-server
 ```
 
-See [Installation: RClone Manager Server](../getting-started/installation-headless.md) to set up the `rclone-manager-server` service.
+See [Installation: RClone Manager Server](../getting-started/installation-server.md) to set up the `rclone-manager-server` service.
 
 ---
 

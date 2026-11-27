@@ -295,7 +295,7 @@ user_allow_other
 </details>
 
 <details>
-<summary>[[icon:dns]] Docker / Headless container</summary>
+<summary>[[icon:dns]] Docker / Server container</summary>
 
 RClone Manager's official Docker container automatically uncomments `user_allow_other` in `/etc/fuse.conf` at startup when dropping privileges to `PUID`/`PGID`.
 

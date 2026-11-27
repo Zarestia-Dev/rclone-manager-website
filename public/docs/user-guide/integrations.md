@@ -75,7 +75,7 @@ Android has no file manager menu to register, so there is nothing to add under *
 
 Removing RClone Manager with its installer or package takes the registered entries with it:
 
-- **Windows**: The installer (both NSIS `.exe` and WiX `.msi` packages) removes the custom registry keys and the `.lnk` shortcuts in your SendTo folder on uninstall. This covers both the desktop and the headless product.
+- **Windows**: The installer (both NSIS `.exe` and WiX `.msi` packages) removes the custom registry keys and the `.lnk` shortcuts in your SendTo folder on uninstall. This covers both the desktop app and the server.
 - **Linux**: The DEB and RPM packages run a pre-removal script that deletes the Nautilus scripts and Python extensions, Dolphin service menus and Nemo actions of the product being removed, in `/root` and in every user's home under `/home`.
 - **macOS**: Dragging the app to the Trash does not remove your user service bundles. Choose **Remove from File Manager Menu** in the app first; it deletes the `.workflow` folder.
 

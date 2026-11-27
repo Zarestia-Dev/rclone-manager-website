@@ -149,7 +149,7 @@ Workflows are stored as declarative JSON schemas:
 
 - **Export:** Click the **Export** button in the canvas toolbar to download your complete pipeline as a `.json` workflow recipe.
 - **Import:** Click **Import Workflow** to load recipes shared by teammates or imported from other systems.
-- **Portability:** Workflows use standardized remote and credential references, making them safe to transfer between desktop installations and headless server instances.
+- **Portability:** Workflows use standardized remote and credential references, making them safe to transfer between desktop installations and server instances.
 
 ---
 

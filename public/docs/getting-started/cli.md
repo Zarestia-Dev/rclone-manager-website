@@ -1,6 +1,6 @@
 # [[icon:terminal.primary]] CLI Reference
 
-RClone Manager supports a wide range of command-line arguments and environment variables. These options allow you to customize paths, secure the headless server, start the application minimized, or trigger remote transfers directly.
+RClone Manager supports a wide range of command-line arguments and environment variables. These options allow you to customize paths, secure the server, start the application minimized, or trigger remote transfers directly.
 
 ---
 
@@ -73,7 +73,7 @@ rclone-manager-server --user admin
 
 > [!WARNING]
 > **Do not put the password on the command line.**  
-> Anything passed with `--pass` is visible to every user on the machine through `ps` and `/proc/<pid>/cmdline`. Give it through `RCLONE_MANAGER_PASS`, preferably from an owner-only file (`chmod 600`) such as the systemd `EnvironmentFile` described in the [headless guide](installation-headless.md). The same applies to the arguments of an updated app: it is started with the same arguments as the running one (see [Updates](updates.md)).
+> Anything passed with `--pass` is visible to every user on the machine through `ps` and `/proc/<pid>/cmdline`. Give it through `RCLONE_MANAGER_PASS`, preferably from an owner-only file (`chmod 600`) such as the systemd `EnvironmentFile` described in the [server guide](installation-server.md). The same applies to the arguments of an updated app: it is started with the same arguments as the running one (see [Updates](updates.md)).
 
 ### Secure HTTPS Example
 
@@ -96,6 +96,6 @@ These variables have no command-line flag. For the two vault variables, empty va
 | :--------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `RCLONE_MANAGER_VAULT_PASSWORD`                                        | Master password that unlocks the configuration vault at startup, so a protected installation starts without anyone typing it.                                                                |
 | `RCLONE_MANAGER_VAULT_PASSWORD_FILE`                                   | Path to a file that holds that password (for example a Docker or systemd secret). It is used only when `RCLONE_MANAGER_VAULT_PASSWORD` is unset or empty. Prefer it over the variable above. |
-| `RCLONE_MANAGER_SECRET`, `RCLONE_MANAGER_SECRET_PATH`, `…_SECRET_FILE` | Master key or key file for the encrypted credential store of the headless server. See **Secret Management** in the [headless configuration](../platform/configuration-headless.md).          |
+| `RCLONE_MANAGER_SECRET`, `RCLONE_MANAGER_SECRET_PATH`, `…_SECRET_FILE` | Master key or key file for the encrypted credential store of the server. See **Secret Management** in the [server configuration](../platform/configuration-server.md).          |
 | `RCLONE_MANAGER_DISABLE_UPDATES`                                       | Set to `1` or `true` to keep release checks but turn off in-app installation. See [Updates](updates.md).                                                                                     |
 | `RCLONE_MANAGER_INSTALLATION_TYPE`                                     | Declares how the app is deployed (for example `container`) so it does not try to replace its own executable. Docker and Podman are detected automatically. See [Updates](updates.md).        |

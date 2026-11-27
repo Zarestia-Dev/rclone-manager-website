@@ -5,7 +5,7 @@ import { GitHubRelease } from './downloads.model';
  * `server-v<version>`; up to 0.3.7 they were `headless-v<version>`, so a release also
  * counts when "headless" appears in its tag, its name, or any of its asset names.
  */
-export function isHeadlessRelease(release: GitHubRelease): boolean {
+export function isServerRelease(release: GitHubRelease): boolean {
   const tag = release.tag_name?.toLowerCase() ?? '';
   const name = release.name?.toLowerCase() ?? '';
   return (

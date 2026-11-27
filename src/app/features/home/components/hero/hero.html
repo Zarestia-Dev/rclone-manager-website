@@ -1,4 +1,4 @@
-<section class="hero" [class.headless-mode]="modeService.currentMode() === 'headless'">
+<section class="hero" [class.server-mode]="modeService.currentMode() === 'server'">
   <div class="hero-background-wrapper">
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
@@ -12,7 +12,7 @@
       <div class="mode-text-container">
         @for (mode of modes; track mode) {
         <div class="mode-content" [class.active]="modeService.currentMode() === mode">
-          <h1 class="hero-title animate-fade-in-up animate-delay-1" [class.headless]="mode === 'headless'">
+          <h1 class="hero-title animate-fade-in-up animate-delay-1" [class.server]="mode === 'server'">
             {{ heroContent[mode].title }}
           </h1>
           <p class="hero-subtitle animate-fade-in-up animate-delay-2">

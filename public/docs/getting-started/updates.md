@@ -25,7 +25,7 @@ How an update is installed depends on how RClone Manager was installed. The app 
 - **Administrator password**: The portable and server updaters never ask for a root or administrator password. If the executable or its folder is read-only or owned by another user, installation is disabled and the reason is shown; update it with your deployment tooling instead. `.deb` and `.rpm` updates are the exception: they use the system's own password prompt, and without a session that can show one (a headless service, for example) the app reports the failure and keeps the verified download for another try.
 - **Automatic rollback**: After a portable or server update, the new version must report a successful start within 90 seconds. If it exits or does not report in time, the previous executable is restored and the failed version is hidden from the update list. Once the new version has reported its start, the update is kept, even if you close the app right away. Only the executable is rolled back, not your settings.
 - **Background process and folder (Linux and macOS)**: While an updated portable app or server runs, the original process stays in the background as its parent, so that service managers, containers and terminals that track the process keep seeing the same one. A small hidden `.rcman-update-…` folder stays next to the executable. Both disappear when the app or service stops; if an update was rolled back, the folder stays until the failure has been shown to you.
-- **Credentials and launch arguments**: The updated app is started with the same arguments as the running one. Anything on the command line, such as `--pass`, is visible to every user on the machine through `ps` and `/proc/<pid>/cmdline`, so give passwords through `RCLONE_MANAGER_PASS` in an owner-only file instead (see the [headless guide](installation-headless.md)). During the update the arguments pass through an environment variable that is not written to disk and not inherited by rclone or other child processes; on Linux it stays visible to the process owner and root in `/proc/<pid>/environ`, like the rest of the service's environment.
+- **Credentials and launch arguments**: The updated app is started with the same arguments as the running one. Anything on the command line, such as `--pass`, is visible to every user on the machine through `ps` and `/proc/<pid>/cmdline`, so give passwords through `RCLONE_MANAGER_PASS` in an owner-only file instead (see the [server guide](installation-server.md)). During the update the arguments pass through an environment variable that is not written to disk and not inherited by rclone or other child processes; on Linux it stays visible to the process owner and root in `/proc/<pid>/environ`, like the rest of the service's environment.
 - **Turning updates off**: Set `RCLONE_MANAGER_DISABLE_UPDATES=1` to keep release checks but disable in-app installation.
 
 ---
@@ -63,7 +63,7 @@ For AUR, Flatpak and Docker installations the in-app updater does not install an
   ```bash
   flatpak update io.github.zarestia_dev.rclone-manager
   ```
-- **Docker Container**: The container announces a new `headless-` release once its matching server package is published. Pull the latest image and re-create your container:
+- **Docker Container**: The container announces a new `server-v` release once its matching server package is published. Pull the latest image and re-create your container:
   ```bash
   docker pull ghcr.io/zarestia-dev/rclone-manager:latest
   ```

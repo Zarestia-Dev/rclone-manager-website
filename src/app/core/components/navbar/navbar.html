@@ -24,10 +24,7 @@
       <!-- Mode Toggle -->
       <button class="mode-toggle" (click)="toggleMode()" aria-label="Toggle desktop/server mode">
         <span class="toggle-track">
-          <span
-            class="toggle-indicator"
-            [class.headless]="modeService.currentMode() === 'headless'"
-          >
+          <span class="toggle-indicator" [class.server]="modeService.currentMode() === 'server'">
             <mat-icon>{{ modeService.modeIcon() }}</mat-icon>
           </span>
         </span>

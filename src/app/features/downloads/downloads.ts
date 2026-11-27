@@ -21,7 +21,7 @@ import { ModeService } from '../../core/services/mode.service';
 import {
   GITHUB_REPO,
   DESKTOP_PLATFORMS_CONFIG,
-  HEADLESS_PLATFORMS_CONFIG,
+  SERVER_PLATFORMS_CONFIG,
   DOWNLOAD_TYPE_ORDER,
   FALLBACK_PLATFORMS,
   FALLBACK_CHANGELOG,
@@ -32,7 +32,7 @@ import {
   DOWNLOADS_MESSAGES,
 } from './downloads.constants';
 import { createDownloadOption, getDownloadType } from './downloads.utils';
-import { isHeadlessRelease } from './release.utils';
+import { isServerRelease } from './release.utils';
 import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
@@ -90,8 +90,8 @@ export class Downloads {
     const mode = this.mode();
     const releases = this.allReleases();
     const filtered =
-      mode === 'headless'
-        ? releases.filter((r) => isHeadlessRelease(r))
+      mode === 'server'
+        ? releases.filter((r) => isServerRelease(r))
         : releases.filter((r) => this.isDesktopRelease(r));
 
     return [...filtered].sort(
@@ -115,8 +115,8 @@ export class Downloads {
   // platforms only falls back when *releases* fail, not if changelog fails.
   readonly platforms = computed(() => {
     if (this.releasesResource.error()) {
-      return this.mode() === 'headless'
-        ? structuredClone(HEADLESS_PLATFORMS_CONFIG).filter((p) => p.packageManagers?.length)
+      return this.mode() === 'server'
+        ? structuredClone(SERVER_PLATFORMS_CONFIG).filter((p) => p.packageManagers?.length)
         : FALLBACK_PLATFORMS;
     }
     return this.generatePlatformsFromReleases(this.filteredReleases());
@@ -158,12 +158,12 @@ export class Downloads {
   }
 
   private isDesktopRelease(release: GitHubRelease): boolean {
-    return !isHeadlessRelease(release);
+    return !isServerRelease(release);
   }
 
   private generatePlatformsFromReleases(releases: GitHubRelease[]): DownloadPlatform[] {
     const mode = this.mode();
-    const config = mode === 'headless' ? HEADLESS_PLATFORMS_CONFIG : DESKTOP_PLATFORMS_CONFIG;
+    const config = mode === 'server' ? SERVER_PLATFORMS_CONFIG : DESKTOP_PLATFORMS_CONFIG;
     const platforms: DownloadPlatform[] = structuredClone(config);
 
     if (releases.length === 0) return platforms.filter((p) => p.packageManagers?.length);
@@ -172,9 +172,6 @@ export class Downloads {
       const option = createDownloadOption(asset);
       if (!option) continue;
 
-      if (mode === 'headless' && option.type !== 'Server Archive') {
-        option.displayName = `Server + Tray - ${option.displayName || option.name}`;
-      }
       if (option.platformIndex !== undefined) {
         platforms[option.platformIndex]?.downloads.push(option);
       }

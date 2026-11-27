@@ -1,6 +1,6 @@
 # [[icon:photo_library.primary]] Wiki Gallery
 
-Explore the features and capabilities of **RClone Manager** through this visual gallery. The application is designed with a premium, GNOME-inspired user interface built using Angular and Tauri to deliver a native, highly responsive experience across desktop, headless web server, and mobile environments.
+Explore the features and capabilities of **RClone Manager** through this visual gallery. The application is designed with a premium, GNOME-inspired user interface built using Angular and Tauri to deliver a native, highly responsive experience across desktop, server (web), and mobile environments.
 
 ---
 

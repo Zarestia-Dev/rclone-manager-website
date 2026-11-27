@@ -153,7 +153,7 @@ When setting up cloud providers that require browser-based OAuth authentication 
          - rclone-config:/config
    ```
 
-2. **SSH Port Forwarding (For Remote VPS / Headless Servers)**:
+2. **SSH Port Forwarding (For Remote VPS / Servers)**:
    If RClone Manager is running on a remote VPS or NAS and you access the Web UI from your local computer, forward port `53682` via SSH tunnel from your local terminal:
 
    ```bash
@@ -162,7 +162,7 @@ When setting up cloud providers that require browser-based OAuth authentication 
 
    With this tunnel open, the local browser callback reaches the remote host. For Docker, this assumes host networking as above; the host loopback does not reach a bridge-mode container’s private loopback.
 
-3. **Headless Manual Token (`rclone authorize`)**:
+3. **Manual Token (`rclone authorize`)**:
    Run `rclone authorize "<provider>"` on your local computer to generate an OAuth token JSON, then paste the resulting token directly into the manual remote configuration fields in RClone Manager Web UI.
 
 ### [[icon:person.accent]] User & Group Mapping (PUID / PGID / PGIDS)
@@ -230,7 +230,7 @@ is enabled.
 
 ## [[icon:settings.primary]] Systemd Service Configuration
 
-For the pure server, create the service described in the [installation guide](../getting-started/installation-headless.md), which also covers the service user and file ownership. Installing a package does not necessarily create or enable that service. Tray-enabled native packages still require a GUI runtime.
+For the pure server, create the service described in the [installation guide](../getting-started/installation-server.md), which also covers the service user and file ownership. Installing a package does not necessarily create or enable that service. Tray-enabled native packages still require a GUI runtime.
 
 **1. Put credentials in the environment file** (owner-only, never in `ExecStart`, because unit files and command lines are readable by every user):
 

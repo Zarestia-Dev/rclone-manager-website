@@ -16,7 +16,7 @@
 - [Configuration](getting-started/configuration.md) {description="Initial setup and linking your rclone remotes", icon=settings}
 - [CLI Reference](getting-started/cli.md) {description="Command-line arguments and environment variables", icon=terminal}
 - [Building from Source](getting-started/building.md) {description="Instructions for developers and packagers", icon=build}
-- [Installation - Headless](getting-started/installation-headless.md) {description="How to install RClone Manager on a server", icon=dns}
+- [Installation - Server](getting-started/installation-server.md) {description="How to install RClone Manager on a server", icon=dns}
 
 ## User Guide {icon=menu_book, description="Learn how to use RClone Manager effectively"}
 
@@ -42,7 +42,7 @@
 - [macOS Installation](platform/installation-macos.md) {icon=apple}
 - [Linux Installation](platform/installation-linux.md) {icon=terminal}
 - [Configuration Desktop](platform/configuration-desktop.md) {icon=desktop_windows}
-- [Configuration Headless](platform/configuration-headless.md) {icon=storage}
+- [Configuration - Server](platform/configuration-server.md) {icon=storage}
 - [Android Support (Beta)](platform/configuration-android.md) {icon=android}
 
 ## Support {icon=help, description="Get help when you need it"}

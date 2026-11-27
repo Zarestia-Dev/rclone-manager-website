@@ -46,11 +46,12 @@
         Choose Your Platform
       </h2>
 
-      @if (mode() === 'headless') {
+      @if (mode() === 'server') {
         <p>
-          Choose <strong>Server</strong> for a background service without desktop libraries, or
-          <strong>Server + Tray</strong> for a local tray and native updater. Server archives
-          include the browser interface and translations. Only published assets are listed.
+          Choose the <strong>Server</strong> archive for a background service without desktop
+          libraries. Choose a package for a desktop machine: it adds a menu entry, a tray and
+          in-app updates. All of them include the browser interface and translations. Only
+          published assets are listed.
         </p>
       }
 

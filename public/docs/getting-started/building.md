@@ -68,7 +68,7 @@ The executable and Cargo package are both named `rclone-manager-server`.
 There is no need to run the core library separately.
 
 The executable embeds the frontend, translations and templates, so it can be copied
-anywhere on its own. See [server installation](installation-headless.md).
+anywhere on its own. See [server installation](installation-server.md).
 
 ## [[icon:construction.primary]] Other native variants
 

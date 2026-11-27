@@ -1,22 +1,8 @@
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import {
-  from,
-  map,
-  concatMap,
-  delay,
-  Observable,
-  of,
-  shareReplay,
-  Subject,
-  switchMap,
-  takeUntil,
-} from 'rxjs';
+import { from, map, concatMap, delay, Observable, shareReplay, Subject, takeUntil } from 'rxjs';
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { WikiService } from './wiki.service';
 import { HttpClient } from '@angular/common/http';
-import { GithubService } from '../../../shared/services/github.service';
-import { GitHubRelease } from '../../downloads/downloads.model';
-import { isHeadlessRelease } from '../../downloads/release.utils';
 
 export interface DocItem {
   title: string;
@@ -48,7 +34,6 @@ export class DocService {
   private wikiService = inject(WikiService);
   private sanitizer = inject(DomSanitizer);
   private http = inject(HttpClient);
-  private github = inject(GithubService);
 
   readonly docSections = signal<DocSection[]>([]);
   readonly quickLinks = signal<DocItem[]>([]);
@@ -58,7 +43,6 @@ export class DocService {
   private searchIndex = new Map<string, string>();
   private indexingCancel$ = new Subject<void>();
   private searchIndexCache$?: Observable<Record<string, string>>;
-  private latestHeadlessRelease$?: Observable<GitHubRelease | undefined>;
 
   readonly searchHits = computed(() => this.search(this.searchQuery()));
 
@@ -72,38 +56,7 @@ export class DocService {
   }
 
   fetchPage(path: string) {
-    return this.wikiService
-      .fetchPage(path)
-      .pipe(switchMap((markdown) => this.replaceDocPlaceholders(markdown)));
-  }
-
-  private replaceDocPlaceholders(markdown: string): Observable<string> {
-    if (!markdown.includes('{{HEADLESS_LATEST_VERSION}}')) {
-      return of(markdown);
-    }
-    return this.getLatestHeadlessRelease().pipe(
-      map((release) => {
-        const version = release?.tag_name.replace(/^(?:server|headless)-v/i, '') ?? 'latest';
-        return markdown.replace(/{{HEADLESS_LATEST_VERSION}}/g, version);
-      }),
-    );
-  }
-
-  private getLatestHeadlessRelease(): Observable<GitHubRelease | undefined> {
-    this.latestHeadlessRelease$ ??= this.github
-      .get<GitHubRelease[]>('/repos/Zarestia-Dev/rclone-manager/releases')
-      .pipe(
-        map(
-          (releases) =>
-            releases
-              .filter((r) => isHeadlessRelease(r))
-              .sort(
-                (a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime(),
-              )[0],
-        ),
-        shareReplay(1),
-      );
-    return this.latestHeadlessRelease$;
+    return this.wikiService.fetchPage(path);
   }
 
   loadSearchIndex(forceRefresh = false): Observable<Record<string, string>> {

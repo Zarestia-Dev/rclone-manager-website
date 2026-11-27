@@ -26,7 +26,7 @@ The Android version of RClone Manager brings powerful cloud storage management d
 
 - **Add / Edit / Delete**: Full CRUD support for all remote storage configurations.
 - **Seamless OAuth Authentication**: Linking accounts for cloud providers (like Google Drive, OneDrive, Dropbox) works natively. The authentication flow redirects back to the app using the custom deep link scheme `rclone-manager://oauth`.
-- **Remote Instance Connections**: You can connect the app to remote Rclone instances running on separate machines, servers, or headless setups to control them dynamically from the interface.
+- **Remote Instance Connections**: You can connect the app to remote Rclone instances running on separate machines, or servers to control them dynamically from the interface.
 
 ### Operations & Transfers
 

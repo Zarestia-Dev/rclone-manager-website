@@ -1,6 +1,6 @@
 # Installation Overview
 
-RClone Manager is available in three variants: the **Desktop Client** for personal computers, the **Headless Server** for remote access (NAS, VPS, Docker), and the **Mobile App (Android Beta)** for mobile devices.
+RClone Manager is available in three variants: the **Desktop Client** for personal computers, the **Server** for remote access (NAS, VPS, Docker), and the **Mobile App (Android Beta)** for mobile devices.
 
 Select your preferred method below.
 
@@ -36,7 +36,7 @@ Download standalone architecture-separated APKs (`arm64-v8a`, `armeabi-v7a`, `x8
 
 ---
 
-## [[icon:dns.primary]] Headless & Docker
+## [[icon:dns.primary]] Server & Docker
 
 Designed for servers, NAS, or running as a web service. Access the full UI via any web browser.
 
@@ -44,7 +44,7 @@ Designed for servers, NAS, or running as a web service. Access the full UI via a
 
 The official Docker image is available via the GitHub Container Registry.
 
-- **[Docker Installation Guide](installation-headless.md#docker-quick-start)**
+- **[Docker Installation Guide](installation-server.md#docker-quick-start)**
 - **Image:** `ghcr.io/zarestia-dev/rclone-manager`
 - **Registry:** [View on GitHub Packages](https://github.com/Zarestia-Dev/rclone-manager/pkgs/container/rclone-manager)
 
@@ -52,8 +52,8 @@ The official Docker image is available via the GitHub Container Registry.
 
 Run directly on Linux/Node.js environments without Docker.
 
-- **[Headless Setup Guide](installation-headless.md)**
-- **Versions:** Headless versions follow specific tags (e.g., [`headless-v0.1.8`](https://github.com/Zarestia-Dev/rclone-manager/tree/headless-v0.1.8)).
+- **[Server Setup Guide](installation-server.md)**
+- **Versions:** Server versions follow their own tags (`server-v<version>`; up to 0.3.7 `headless-v<version>`, e.g. [`headless-v0.3.7`](https://github.com/Zarestia-Dev/rclone-manager/tree/headless-v0.3.7)).
 
 ---
 
@@ -64,7 +64,7 @@ Run directly on Linux/Node.js environments without Docker.
 The application acts as a GUI for **[Rclone](https://rclone.org/)**.
 
 - **Desktop:** The app acts as a setup wizard and will automatically download, validate, or update Rclone on initial startup.
-- **Headless/Docker:** The Docker entrypoint automatically downloads/updates the Rclone binary on container startup.
+- **Server/Docker:** The Docker entrypoint automatically downloads/updates the Rclone binary on container startup.
 - **Mobile (Android):** Runs natively using an in-process Go library (`librclone`) via FFI bindings.
 
 ### 2. Mounting Drivers (Required for Mount features)
@@ -77,4 +77,4 @@ To mount your cloud storage as a local disk drive, you must have the filesystem 
 | **macOS**   | **macFUSE** | [osxfuse.github.io](https://osxfuse.github.io/) |
 | **Linux**   | **fuse3**   | Usually pre-installed                           |
 
-> **Note:** If these drivers are missing, the Desktop app will prompt you to install them. For Docker/Headless, the host system must support FUSE and the container needs privileged access.
+> **Note:** If these drivers are missing, the Desktop app will prompt you to install them. For Docker/Server, the host system must support FUSE and the container needs privileged access.

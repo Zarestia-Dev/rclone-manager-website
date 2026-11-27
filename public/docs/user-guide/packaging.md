@@ -103,9 +103,9 @@ To avoid "App Damaged" or "Unidentified Developer" warnings, you must sign the a
 
 ---
 
-## [[icon:dns.primary]] Headless & Docker Packaging
+## [[icon:dns.primary]] Server & Docker Packaging
 
-The headless version is packaged differently since it serves a web UI instead of opening a window.
+The server is packaged differently since it serves a web UI instead of opening a window.
 
 ### Server
 
@@ -150,9 +150,10 @@ directory convention.
 ### 2. Server Releases
 
 - **Workflow:** `.github/workflows/release-server.yml`, triggered manually.
-- **Tag Naming:** Releases are prefixed with `server-v*`, the tag the server's updater
-  looks for. Up to 0.3.7 they were `headless-v*`; `headless-v0.3.7` is the last one and
-  moves installs of the RClone Manager Headless app to the server.
+- **Tag Naming:** Releases are prefixed with `server-v*`, the tag the server's
+  updater looks for. Up to 0.3.7 they were `headless-v*`; the `headless-v0.3.7`
+  release stays published, since it moves the RClone Manager Headless app's
+  installations to the server.
 - **Targets:** Linux, Windows, and macOS on x86_64 and aarch64.
 - **Assets:** `server-<os>-<arch>-<version>.zip` for every target. Each ZIP contains
   the executable, `LICENSE`, a short `README.txt` and, on Linux, the systemd unit
@@ -162,9 +163,9 @@ directory convention.
   `RClone.Manager.Server_<version>_<x64|arm64>-setup.exe` (NSIS) and
   `RClone.Manager.Server_<version>_<x64|arm64>_en-US.msi` (nfpm), made from
   `backend/server/package/`.
-- **Updates:** The signed `updater.json` catalog is published beside the assets,
-  with a `latest.json` that moves installs of the RClone Manager Headless app to
-  the server package of their format.
+- **Updates:** The signed `updater.json` catalog is published beside the assets.
+  The `latest.json` of the `headless-v0.3.7` release moves installs of the RClone
+  Manager Headless app to the server package of their format.
 - **Future targets:** Tracked in
   [backend/TODO.md](https://github.com/Zarestia-Dev/rclone-manager/blob/master/backend/TODO.md).
 

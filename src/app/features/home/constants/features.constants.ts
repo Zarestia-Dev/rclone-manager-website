@@ -37,7 +37,7 @@ export const DESKTOP_FEATURES: Feature[] = [
   },
 ];
 
-export const HEADLESS_FEATURES: Feature[] = [
+export const SERVER_FEATURES: Feature[] = [
   {
     title: 'Web Dashboard',
     icon: 'dashboard',

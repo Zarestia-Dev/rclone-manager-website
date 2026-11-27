@@ -11,7 +11,7 @@ Any sync or transfer profile (see [Sync & Transfer Jobs](sync-and-transfer.md)) 
 All three are set in the profile's operation step of the remote configuration (for example the **Sync** step), below the paths.
 
 > [!IMPORTANT]
-> Automations run inside RClone Manager, so the app must be running: the desktop app (closing the window keeps it running in the system tray) or the headless web server. Nothing runs while the app is closed.
+> Automations run inside RClone Manager, so the app must be running: the desktop app (closing the window keeps it running in the system tray) or the server (web). Nothing runs while the app is closed.
 
 ---
 

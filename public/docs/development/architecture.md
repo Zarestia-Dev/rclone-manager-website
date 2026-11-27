@@ -30,7 +30,7 @@ backend/
 │   ├── tests/architecture.rs   Source boundary checks
 │   └── build.rs                librclone build and linking
 ├── server/                     Tokio/Axum executable and reusable HTTP host
-│   ├── src/headless/           Process runtime, signals, paths and restart
+│   ├── src/service/            Process runtime, signals, paths and restart
 │   ├── src/web/                Routes, authentication, access control, SSE and handlers
 │   ├── linux/, package/        systemd service template and packaging notes
 │   └── build.rs                Embeds the compiled Angular UI
@@ -385,7 +385,7 @@ the `rclone-manager` namespace independently of Cargo crate names. Changing sour
 directories must not migrate user data implicitly.
 
 Authentication, TLS and deployment settings are described in
-[headless configuration](../platform/configuration-headless.md). Authentication is
+[server configuration](../platform/configuration-server.md). Authentication is
 optional and requires a username/password pair; do not assume that choosing a
 server build enables it automatically.
 

@@ -20,7 +20,7 @@
   justify-content: center;
   overflow: hidden;
 
-  &.headless-mode {
+  &.server-mode {
     .blob-1 {
       top: 40%;
       left: 60%;
@@ -51,7 +51,7 @@
       animation: float 14s infinite ease-in-out 1s;
     }
 
-    .hero-title.headless {
+    .hero-title.server {
       @include gradient-text;
     }
   }

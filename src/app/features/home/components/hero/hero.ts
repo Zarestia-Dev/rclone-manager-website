@@ -16,7 +16,7 @@ import { AnimatedLogoComponent } from '../animated-logo/animated-logo';
 export class Hero {
   protected modeService = inject(ModeService);
   protected readonly heroContent = HERO_CONTENT;
-  protected readonly modes = ['desktop', 'headless'] as const;
+  protected readonly modes = ['desktop', 'server'] as const;
 
   /** Forwarded from Home - increments to replay the logo intro animation. */
   readonly homeNavTrigger = input(0);

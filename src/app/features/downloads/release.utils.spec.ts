@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GitHubRelease } from './downloads.model';
-import { isHeadlessRelease } from './release.utils';
+import { isServerRelease } from './release.utils';
 
 function release(tag_name: string, name: string, assets: string[]): GitHubRelease {
   return {
@@ -18,10 +18,10 @@ function release(tag_name: string, name: string, assets: string[]): GitHubReleas
   } as GitHubRelease;
 }
 
-describe('isHeadlessRelease', () => {
+describe('isServerRelease', () => {
   it('counts server-v releases as server releases', () => {
     expect(
-      isHeadlessRelease(
+      isServerRelease(
         release('server-v0.3.8-beta.1', 'RClone Manager Server v0.3.8-beta.1', [
           'server-linux-x86_64-0.3.8-beta.1.zip',
           'RClone.Manager.Server_0.3.8-beta.1_amd64.deb',
@@ -32,14 +32,14 @@ describe('isHeadlessRelease', () => {
 
   it('still counts headless-v releases up to 0.3.7', () => {
     expect(
-      isHeadlessRelease(
+      isServerRelease(
         release('headless-v0.3.7', 'RClone Manager Server v0.3.7', [
           'server-linux-x86_64-0.3.7.zip',
         ]),
       ),
     ).toBe(true);
     expect(
-      isHeadlessRelease(
+      isServerRelease(
         release('headless-v0.3.6', 'RClone Manager Headless v0.3.6', [
           'RClone.Manager.Headless_0.3.6_amd64.deb',
         ]),
@@ -49,7 +49,7 @@ describe('isHeadlessRelease', () => {
 
   it('does not count desktop releases', () => {
     expect(
-      isHeadlessRelease(
+      isServerRelease(
         release('v0.3.7', 'RClone Manager v0.3.7', [
           'RClone.Manager_0.3.7_amd64.deb',
           'portable-linux-x86_64-0.3.7.zip',

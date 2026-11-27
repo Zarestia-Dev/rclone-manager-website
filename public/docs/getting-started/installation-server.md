@@ -19,7 +19,7 @@ RClone Manager Server replaces the RClone Manager Headless app (0.3.6 and older)
 See **Moving from RClone Manager Headless** below.
 
 `release-server.yml` builds the ZIP archives and the packages of each
-`server-v<version>` release (`headless-v<version>` up to 0.3.7).
+`server-v<version>` release. Releases up to 0.3.7 are tagged `headless-v<version>`.
 
 ## [[icon:download.primary]] Download the standalone server
 
@@ -121,7 +121,7 @@ volumes:
 ```
 
 Start with `docker compose up -d`. Preserve both volumes across updates.
-See [configuration](../platform/configuration-headless.md) for authentication,
+See [configuration](../platform/configuration-server.md) for authentication,
 TLS, OAuth, user mapping and FUSE mounts.
 
 ## [[icon:storage.primary]] Unraid (Community Applications)

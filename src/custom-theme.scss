@@ -653,29 +653,6 @@ $dark-theme: (
       color-mix(in srgb, var(--view-bg-color) 90%, transparent) 100%
     );
 
-  // Headless Mode Gradient
-  --headless-background:
-    radial-gradient(
-      circle at 20% 50%,
-      color-mix(in srgb, var(--gnome-orange-3) 40%, transparent) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
-      color-mix(in srgb, var(--gnome-yellow-4) 40%, transparent) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 40% 80%,
-      color-mix(in srgb, var(--gnome-red-3) 40%, transparent) 0%,
-      transparent 50%
-    ),
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--window-bg-color) 90%, transparent) 0%,
-      color-mix(in srgb, var(--view-bg-color) 90%, transparent) 100%
-    );
-
   -webkit-font-smoothing: antialiased;
 
   mat-card-header {
@@ -735,8 +712,8 @@ body {
     background: transparent;
   }
 
-  // Headless Mode Overrides - Orange/Yellow Theme
-  &.mode-headless {
+  // Server Mode Overrides - Orange/Yellow Theme
+  &.mode-server {
     --primary-color: var(--gnome-orange-3);
     --accent-color: var(--gnome-yellow-4);
     --primary-color-rgb: 255, 120, 0;

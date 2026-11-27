@@ -73,7 +73,7 @@ export const DESKTOP_PLATFORMS_CONFIG: DownloadPlatform[] = [
   },
 ];
 
-export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
+export const SERVER_PLATFORMS_CONFIG: DownloadPlatform[] = [
   {
     name: 'Windows (Server)',
     icon: 'dns',
@@ -85,7 +85,7 @@ export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
         name: 'Windows Setup Guide',
         command: 'View Guide',
         icon: 'description',
-        url: 'https://hakanismail.info/zarestia/rclone-manager/docs/configuration-headless',
+        url: 'https://hakanismail.info/zarestia/rclone-manager/docs/configuration-server',
         actionLabel: 'View Guide',
       },
     ],
@@ -117,7 +117,7 @@ export const HEADLESS_PLATFORMS_CONFIG: DownloadPlatform[] = [
         name: 'Systemd Setup',
         command: 'View Guide',
         icon: 'description',
-        url: 'https://hakanismail.info/zarestia/rclone-manager/docs/configuration-headless',
+        url: 'https://hakanismail.info/zarestia/rclone-manager/docs/configuration-server',
         actionLabel: 'View Guide',
       },
     ],
@@ -138,8 +138,8 @@ export const DOWNLOAD_TYPE_ORDER = [
   'DEB Package',
   'RPM Package',
   'Arch Package',
-  'Windows Headless',
-  'Linux Headless',
+  'Windows Server',
+  'Linux Server',
 ];
 
 export const CHANGELOG_SECTION_ORDER = ['warning', 'added', 'changed', 'fixed', 'need-fix'];
@@ -385,15 +385,15 @@ export const FILE_EXTENSION_PATTERNS = [
   {
     pattern: 'headless',
     secondaryPattern: 'windows',
-    displayName: 'Windows Headless',
-    type: 'Windows Headless',
+    displayName: 'Windows Server',
+    type: 'Windows Server',
     platformIndex: 0,
   },
   {
     pattern: 'headless',
     secondaryPattern: 'linux',
-    displayName: 'Linux Headless',
-    type: 'Linux Headless',
+    displayName: 'Linux Server',
+    type: 'Linux Server',
     platformIndex: 2,
   },
 ];

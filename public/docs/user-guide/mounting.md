@@ -45,7 +45,7 @@ _Boundary Warning:_ The app will only try _once_ per startup. If Rclone encounte
 These paths dictate exactly what is being mounted and where it is going.
 
 - **Source Path (The Cloud):** This is the path _inside_ your remote. You don't have to mount the entire drive. If you only want your homework folder, you can specify `HomeWorks` (which translates to `YourRemote:HomeWorks`). Because the remote hasn't been fully created yet in this modal, you cannot browse for this path automatically. A small warning badge is there to remind you of this limitation.
-- **Destination Path (Your Local Machine):** This is where the remote will manifest on your computer. You can type the path manually, or click the **Purple Folder Icon** to open your native file selector (or RClone Manager's built-in Nautilus browser if you are running in Headless Mode).
+- **Destination Path (Your Local Machine):** This is where the remote will manifest on your computer. You can type the path manually, or click the **Purple Folder Icon** to open your native file selector (or RClone Manager's built-in Nautilus browser if you are running the Server).
 
 > [!NOTE]
 > **A Windows Quirk:** On Windows, FUSE explicitly requires the destination folder to _not exist_ prior to mounting. If you manually select an existing, empty folder as your destination, RClone Manager will quietly and politely delete that folder for you before executing the mount to satisfy Windows.

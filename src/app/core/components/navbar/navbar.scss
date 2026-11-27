@@ -191,7 +191,7 @@
         height: var(--icon-size-sm);
       }
 
-      &.headless {
+      &.server {
         background: var(--primary-color);
         transform: rotate(180deg);
       }
