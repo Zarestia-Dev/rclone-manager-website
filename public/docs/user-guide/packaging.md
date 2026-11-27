@@ -149,9 +149,10 @@ directory convention.
 
 ### 2. Server Releases
 
-- **Workflow:** `.github/workflows/release-headless.yml`, triggered manually.
-- **Tag Naming:** Releases are prefixed with `headless-v*`, the tag the RClone
-  Manager Headless app and the server's updater look for.
+- **Workflow:** `.github/workflows/release-server.yml`, triggered manually.
+- **Tag Naming:** Releases are prefixed with `server-v*`, the tag the server's updater
+  looks for. Up to 0.3.7 they were `headless-v*`; `headless-v0.3.7` is the last one and
+  moves installs of the RClone Manager Headless app to the server.
 - **Targets:** Linux, Windows, and macOS on x86_64 and aarch64.
 - **Assets:** `server-<os>-<arch>-<version>.zip` for every target. Each ZIP contains
   the executable, `LICENSE`, a short `README.txt` and, on Linux, the systemd unit

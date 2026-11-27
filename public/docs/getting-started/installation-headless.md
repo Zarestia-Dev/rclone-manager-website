@@ -5,10 +5,10 @@ on your server, NAS or desktop.
 
 ## [[icon:help_outline.primary]] Choose a package
 
-| Package                                     | Intended use                                                  |
-| ------------------------------------------- | ------------------------------------------------------------- |
-| **Server ZIP / Docker**                     | Background services, containers, servers and NAS devices      |
-| **Server packages (DEB, RPM, setup, MSI)**  | A desktop machine: menu entry, start at login, in-app updates |
+| Package                                    | Intended use                                                  |
+| ------------------------------------------ | ------------------------------------------------------------- |
+| **Server ZIP / Docker**                    | Background services, containers, servers and NAS devices      |
+| **Server packages (DEB, RPM, setup, MSI)** | A desktop machine: menu entry, start at login, in-app updates |
 
 Both are the same program, `rclone-manager-server` (add `.exe` on Windows). It
 needs no Tauri, GTK, WebKit or Xvfb, and shows a system tray on Linux and Windows
@@ -18,14 +18,14 @@ regular desktop application is `rclone-manager`.
 RClone Manager Server replaces the RClone Manager Headless app (0.3.6 and older).
 See **Moving from RClone Manager Headless** below.
 
-`release-headless.yml` builds the ZIP archives and the packages of each
-`headless-v<version>` release.
+`release-server.yml` builds the ZIP archives and the packages of each
+`server-v<version>` release (`headless-v<version>` up to 0.3.7).
 
 ## [[icon:download.primary]] Download the standalone server
 
 Choose a **Server** archive from [Downloads](https://hakanismail.info/zarestia/rclone-manager/downloads)
 with Server mode selected, or from the
-[server releases](https://github.com/Zarestia-Dev/rclone-manager/releases) (tagged `headless-v<version>`).
+[server releases](https://github.com/Zarestia-Dev/rclone-manager/releases) (tagged `server-v<version>`, `headless-v<version>` up to 0.3.7).
 
 | OS      | Architectures   | Archive                               |
 | ------- | --------------- | ------------------------------------- |
@@ -185,12 +185,12 @@ through the application's engine setup.
 
 Each release also has the server as packages for desktop machines:
 
-| Package       | File                                                     | Installs for       |
-| ------------- | -------------------------------------------------------- | ------------------ |
-| DEB           | `RClone.Manager.Server_<version>_<amd64\|arm64>.deb`     | All users          |
-| RPM           | `RClone.Manager.Server-<version>-1.<x86_64\|aarch64>.rpm` | All users          |
-| Windows setup | `RClone.Manager.Server_<version>_<x64\|arm64>-setup.exe`  | The current user   |
-| Windows MSI   | `RClone.Manager.Server_<version>_<x64\|arm64>_en-US.msi`  | All users          |
+| Package       | File                                                      | Installs for     |
+| ------------- | --------------------------------------------------------- | ---------------- |
+| DEB           | `RClone.Manager.Server_<version>_<amd64\|arm64>.deb`      | All users        |
+| RPM           | `RClone.Manager.Server-<version>-1.<x86_64\|aarch64>.rpm` | All users        |
+| Windows setup | `RClone.Manager.Server_<version>_<x64\|arm64>-setup.exe`  | The current user |
+| Windows MSI   | `RClone.Manager.Server_<version>_<x64\|arm64>_en-US.msi`  | All users        |
 
 They add a menu entry and update from inside the app: the DEB and RPM through
 `pkexec`, which asks for the administrator password in the desktop session; the
