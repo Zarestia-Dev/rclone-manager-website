@@ -83,7 +83,7 @@ export class DocService {
     }
     return this.getLatestHeadlessRelease().pipe(
       map((release) => {
-        const version = release?.tag_name.replace(/^headless-v/i, '') ?? 'latest';
+        const version = release?.tag_name.replace(/^(?:server|headless)-v/i, '') ?? 'latest';
         return markdown.replace(/{{HEADLESS_LATEST_VERSION}}/g, version);
       }),
     );
